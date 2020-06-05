@@ -16,27 +16,14 @@ BUILD_CLI	=	build_ai
 
 NAME_SRV	=	zappy_server
 
-NAME_CLI	=	zappy_ai
+NAME_AI		=	zappy_ai
 
 NAME_TEST	=	unit_tests
 
-OBJ_SRV		=	$(SRC_SRV:%.c=$(BUILD_SRV)/%.o) 
-
-OBJ_AI		=	$(SRC_AI:%.c=$(BUILD_AI)/%.o)
+OBJ_SRV		=	$(SRC_SRV:%.c=$(BUILD_SRV)/%.o)
 
 override LDFLAGS	+=
 
-override LDLIBS		+= 
-
-override CFLAGS		+=	-Wall \
-						-Wextra \
-						-ffreestanding \
-						-Wshadow \
-						-Wsign-compare \
-						-Wno-unused-parameter \
-						-Wno-unused-variable \
-
-override CPPFLAGS	+=	-I./share/include		\
-						-I./server/include		\
+override LDLIBS		+=
 
 override DEPFLAGS	+=	-MT $@ -MMD -MP -MF $(@:.o=.d)
