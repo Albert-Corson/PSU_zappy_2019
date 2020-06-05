@@ -1,6 +1,8 @@
 #!/usr/bin/env python3 
 import sys
 
+import socket
+
 class Error(Exception):
     pass
 
@@ -8,6 +10,39 @@ class CmdLineErrors(Error):
     def __init__(self, expression, message):
         self.expression = expression
         self.message = message
+
+#TODO: Vision handling and ressources managements
+
+class Trantorian:
+    x, y = 0, 0
+    level = 1
+    stones = { "linemate": 0, "deraumere": 0, "sibur": 0,
+                "mendiane": 0, "phiras": 0, "thystame": 0 }
+
+    def __init__(self, name):
+        print("A Traitorian has been invoked")
+        self.name = name
+
+    def collect_stone(self, stone):
+        if stone in self.stones:
+            print(self.name + " just picked up a " + stone + " stone!")
+            self.stones[stone] += 1
+        else:
+            print("Dunno this stone, duh..")
+
+    def dump_stone(self):
+        print("### Stone recap ###\n")
+        [print("# [" + x + "]" + ":\t%d  #" %(self.stones[x])) for x in self.stones]
+        print("\n### end ###")
+
+    def reset_stones(self):
+        for _ in self.stones:
+            self.stones[_] = 0
+
+    def elevate(self):
+        print("This member function is for elevation")
+        self.level += 1
+        print("Now elevating to %d" %(self.level))
 
 def displayHelp():
     print("USAGE: ./zappy_ai -p port -name -h machine ")
@@ -39,11 +74,30 @@ def arg_gestion(ac, av):
     except ValueError:
         raise CmdLineErrors("The port must be a number", "")
     #[print(x + " => " + dicto[x]) for x in dicto]
+    return dicto["-p"], dicto["-name"], dicto["-h"]
+
+def init_communication(sockfd, player):
+    msg = sockfd.recv(1280).decode("Utf8")
+    print("receive => " + msg)
+    sockfd.send((player.name + "\n").encode("Utf8"))
+    buffer = sockfd.recv(1280).decode("Utf8").split('\n')
+    remaining_client = int(buffer[0])
+    word_dimensions = list(map(int, buffer[1].split(' ')))
+    return remaining_client, word_dimensions
 
 def begin_ai(ac, av):
-    ac-=1
-    arg_gestion(ac, av[1:])
+    
+    port, name , host = arg_gestion(ac - 1, av[1:])
+    host = socket.gethostbyname(host)
+    player = Trantorian(name)
+
     # begin socket stuff here
+    sockfd = socket.create_connection((host, port))
+    remaining_client, word_dim = init_communication(sockfd, player)
+    
+    # AI stuff here
+
+    sockfd.close()
 
 def main():
     av = sys.argv
