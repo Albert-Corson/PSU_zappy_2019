@@ -10,7 +10,7 @@
 
 #include <stdbool.h>
 
-#include <libs/socker/request.h>
+#include <socker/request.h>
 
 ////////////////////////////////////////////////////////////////////////////////
 // ROUTER
@@ -23,10 +23,38 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
+* @brief name-value pair to store a request parameter
+*/
+typedef struct {
+    char *name;
+    void *value;
+} param_t;
+
+/**
+* @brief request parameters storage unit, with a param getter method
+*/
+typedef struct {
+    param_t *params;
+    void (*get)(params_store_t *store, const char *name);
+} params_store_t;
+
+/**
+* @brief request structure holding all necessary request information
+*/
+typedef struct {
+    peer_t sender;
+    void *header;
+    void *body;
+    void *footer;
+    char *path;
+    params_store_t *params;
+} router_request_t;
+
+/**
 * @brief route middleware, executed when a route the associated route is 
 * requested
 */
-typedef bool (*middleware_t)(request_t *req, response_t *res);
+typedef bool (*middleware_t)(router_request_t *req, response_t *res);
 
 /**
 * @brief server router node
