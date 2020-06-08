@@ -1,5 +1,5 @@
 include var.mk sources.mk
 
 $(NAME_AI):
-	cp ./$(SRC_AI) $@
-	chmod +x $@
+	cd ai ; python3 setup.py build
+	cp ai/build/exe.linux-x86_64-3.8/main ./zappy_ai

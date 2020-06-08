@@ -24,7 +24,7 @@ clean: ## Delete the relocatable files
 
 fclean: clean ## Delete the binary file and execute the above rule
 	$(RM) $(NAME_SRV) $(NAME_TEST)
-	$(RM) $(NAME_AI)
+	$(RM) $(NAME_AI) ai/build
 
 re: fclean all ## Executes an fclean and rebuild
 
