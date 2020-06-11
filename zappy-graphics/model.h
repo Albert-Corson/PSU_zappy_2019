@@ -22,6 +22,8 @@ public:
     void addTexture(QString name, QString url);
     void addTexture(QString name, QString url, Qt3DRender::QAbstractTexture::TextureFormat format);
 
+    QStringList getEnabledLayers() const;
+
     void setScale(float scale);
 
     void setPosition(float X, float Y);
@@ -30,6 +32,10 @@ public:
     void setPostionX(float X);
     void setPostionY(float Y);
     void setPostionZ(float Z);
+
+    void setRotationX(float X);
+    void setRotationY(float Y);
+    void setRotationZ(float Z);
 
     void updatePostionX(float X);
     void updatePostionY(float Y);
@@ -43,6 +49,8 @@ private:
     Qt3DCore::QTransform *m_transform;
     Effect *m_effect = nullptr;
     QVector3D m_position = QVector3D(0, 0, 0);
+
+    QStringList m_enabledLayers;
 };
 
 #endif // MODEL_H

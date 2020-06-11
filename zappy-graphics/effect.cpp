@@ -2,7 +2,7 @@
 #include <Qt3DRender/QShaderProgramBuilder>
 #include <Qt3DRender/QGraphicsApiFilter>
 
-Effect::Effect(Qt3DCore::QEntity *rootEntity, QString url)
+Effect::Effect(Qt3DCore::QEntity *rootEntity, QString url, QStringList enabledLayers)
     : m_effect(new Qt3DRender::QEffect(rootEntity))
     , m_filterKey(new Qt3DRender::QFilterKey(rootEntity))
     , m_shader(new Qt3DRender::QShaderProgram(rootEntity))
@@ -19,6 +19,9 @@ Effect::Effect(Qt3DCore::QEntity *rootEntity, QString url)
     m_shader->setVertexShaderCode(Qt3DRender::QShaderProgram::loadSource(shaderUrl));
     m_builder->setShaderProgram(m_shader);
     m_builder->setFragmentShaderGraph(QUrl("qrc:/shaders/graphs/metalrough.frag.json"));
+    enabledLayers.append(QString("normal"));
+    qDebug() << enabledLayers;
+    m_builder->setEnabledLayers(enabledLayers);
 
     m_renderPass->setShaderProgram(m_shader);
     m_technique->addRenderPass(m_renderPass);
@@ -34,10 +37,4 @@ Effect::Effect(Qt3DCore::QEntity *rootEntity, QString url)
 Qt3DRender::QEffect *Effect::getEffect() const
 {
     return m_effect;
-}
-
-void Effect::addEnaledLayers(QString str)
-{
-    m_listEnabledLayers.append(str);
-    m_builder->setEnabledLayers(m_listEnabledLayers);
 }

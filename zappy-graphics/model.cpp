@@ -35,26 +35,22 @@ void Model::setEffect(Effect *effect)
 
 void Model::addTexture(QString name, QString url)
 {
-    if (!m_effect)
-        return;
     Qt3DRender::QTextureLoader *texture = new Qt3DRender::QTextureLoader(m_modelEntity);
 
     texture->setSource(QUrl::fromLocalFile(url));
     texture->setMirrored(false);
-    m_effect->addEnaledLayers(name);
+    m_enabledLayers.append(name);
     m_material->addParameter(new Qt3DRender::QParameter(name, texture, m_modelEntity));
 }
 
 void Model::addTexture(QString name, QString url, Qt3DRender::QAbstractTexture::TextureFormat format)
 {
-    if (!m_effect)
-        return;
     Qt3DRender::QTextureLoader *texture = new Qt3DRender::QTextureLoader(m_modelEntity);
 
     texture->setSource(QUrl::fromLocalFile(url));
     texture->setMirrored(false);
     texture->setFormat(format);
-    m_effect->addEnaledLayers(name);
+    m_enabledLayers.append(name);
     m_material->addParameter(new Qt3DRender::QParameter(name, texture, m_modelEntity));
 }
 
@@ -96,6 +92,21 @@ void Model::setPostionZ(float Z)
     m_transform->setTranslation(m_position);
 }
 
+void Model::setRotationX(float X)
+{
+    m_transform->setRotationX(X);
+}
+
+void Model::setRotationY(float Y)
+{
+    m_transform->setRotationY(Y);
+}
+
+void Model::setRotationZ(float Z)
+{
+    m_transform->setRotationZ(Z);
+}
+
 void Model::updatePostionX(float X)
 {
     m_position.setX(m_position.x() + X);
@@ -112,4 +123,9 @@ void Model::updatePostionZ(float Z)
 {
     m_position.setZ(m_position.z() + Z);
     m_transform->setTranslation(m_position);
+}
+
+QStringList Model::getEnabledLayers() const
+{
+    return m_enabledLayers;
 }

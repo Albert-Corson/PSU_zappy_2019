@@ -20,7 +20,7 @@ public:
 
     void setLightType(LightType type);
 
-    void setLightParameters();
+    void setLightParameters(float intensity, QVector3D position);
 
 private:
     LightType m_type = UNKNOW;

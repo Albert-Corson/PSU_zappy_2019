@@ -12,11 +12,9 @@
 class Effect
 {
 public:
-    Effect(Qt3DCore::QEntity *rootEntity, QString url);
+    Effect(Qt3DCore::QEntity *rootEntity, QString url, QStringList);
 
     Qt3DRender::QEffect *getEffect() const;
-
-    void addEnaledLayers(QString str);
 
 private:
     Qt3DRender::QEffect *m_effect;
@@ -25,8 +23,6 @@ private:
     Qt3DRender::QShaderProgramBuilder *m_builder;
     Qt3DRender::QRenderPass *m_renderPass;
     Qt3DRender::QTechnique *m_technique;
-
-    QStringList m_listEnabledLayers;
 };
 
 #endif // EFFECT_H
