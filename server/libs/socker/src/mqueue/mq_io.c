@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2020
-** NWP_myteams_2019
+** PSU_zappy_2019
 ** File description:
 ** mq_io
 */
@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "mq.h"
+#include "internals/mq.h"
 
 static ssize_t mq_receive(int fd, char **data_ptr)
 {

@@ -41,11 +41,11 @@ sockaddrin_t *socket_get_local_info(void)
     if (info == NULL) {
         local_sockd = socket_open(SOT_UDP);
         if (socket_connect(local_sockd, htons(0), INADDR_LOOPBACK) == -1) {
-            socket_close(&local_sockd);
+            socket_close(local_sockd);
             return (NULL);
         }
         info = socket_get_info(local_sockd);
-        socket_close(&local_sockd);
+        socket_close(local_sockd);
     }
     return (info);
 }

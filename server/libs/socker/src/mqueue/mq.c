@@ -1,13 +1,13 @@
 /*
 ** EPITECH PROJECT, 2020
-** NWP_myteams_2019
+** PSU_zappy_2019
 ** File description:
-** mq_entry
+** mq
 */
 
 #include <stdlib.h>
 
-#include "mq.h"
+#include "internals/mq.h"
 
 mq_head_t *new_mq_head(void)
 {

@@ -7,9 +7,9 @@
 
 #include <stdlib.h>
 
-#include "events_internals.h"
+#include "internals/events.h"
 
-event_list_entry_t *new_event_list_entry(event_type_t type, \
+event_list_entry_t *new_event_list_entry(const char *type, \
 event_listener_t listener)
 {
     event_list_entry_t *entry = malloc(sizeof(*entry));

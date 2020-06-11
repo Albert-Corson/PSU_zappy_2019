@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2020
-** NWP_myteams_2019
+** PSU_zappy_2019
 ** File description:
 ** message queue api
 */
@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mq.h"
+#include "internals/mq.h"
 
 int mq_push(mq_t *mq, int to_fd, const void *data, size_t len)
 {

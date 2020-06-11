@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2020
-** NWP_myteams_2019
+** PSU_zappy_2019
 ** File description:
 ** bind
 */
@@ -28,8 +28,6 @@ void select_unbind(fd_t fd, select_mode_t mode)
         FD_CLR(fd, &G_SELECT_SETS.readfds);
     if (mode & SL_WRITE)
         FD_CLR(fd, &G_SELECT_SETS.writefds);
-    if (mode & SL_WARN)
-        FD_CLR(fd, &G_SELECT_SETS.warnfds);
 }
 
 void select_clear(select_mode_t mode)
@@ -38,6 +36,4 @@ void select_clear(select_mode_t mode)
         FD_ZERO(&G_SELECT_SETS.readfds);
     if (mode & SL_WRITE)
         FD_ZERO(&G_SELECT_SETS.writefds);
-    if (mode & SL_WARN)
-        FD_ZERO(&G_SELECT_SETS.warnfds);
 }
