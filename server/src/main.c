@@ -1,6 +1,6 @@
 /*
 ** EPITECH PROJECT, 2020
-** zappy
+** PSU_zappy_2019
 ** File description:
 ** main server file
 */

@@ -8,6 +8,7 @@
 #ifndef SOCKER_H_
 #define SOCKER_H_
 
+#include <netinet/in.h>
 #include <stddef.h>
 
 #include "types.h"
@@ -20,6 +21,24 @@
 // queues and message queues with the capability to add plugins (such as a 
 // server and connection queue abstraction, an API router, ...).
 ////////////////////////////////////////////////////////////////////////////////
+
+/**
+* @brief Listen on a given port and address
+* @param port port to listen to
+* @param addr address to listen to
+* @param size size of the connection queue (leave at 0 to use SOMAXCONN as the 
+* default value)
+* @return -1 in case of error, 0 otherwise
+*/
+int socker_listen(in_port_t port, in_addr_t addr, int size);
+
+/**
+* @brief Connect to a remote address and port
+* @param port port to connect to
+* @param addr address to connect to
+* @return -1 in case of error, the socket connected otherwise
+*/
+sockd_t socker_connect(in_port_t port, in_addr_t addr);
 
 /**
 * @brief Run socker

@@ -1,11 +1,11 @@
 /*
 ** EPITECH PROJECT, 2020
-** NWP_myteams_2019
+** PSU_zappy_2019
 ** File description:
 ** mq_init
 */
 
-#include "mq.h"
+#include "internals/mq.h"
 
 mq_t *mq_open(void)
 {

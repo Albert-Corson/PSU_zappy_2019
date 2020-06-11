@@ -9,6 +9,7 @@
 #define PROTOCOL_H_
 
 #include <stddef.h>
+#include <sys/types.h>
 #include <stdbool.h>
 
 #include "types.h"
@@ -20,19 +21,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
-* @brief prototype of a validation function used to validate either protocol 
-* header or footer. It must return false if the header or footer is invalid, 
-* and 1 otherwise.
+* @brief prototype of a reader function used to read and validate 
+* either protocol header or footer. It must return -1 if the header or footer 
+* is invalid, and the content size otherwise.
 */
-typedef bool (*validator_t)(void *data);
+typedef ssize_t (*reader_t)(sockd_t sockd);
 
 /**
 * @brief header structure used to define a protocol header to be used by the 
 * server
 */
 typedef struct {
-    size_t size;
-    validator_t validator;
+    reader_t reader;
 } header_t;
 
 /**

@@ -16,7 +16,6 @@
 typedef struct {
     fd_set readfds;
     fd_set writefds;
-    fd_set warnfds;
 } select_sets_t;
 
 select_sets_t *select_sets_location(void);
@@ -28,8 +27,7 @@ select_sets_t *select_sets_location(void);
 */
 typedef enum {
     SL_READ = 1 << 0,
-    SL_WRITE = 1 << 1,
-    SL_WARN = 1 << 2
+    SL_WRITE = 1 << 1
 } select_mode_t;
 
 /**
@@ -39,7 +37,6 @@ typedef enum {
 ** @param mode binding mode, telling what action to do on the given descriptor:
 ** bind read only: SL_READ
 ** bind write only: SL_WRITE
-** bind warn only: SL_WARN
 ** @return -1 in case of error (fdset full), 0 otherwise
 **/
 int select_bind(fd_t fd, select_mode_t mode);
@@ -51,7 +48,6 @@ int select_bind(fd_t fd, select_mode_t mode);
 ** @param mode unbinding mode, telling what mode(s) to unbind:
 ** unbind read: SL_READ
 ** unbind write: SL_WRITE
-** unbind warn: SL_WRITE
 **/
 void select_unbind(fd_t fd, select_mode_t mode);
 
@@ -60,7 +56,6 @@ void select_unbind(fd_t fd, select_mode_t mode);
 ** @param mode unbinding mode, telling what mode(s) to unbind:
 ** unbind read: SL_READ
 ** unbind write: SL_WRITE
-** unbind warn: SL_WRITE
 **/
 void select_clear(select_mode_t mode);
 
@@ -74,10 +69,9 @@ void select_clear(select_mode_t mode);
 ** @param ms_timeout timeout (in ms) to wait for fds to become "ready"
 ** Default timeout value is SELECT_DEFAULT_TIMEOUT (used if ms_timeout == 0)
 ** No timeout is used if ms_timeout < 0
-** @param mode update mode (SL_READ, SL_WRITE, SL_WARN)
+** @param mode update mode (SL_READ, SL_WRITE)
 ** @return -1 if select(2) failed, 0 otherwise
 **/
-int select_update(fd_set *readfds, fd_set *writefds, fd_set *warnfds, \
-long ms_timeout);
+int select_update(fd_set *readfds, fd_set *writefds, long ms_timeout);
 
 #endif /* !SELECT_H_ */
