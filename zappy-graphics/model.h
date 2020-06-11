@@ -10,6 +10,8 @@
 #include <Qt3DRender/QMaterial>
 #include <Qt3DRender/QAbstractTexture>
 
+#include <Qt3DAnimation/QClipAnimator>
+
 class Model
 {
 public:
@@ -17,12 +19,14 @@ public:
 
     void addMesh(QString url);
     void addArmature(QString url);
+    void addAnimation(Qt3DAnimation::QClipAnimator *animation);
 
     void setEffect(Effect *effect);
     void addTexture(QString name, QString url);
     void addTexture(QString name, QString url, Qt3DRender::QAbstractTexture::TextureFormat format);
 
     QStringList getEnabledLayers() const;
+    Qt3DCore::QAbstractSkeleton *getSkeleton() const;
 
     void setScale(float scale);
 

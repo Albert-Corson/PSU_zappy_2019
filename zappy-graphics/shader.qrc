@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/">
         <file>assets/shader/skinnedPbr.vert</file>
-        <file>../../../Downloads/metalrough.frag.json</file>
     </qresource>
 </RCC>

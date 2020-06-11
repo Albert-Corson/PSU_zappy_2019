@@ -27,6 +27,11 @@ void Model::addArmature(QString url)
     m_modelEntity->addComponent(m_armature);
 }
 
+void Model::addAnimation(Qt3DAnimation::QClipAnimator *animation)
+{
+    m_modelEntity->addComponent(animation);
+}
+
 void Model::setEffect(Effect *effect)
 {
     m_effect = effect;
@@ -129,3 +134,9 @@ QStringList Model::getEnabledLayers() const
 {
     return m_enabledLayers;
 }
+
+Qt3DCore::QAbstractSkeleton *Model::getSkeleton() const
+{
+    return m_skeleton;
+}
+
