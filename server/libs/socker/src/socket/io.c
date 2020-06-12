@@ -10,7 +10,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include "socket.h"
+#include "internals/socket.h"
 
 ssize_t socket_read(sockd_t sockd, char *buffer, size_t len)
 {

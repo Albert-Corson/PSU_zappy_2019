@@ -1,6 +1,6 @@
 include var.mk sources.mk
 
-$(NAME_SRV):	$(OBJ_SRV)
+$(NAME_SRV): $(OBJ_SRV)
 	$(LD) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 .SECONDEXPANSION:

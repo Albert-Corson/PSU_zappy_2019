@@ -22,13 +22,7 @@ int socker_init(void)
 {
     G_SOCKER.events = new_event_list();
     FDI_ZERO(&G_SOCKER.fd_info);
-    G_SOCKER.mq = mq_open();
-    if (G_SOCKER.mq == NULL) {
-        LOG_ERROR("Couldn't initialize socker: %s", strerror(errno));
-        return (-1);
-    }
     G_SOCKER.ms_timeout = -1;
-    G_SOCKER.protocol = (protocol_t){ 0 };
     return (0);
 }
 
@@ -36,5 +30,4 @@ void socker_destroy(void)
 {
     delete_event_list(G_SOCKER.events);
     FDI_ZERO(&G_SOCKER.fd_info);
-    free(G_SOCKER.mq);
 }

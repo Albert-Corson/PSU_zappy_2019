@@ -13,7 +13,7 @@
 #include <errno.h>
 
 #include "logger.h"
-#include "socket.h"
+#include "internals/socket.h"
 
 sockd_t socket_open(socket_type_t type)
 {
@@ -62,8 +62,9 @@ sockd_t socket_accept(sockd_t sockd)
     sockd_t peersd = -1;
 
     peersd = accept(sockd, (struct sockaddr *)&st_addr, &addrlen);
-    if (peersd == -1)
+    if (peersd == -1) {
         LOG_ERROR("Couldn't accept connection: %s", socket_strerror());
+    }
     return (peersd);
 }
 

@@ -7,8 +7,9 @@
 
 #include <stdbool.h>
 
+#include "logger.h"
 #include "internals/socker.h"
-#include "select.h"
+#include "internals/select.h"
 
 static void prepare_fdset(fdi_mode_t mode, fd_set *fds, int *max_fd)
 {
@@ -24,7 +25,7 @@ static void prepare_fdset(fdi_mode_t mode, fd_set *fds, int *max_fd)
 
 static int prepare_select(fd_set *readfds, fd_set *writefds)
 {
-    int max_fd = -1;
+    int max_fd = -2;
 
     if (readfds != NULL)
         prepare_fdset(FDI_READ, readfds, &max_fd);
@@ -35,7 +36,7 @@ static int prepare_select(fd_set *readfds, fd_set *writefds)
 
 int select_update(fd_set *readfds, fd_set *writefds, long ms_timeout)
 {
-    int max_fd = -1;
+    int max_fd = -2;
     struct timeval timeout = { .tv_usec = ms_timeout * 1000 };
     struct timeval *timeoutptr = &timeout;
 

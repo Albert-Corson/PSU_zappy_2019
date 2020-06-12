@@ -8,8 +8,9 @@
 #ifndef REQUEST_H_
 #define REQUEST_H_
 
+#include <stddef.h>
+
 #include "types.h"
-#include "peer.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // REQUEST
@@ -20,10 +21,8 @@
 * @brief request structure holding all necessary request information
 */
 typedef struct {
-    peer_t sender;
-    void *header;
-    void *body;
-    void *footer;
+    sockd_t sender;
+    void *data;
 } request_t;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,7 +35,7 @@ typedef struct {
 * to a request
 */
 typedef struct {
-    void (*send)(peer_t *client, void *body);
+    void (*send)(request_t *req, void *data, size_t len);
 } response_t;
 
 #endif /* !REQUEST_H_ */

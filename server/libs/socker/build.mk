@@ -8,5 +8,5 @@
 $(TARGET_LIB): $(OBJ_LIB)
 	ar rc $(TARGET_LIB) $(OBJ_LIB)
 
-$(PROJECT_ROOT)/include/libs/$(NAME)/%.h: include/%.h
+$(INCLUDES_PATH)/$(NAME)/%.h: $(DIR_HEADERS)/%.h
 	ln -fs $(ROOT_LIB)/$< $@
