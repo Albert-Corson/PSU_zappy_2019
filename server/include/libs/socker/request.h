@@ -17,27 +17,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
-* @brief name-value pair to store a request parameter
-*/
-typedef struct {
-    char *name;
-    void *value;
-} param_t;
-
-/**
-* @brief request parameters storage unit, with a param getter method
-*/
-typedef struct {
-    param_t *params;
-    void (*get)(params_store_t *store, const char *name);
-} params_store_t;
-
-/**
 * @brief request structure holding all necessary request information
 */
 typedef struct {
-    char *path;
-    params_store_t *params;
     peer_t sender;
     void *header;
     void *body;

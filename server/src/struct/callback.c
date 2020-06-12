@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include <struct/player.h>
+#include <player.h>
 
 void callback_clear(callback_t *callback)
 {
@@ -25,8 +25,8 @@ void callback_destroy(callback_t *callback)
     callback_clear(callback);
 }
 
-void callback_constuct(callback_t *callback, callback_fcn_t fcn, long timeout, \
-char **argv)
+void callback_constuct(callback_t *callback, callback_fcn_t fcn, \
+response_t *res, long timeout)
 {
     if (!callback) {
         return;
@@ -34,9 +34,18 @@ char **argv)
         callback_clear(callback);
         return;
     }
-    callback->start = time(NULL);
     callback->callback = fcn;
+    callback->res = res;
+    callback->start = time(NULL);
     callback->timeout = timeout;
+    callback->argv = NULL;
+    callback->argc = 0;
+}
+
+void callback_set_argv(callback_t *callback, char **argv)
+{
+    if (!callback)
+        return;
     callback->argv = argv;
     callback->argc = 0;
     if (!argv)

@@ -9,5 +9,4 @@
 
 bool sglob_matches(const char *pattern, const char *expr)
 {
-    
 }

@@ -5,10 +5,9 @@
 ** middleware
 */
 
-#include <plugins/router.h>
 #include <game.h>
 
-void cb_forward(player_t *player, int argc, char **argv);
+void cb_forward(callback_t *callback, player_t *player);
 
 bool mw_forward(request_t *req, response_t *res)
 {
@@ -16,7 +15,7 @@ bool mw_forward(request_t *req, response_t *res)
 
     if (!player)
         res->send(&req->sender, "ko\n");
-    else if (!player_queue_callback(player, cb_forward, 7, NULL))
+    else if (!player_queue_callback(player, cb_forward, res, 7))
         return (true);
     return (false);
 }
