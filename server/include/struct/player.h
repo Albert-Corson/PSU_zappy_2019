@@ -7,23 +7,26 @@
 
 #pragma once
 
-#include <time.h>
 #include <sys/queue.h>
 
 #include <libs/socker/types.h>
 #include <struct/team.h>
-
-typedef struct player player_t;
-
-typedef struct {
-    time_t start;
-    long timeout;
-    void (*callback)(player_t *player);
-} player_callback_t;
+#include <struct/callback.h>
 
 typedef struct player {
     SLIST_ENTRY(player) next;
     sockd_t sockd;
     team_t *team;
-    player_callback_t callbacks[10];
+    callback_t callbacks[10];
 } player_t;
+
+/**
+* @brief add a callback to the queue if space is available
+* 
+* @param player the player in which to queue the callback
+* @param fcn the function callback
+* @param timeout the time after which to execute the callback
+* @param cmdinput the input line that will be passed as argv to @fcn
+*/
+callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
+long timeout, char *cmdinput);
