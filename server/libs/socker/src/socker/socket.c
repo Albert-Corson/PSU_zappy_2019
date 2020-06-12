@@ -5,9 +5,9 @@
 ** socket
 */
 
-#include "internals/logger.h"
 #include "internals/socker.h"
 #include "internals/socket.h"
+#include "logger.h"
 #include "types.h"
 
 int socker_listen(in_port_t port, in_addr_t addr, int size)
@@ -40,4 +40,16 @@ sockd_t socker_connect(in_port_t port, in_addr_t addr)
     }
     FDI_SET(FDI_READ | FDI_WRITE, &G_SOCKER.fd_info, peer);
     return (0);
+}
+
+sockd_t socker_accept(sockd_t listener)
+{
+    sockd_t client = socket_accept(listener);
+
+    if (!SOCKET_IS_OPEN(client)) {
+        LOG_ERROR("Couldn't accept connection: %s", strerror(errno));
+        return (-1);
+    }
+    FDI_SET(FDI_READ, &G_SOCKER.fd_info, client);
+    return (client);
 }

@@ -7,26 +7,14 @@
 
 #include <stdbool.h>
 
+#include "internals/socker.h"
 #include "select.h"
 
-inline select_sets_t *select_sets_location(void)
-{
-    static select_sets_t sets = { 0 };
-    static bool is_init = false;
-
-    if (is_init == false) {
-        FD_ZERO(&sets.readfds);
-        FD_ZERO(&sets.writefds);
-        is_init = true;
-    }
-    return (&sets);
-}
-
-static void prepare_fdset(fd_set src, fd_set *fds, int *max_fd)
+static void prepare_fdset(fdi_mode_t mode, fd_set *fds, int *max_fd)
 {
     FD_ZERO(fds);
     for (int index = 0; index < FD_SETSIZE; ++index) {
-        if (!FD_ISSET(index, &src))
+        if (!FDI_ISSET(mode, &G_SOCKER.fd_info, index))
             continue;
         if (index > *max_fd)
             *max_fd = index;
@@ -39,9 +27,9 @@ static int prepare_select(fd_set *readfds, fd_set *writefds)
     int max_fd = -1;
 
     if (readfds != NULL)
-        prepare_fdset(G_SELECT_SETS.readfds, readfds, &max_fd);
+        prepare_fdset(FDI_READ, readfds, &max_fd);
     if (writefds != NULL)
-        prepare_fdset(G_SELECT_SETS.writefds, writefds, &max_fd);
+        prepare_fdset(FDI_WRITE, writefds, &max_fd);
     return (max_fd);
 }
 

@@ -10,24 +10,59 @@
 
 #include <sys/select.h>
 #include <string.h>
+#include <stdbool.h>
 
-#include "protocol.h"
-#include "internals/mq.h"
 #include "internals/events.h"
+
+////////////////////////////////////////////////////////////////////////////////
+// Socker internals
+// Structure and internal methods to use socker
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+* @brief Socker storage structure
+*/
+typedef struct {
+    bool is_init;
+    long ms_timeout;
+    fd_info_t fd_info;
+    event_list_t *events;
+} socker_t;
+
+/**
+* @brief Socker structure static storage location
+*/
+socker_t *socker_location(void);
+
+/**
+* @brief A macro to access the globally stored socker structure
+*/
+#define G_SOCKER (*socker_location())
+
+/**
+* @brief Accept incoming connection and bind it to read
+* @param listener listener socket receiving connection
+*/
+sockd_t socker_accept(sockd_t listener);
+
+////////////////////////////////////////////////////////////////////////////////
+// FD Information
+// Used to store various information about every file (or socket) descriptor
+////////////////////////////////////////////////////////////////////////////////
 
 /**
 * @brief Storage structure to store information about file descriptors
 */
 typedef struct {
-    char fds[FD_SETSIZE];
+    unsigned char fds[FD_SETSIZE];
 } fd_info_t;
 
-enum fdi_mode {
+typedef enum fdi_mode {
     FDI_NO_MODE = 0,
     FDI_READ = 1 << 1,
     FDI_WRITE = 1 << 2,
     FDI_LISTENER = 1 << 3 | FDI_READ
-};
+} fdi_mode_t;
 
 /**
 * @brief Check if a fd has the given mode
@@ -57,25 +92,5 @@ enum fdi_mode {
 */
 #define FDI_CLR(fd_info, fd) \
     ((fd_info)->fds[fd] &= FDI_NO_MODE)
-
-/**
-* @brief Socker storage structure
-*/
-typedef struct {
-    event_list_t *events;
-    protocol_t protocol;
-    fd_info_t fd_info;
-    mq_t *mq;
-} socker_t;
-
-/**
-* @brief Socker structure static storage location
-*/
-socker_t *socker_location(void);
-
-/**
-* @brief A macro to access the globally stored socker structure
-*/
-#define G_SOCKER (*socker_location())
 
 #endif /* !SOCKER_INTERNALS_H_ */

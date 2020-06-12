@@ -10,9 +10,6 @@
 
 #include <stdarg.h>
 
-#include "../peer.h"
-#include "../request.h"
-
 ////////////////////////////////////////////////////////////////////////////////
 // EVENTS
 // Implements an event queue to which listeners can be bound and unbound.
