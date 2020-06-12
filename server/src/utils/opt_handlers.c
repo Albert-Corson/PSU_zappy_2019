@@ -67,7 +67,7 @@ int opt_handler_name(int argc, const char **argv)
         it = calloc(1, sizeof(*it));
         if (!it)
             return (false);
-        it->name = argv[idx];
+        team_construct(it, argv[idx]);
         SLIST_INSERT_HEAD(&GAME.teams, it, next);
     }
     if (SLIST_EMPTY(&GAME.teams))

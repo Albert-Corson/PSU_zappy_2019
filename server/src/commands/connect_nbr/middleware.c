@@ -7,7 +7,6 @@
 
 #include <stdio.h>
 
-#include <plugins/router.h>
 #include <game.h>
 
 bool mw_connect_nbr(request_t *req, response_t *res)
@@ -26,7 +25,8 @@ bool mw_connect_nbr(request_t *req, response_t *res)
         if (it->team == player->team)
             ++n;
     }
-    n = snprintf(response, 32, "%lu\n", player->team->max_clients - n);
+    n = player->team->max_clients - n;
+    n = snprintf(response, 32, "%d\n", n < 0 ? 0 : n);
     if (n >= 0)
         res->send(&req->sender, response);
     else

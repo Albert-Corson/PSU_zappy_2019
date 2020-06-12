@@ -14,3 +14,5 @@ typedef struct team {
     const char *name;
     int max_clients;
 } team_t;
+
+void team_construct(team_t *team, const char *name);

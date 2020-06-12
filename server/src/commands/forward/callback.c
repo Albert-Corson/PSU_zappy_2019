@@ -5,9 +5,9 @@
 ** callback
 */
 
-#include <struct/player.h>
+#include <player.h>
 
-void cb_forward(player_t *player, int argc, char **argv)
+void cb_forward(callback_t *callback, player_t *player)
 {
     // TO DO
 }

@@ -5,9 +5,9 @@
 ** callback
 */
 
-#include <struct/player.h>
+#include <player.h>
 
-void cb_eject(player_t *player, int argc, char **argv)
+void cb_eject(callback_t *callback, player_t *player)
 {
     // TO DO
 }
