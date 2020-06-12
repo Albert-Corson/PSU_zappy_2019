@@ -8,7 +8,6 @@
 #include <string.h>
 #include <errno.h>
 
-#include "internals/logger.h"
 #include "internals/socker.h"
 #include "internals/events.h"
 
@@ -28,6 +27,7 @@ int socker_init(void)
         LOG_ERROR("Couldn't initialize socker: %s", strerror(errno));
         return (-1);
     }
+    G_SOCKER.ms_timeout = -1;
     G_SOCKER.protocol = (protocol_t){ 0 };
     return (0);
 }

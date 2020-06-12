@@ -41,10 +41,19 @@ int socker_listen(in_port_t port, in_addr_t addr, int size);
 sockd_t socker_connect(in_port_t port, in_addr_t addr);
 
 /**
-* @brief Run socker
-* Queued data will be sent, and data will be read from available bound sockets
+* @brief Initialize socker
 */
-int socker_run(void);
+int socker_init(void);
+
+/**
+* @brief Uninitialize socker
+*/
+void socker_destroy(void);
+
+/**
+* @brief Run socker once
+*/
+void socker_run(void);
 
 /**
 * @brief Queue a message to send to the given socket
