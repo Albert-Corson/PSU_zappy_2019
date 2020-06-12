@@ -9,6 +9,9 @@ include sources.mk var.mk server.mk
 
 all:    $(NAME_SRV) ## Build the binary and relinks if needed
 
+debug: CFLAGS+=-g
+debug: all
+
 tests_run: override LDLIBS              +=      -lcriterion --coverage
 tests_run: all ## build and execute unit tests
 	$(CC) $(CPPFLAGS) -o $(NAME_TEST) $(SRC_TEST) $(LDFLAGS) $(LDLIBS)
