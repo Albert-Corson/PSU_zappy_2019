@@ -5,7 +5,7 @@
 ** game
 */
 
-#include <struct/game.h>
+#include <game.h>
 
 game_t *g_game_location(void)
 {
@@ -18,4 +18,15 @@ game_t *g_game_location(void)
     };
 
     return (&game);
+}
+
+player_t *game_get_player(sockd_t sockd)
+{
+    player_t *it = NULL;
+
+    SLIST_FOREACH(it, &GAME.players, next) {
+        if (it->sockd == sockd)
+            return (it);
+    }
+    return (NULL);
 }

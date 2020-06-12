@@ -12,3 +12,5 @@
 game_t *g_game_location(void);
 
 #define GAME (*g_game_location())
+
+player_t *game_get_player(sockd_t sockd);
