@@ -5,43 +5,57 @@
 ** run
 */
 
+#include <sys/ioctl.h>
+#include <string.h>
+#include <errno.h>
+#include <unistd.h>
+
 #include "internals/select.h"
 #include "internals/socker.h"
-#include "peer.h"
 #include "logger.h"
 
-static void handle_readable(peer_t *peer)
+static void handle_readable(sockd_t peer)
 {
-    if (FDI_ISSET(FDI_LISTENER, &G_SOCKER.fd_info, peer->sockd)) {
-        socker_accept(peer->sockd);
+    size_t bytes = 0;
+    
+    if (FDI_ISSET(FDI_LISTENER, &G_SOCKER.fd_info, peer)) {
+        socker_accept(peer);
+        return;
+    }
+    if (ioctl(peer, FIONREAD, &bytes) == -1) {
+        LOG_ERROR("ioctl failed: %s\n", strerror(errno));
+        return;
+    }
+    if (bytes <= 0) {
+        FDI_CLR(&G_SOCKER.fd_info, peer);
+        socker_emit("disconnect", peer);
     } else {
-        socker_emit("readable", peer);
+        socker_emit("readable", peer, bytes);
     }
 }
 
-static void handle_writable(peer_t *peer)
+static void handle_writable(sockd_t peer)
 {
     socker_emit("writable", peer);
-    FDI_UNSET(FDI_WRITE, &G_SOCKER.fd_info, peer->sockd);
+    FDI_UNSET(FDI_WRITE, &G_SOCKER.fd_info, peer);
 }
 
 void socker_run(void)
 {
-    peer_t peer = { 0 };
     fd_set readfds;
     fd_set writefds;
 
-    if (G_SOCKER.is_init == false)
+    if (G_SOCKER.is_init == false) {
         LOG_WARN("Socker is being run uninitialized.");
+    }
     if (select_update(&readfds, &writefds, G_SOCKER.ms_timeout) == -1) {
-        LOG_ERROR("Select failed.");
+        LOG_ERROR("Select failed: %s", strerror(errno));
         return;
     }
     for (int index = 0; index < FD_SETSIZE; ++index) {
-        peer.sockd = index;
         if (FD_ISSET(index, &readfds))
-            handle_readable_fd(&peer);
+            handle_readable(index);
         if (FD_ISSET(index, &writefds))
-            handle_writable_fd(&peer);
+            handle_writable(index);
     }
 }

@@ -5,9 +5,14 @@
 ## Makefile
 ##
 
-include sources.mk var.mk server.mk
+include sources.mk var.mk
 
-all:    $(NAME_SRV) ## Build the binary and relinks if needed
+all:    libs $(NAME_SRV) ## Build the binary and relinks if needed
+
+include server.mk
+
+libs:
+	$(MAKE) -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH)"
 
 debug: CFLAGS+=-g
 debug: all
@@ -19,9 +24,11 @@ tests_run: all ## build and execute unit tests
 
 clean: ## Delete the relocatable files
 	$(RM) $(BUILD_SRV) *.gcda *.gcno
+	$(MAKE) clean -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH)"
 
 fclean: clean ## Delete the binary file and execute the above rule
 	$(RM) $(NAME_SRV) $(NAME_TEST)
+	$(MAKE) fclean -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH)"
 
 re: fclean all ## Executes an fclean and rebuild
 

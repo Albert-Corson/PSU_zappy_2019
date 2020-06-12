@@ -11,7 +11,7 @@
 #include <string.h>
 #include <errno.h>
 
-#include "socket.h"
+#include "internals/socket.h"
 
 sockaddrin_t *socket_get_info(sockd_t sockd)
 {

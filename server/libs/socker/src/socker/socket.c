@@ -22,7 +22,7 @@ int socker_listen(in_port_t port, in_addr_t addr, int size)
         LOG_ERROR("Couldn't listen: %s", socket_strerror());
         return (-1);
     }
-    FDI_SET(FDI_LISTENER, &G_SOCKER.fd_info, sockd);
+    FDI_SET(FDI_LISTENER | FDI_READ, &G_SOCKER.fd_info, sockd);
     return (0);
 }
 
@@ -44,12 +44,13 @@ sockd_t socker_connect(in_port_t port, in_addr_t addr)
 
 sockd_t socker_accept(sockd_t listener)
 {
-    sockd_t client = socket_accept(listener);
+    sockd_t peer = socket_accept(listener);
 
-    if (!SOCKET_IS_OPEN(client)) {
+    if (!SOCKET_IS_OPEN(peer)) {
         LOG_ERROR("Couldn't accept connection: %s", strerror(errno));
         return (-1);
     }
-    FDI_SET(FDI_READ, &G_SOCKER.fd_info, client);
-    return (client);
+    socker_emit("connect", &peer);
+    FDI_SET(FDI_READ, &G_SOCKER.fd_info, peer);
+    return (peer);
 }

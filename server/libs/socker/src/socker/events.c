@@ -10,7 +10,7 @@
 
 int socker_on(const char *type, event_listener_t listener)
 {
-    event_on(G_SOCKER.events, type, listener);
+    return (event_on(G_SOCKER.events, type, listener));
 }
 
 void socker_emit(const char *type, ...)

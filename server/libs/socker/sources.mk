@@ -22,14 +22,13 @@ SRC_LIB		=	src/socket/converts.c		\
 				src/socker/socket.c
 OBJ_LIB		=	$(SRC_LIB:.c=.o)
 
-DIR_HEADERS	=	include/
+DIR_HEADERS	=	include
 SRC_HEADERS	=	socker.h	\
-				peer.h		\
 				events.h	\
 				types.h		\
 				logger.h
 
-HEADERS	=	$(SRC_HEADERS:%.h=$(PROJECT_ROOT)/include/libs/$(NAME)/%.h)
+HEADERS	=	$(SRC_HEADERS:%.h=$(INCLUDES_PATH)/$(NAME)/%.h)
 
 SRC_TEST	=	$(SRC_LIB)
 OBJ_TEST	=	$(SRC_TEST:.c=.o)

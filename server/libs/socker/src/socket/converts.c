@@ -7,7 +7,7 @@
 
 #include <arpa/inet.h>
 
-#include "socket.h"
+#include "internals/socket.h"
 
 in_addr_t socket_str_to_addr(const char *addrstr)
 {

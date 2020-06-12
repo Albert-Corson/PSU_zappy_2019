@@ -27,6 +27,19 @@ typedef struct event_list_entry {
 typedef STAILQ_HEAD(event_list, event_list_entry) event_list_t;
 
 /**
+* @brief Create and initialize an event list
+* @return NULL in case of error (not enough memory), a new allocated event list 
+* otherwise
+*/
+event_list_t *new_event_list(void);
+
+/**
+* @brief Free an event list and its entries
+* @param list event list to free
+*/
+void delete_event_list(event_list_t *list);
+
+/**
 * @brief Add an entry to an event list
 * @param list event list
 * @param entry event list entry to add to the list
@@ -45,7 +58,7 @@ event_listener_t listener);
 
 /**
 * @brief Free an event list entry and its members
-* @param entry event list entry
+* @param entry event list entry to free
 */
 void delete_event_list_entry(event_list_entry_t *entry);
 

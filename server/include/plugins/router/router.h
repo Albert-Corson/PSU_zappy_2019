@@ -42,7 +42,7 @@ typedef struct {
 * @brief request structure holding all necessary request information
 */
 typedef struct {
-    peer_t sender;
+    sockd_t sender;
     void *header;
     void *body;
     void *footer;
