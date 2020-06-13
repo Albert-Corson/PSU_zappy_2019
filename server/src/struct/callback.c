@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <memory.h>
 
-#include <player.h>
+#include <struct/player.h>
 
 void callback_clear(callback_t *callback)
 {

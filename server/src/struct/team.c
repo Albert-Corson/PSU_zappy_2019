@@ -5,7 +5,7 @@
 ** team
 */
 
-#include <team.h>
+#include <struct/team.h>
 
 void team_construct(team_t *team, const char *name)
 {

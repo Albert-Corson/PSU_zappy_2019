@@ -14,7 +14,7 @@ void cb_fork(callback_t *callback, player_t *player)
 
     if (!egg)
         return;
-    egg_construct(egg, player->team);
+    egg_construct(egg, player->team, &player->pos);
     SLIST_INSERT_HEAD(&GAME.eggs, egg, next);
     // TO DO: send responses and notifications
 }

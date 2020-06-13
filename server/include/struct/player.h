@@ -10,15 +10,16 @@
 #include <sys/queue.h>
 
 #include <libs/socker/types.h>
-#include <team.h>
-#include <callback.h>
+#include <struct/team.h>
+#include <struct/callback.h>
+#include <struct/vector.h>
 #include <elements.h>
 
 typedef enum {
     NORTH,
+    EAST,
     SOUTH,
-    WEST,
-    EAST
+    WEST
 } direction_e;
 
 typedef struct {
@@ -29,12 +30,14 @@ typedef struct {
 
 typedef struct player {
     SLIST_ENTRY(player) next;
+    bool initialized;
     sockd_t sockd;
     team_t *team;
     callback_t callbacks[10];
     time_t birth;
     size_t level;
-    direction_e direction;
+    direction_e dir;
+    vector_t pos;
     object_t inventory[7];
 } player_t;
 

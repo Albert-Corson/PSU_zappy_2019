@@ -5,7 +5,7 @@
 ** callback
 */
 
-#include <player.h>
+#include <struct/player.h>
 
 void cb_inventory(callback_t *callback, player_t *player)
 {

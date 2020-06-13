@@ -15,4 +15,7 @@ typedef struct team {
     int max_clients;
 } team_t;
 
+/**
+* @brief constructs a team and assigns its name
+*/
 void team_construct(team_t *team, const char *name);
