@@ -14,7 +14,9 @@ game_t *g_game_location(void)
         .height = 0,
         .freq = 100,
         .teams = SLIST_HEAD_INITIALIZER(game.teams),
-        .players = SLIST_HEAD_INITIALIZER(game.players)
+        .players = SLIST_HEAD_INITIALIZER(game.players),
+        .eggs = SLIST_HEAD_INITIALIZER(game.eggs),
+        .spectators = SLIST_HEAD_INITIALIZER(game.spectators)
     };
 
     return (&game);

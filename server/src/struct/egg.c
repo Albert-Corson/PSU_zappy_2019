@@ -5,12 +5,14 @@
 ** egg
 */
 
-#include <egg.h>
+#include <struct/egg.h>
 
-void egg_construct(egg_t *egg, team_t *parent)
+void egg_construct(egg_t *egg, team_t *parent, vector_t *pos)
 {
     if (!egg)
         return;
     egg->laying = time(NULL);
     egg->parent = parent;
+    egg->pos.x = pos->x;
+    egg->pos.y = pos->y;
 }

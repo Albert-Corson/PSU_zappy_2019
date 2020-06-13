@@ -5,9 +5,14 @@
 ** callback
 */
 
-#include <player.h>
+#include <struct/player.h>
 
 void cb_left(callback_t *callback, player_t *player)
 {
-    // TO DO
+    if (player->dir == NORTH) {
+        player->dir = WEST;
+    } else {
+        player->dir -= 1;
+    }
+    // TO DO: send notification and response
 }

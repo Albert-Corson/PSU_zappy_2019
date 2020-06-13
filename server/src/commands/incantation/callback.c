@@ -5,7 +5,7 @@
 ** callback
 */
 
-#include <player.h>
+#include <struct/player.h>
 
 void cb_incantation(callback_t *callback, player_t *player)
 {

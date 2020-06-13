@@ -9,16 +9,18 @@
 
 #include <utils/strtotab.h>
 #include <utils/randbetween.h>
-#include <player.h>
+#include <game.h>
 
 static const player_t template = {
     .next = { 0 },
+    .initialized = false,
     .sockd = -1,
     .team = NULL,
     .callbacks = { { 0 } },
     .birth = 0,
     .level = 0,
-    .direction = NORTH,
+    .dir = NORTH,
+    .pos = { 0, 0 },
     .inventory = {
         { E_FOOD, "food", 10 },
         { E_LINEMATE, "linemate", 0 },
@@ -37,7 +39,9 @@ void player_construct(player_t *player, sockd_t sockd)
     memcpy(player, &template, sizeof(player));
     player->sockd = sockd;
     player->birth = time(NULL);
-    player->direction = randbetween(0, 3);
+    player->dir = randbetween(0, 3);
+    player->pos.x = randbetween(0, GAME.width - 1);
+    player->pos.y = randbetween(0, GAME.height - 1);
 }
 
 callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
