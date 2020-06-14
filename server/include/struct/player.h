@@ -17,9 +17,9 @@
 
 typedef enum {
     NORTH,
-    EAST,
+    WEST,
     SOUTH,
-    WEST
+    EAST
 } direction_e;
 
 typedef struct {
@@ -36,6 +36,7 @@ typedef struct player {
     callback_t callbacks[10];
     time_t birth;
     size_t level;
+    struct player *elevating_with;
     direction_e dir;
     vector_t pos;
     object_t inventory[7];
@@ -56,3 +57,8 @@ void player_construct(player_t *player, sockd_t sockd);
 */
 callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
 response_t *res, long timeout);
+
+/**
+* @brief return true if a player is still alive
+*/
+bool player_is_alive(player_t *player);
