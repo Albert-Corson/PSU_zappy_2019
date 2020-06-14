@@ -1,7 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>assets/animation/Capoeira.fbx</file>
-        <file>assets/animation/test.bin</file>
-        <file>assets/animation/test.gltf</file>
-    </qresource>
-</RCC>
