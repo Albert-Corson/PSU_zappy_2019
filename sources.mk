@@ -24,9 +24,11 @@ SRC_SRV		=	server/src/commands/broadcast/callback.c		\
 				server/src/commands/take/callback.c				\
 				server/src/commands/take/middleware.c			\
 				server/src/game.c								\
+				server/src/incantations.c						\
 				server/src/main.c								\
 				server/src/struct/callback.c					\
 				server/src/struct/egg.c							\
+				server/src/struct/incantation.c					\
 				server/src/struct/player.c						\
 				server/src/struct/team.c						\
 				server/src/utils/get_opts.c						\
@@ -40,5 +42,3 @@ SRC_AI		=	client/src/main.c				\
 
 SRC_TEST	=	$(filter-out server/src/main.c, $(SRC_SRV))	\
 				$(filter-out client/src/main.c, $(SRC_AI))	\
-
-

@@ -24,7 +24,7 @@ OBJ_SRV		=	$(SRC_SRV:%.c=$(BUILD_SRV)/%.o)
 
 OBJ_AI		=	$(SRC_AI:%.c=$(BUILD_AI)/%.o)
 
-override LDFLAGS	+=
+override LDFLAGS	+=	-lm
 
 override LDLIBS		+= 
 

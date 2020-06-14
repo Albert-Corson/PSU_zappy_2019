@@ -9,10 +9,10 @@
 
 void cb_right(callback_t *callback, player_t *player)
 {
-    if (player->dir == WEST) {
-        player->dir = NORTH;
+    if (player->dir == NORTH) {
+        player->dir = EAST;
     } else {
-        player->dir += 1;
+        player->dir -= 1;
     }
     // TO DO: send notification and response
 }

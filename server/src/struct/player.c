@@ -18,7 +18,8 @@ static const player_t template = {
     .team = NULL,
     .callbacks = { { 0 } },
     .birth = 0,
-    .level = 0,
+    .level = 1,
+    .elevating_with = NULL,
     .dir = NORTH,
     .pos = { 0, 0 },
     .inventory = {
@@ -60,4 +61,9 @@ response_t *res, long timeout)
         return (NULL);
     callback_constuct(avail, fcn, res, timeout);
     return (avail);
+}
+
+bool player_is_alive(player_t *player)
+{
+    return (player != NULL && player->inventory[E_FOOD].amount != 0);
 }
