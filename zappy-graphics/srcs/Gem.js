@@ -1,5 +1,5 @@
 import { Model } from './wrappers/Model.js'
-import * as THREE from '../THREE/three.module.js'
+import * as THREE from '../Libs/Three/three.module.js'
 import { GEM_TYPE }  from './constants.js'
 
 

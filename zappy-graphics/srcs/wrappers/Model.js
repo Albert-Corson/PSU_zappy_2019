@@ -1,5 +1,5 @@
-import * as THREE from '../../THREE/three.module.js'
-import { GLTFLoader } from "../../THREE/GLTFLoader.js";
+import * as THREE from '../../Libs/Three/three.module.js'
+import { GLTFLoader } from "../../Libs/Three/GLTFLoader.js";
 
 export class Model {
     constructor(copy = null) {
@@ -20,7 +20,7 @@ export class Model {
     makeClone({ scene, mesh }) {
         this.mesh = mesh.clone();
 
-        console.log(this.mesh);
+        console.log(mesh);
         scene.getScene().add(this.mesh);
     }
 
@@ -35,6 +35,7 @@ export class Model {
                     this.skeleton = new THREE.SkeletonHelper(this.mesh);
                     this.skeleton.visible = false;
                     sceneWrapper.getScene().add(this.skeleton);
+                    console.log(this.gltf.animations[0]);
 
                     // Animations handling
                     this.animations = this.gltf.animations;
@@ -70,6 +71,22 @@ export class Model {
 
     getAnimationLength() {
         return this.animations.length;
+    }
+
+    playAnimationOnce(index) {
+        if (index < 0 || index > this.getAnimationLength() - 1)
+            return;
+
+        this.action.stop();
+        let action = this.mixer.clipAction(this.animations[index]);
+        action.setLoop(THREE.LoopOnce);
+        let callback = _ => {
+            this.mixer.removeEventListener('finished', callback)
+            action.stop();
+            this.action.play();
+        };
+        this.mixer.addEventListener('finished', callback);
+        action.play();
     }
 
     setAnimationIndex(index) {

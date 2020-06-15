@@ -1,4 +1,4 @@
-import * as THREE from '../THREE/three.module.js'
+import * as THREE from '../Libs/Three/three.module.js'
 import { Model } from './wrappers/Model.js'
 
 export class Map {
@@ -33,10 +33,11 @@ export class Map {
         }
     }
 
-    getPositionFromCoord(x, z) {
-        if (!this.modelSize || x > this.x - 1 || z > this.z - 1)
+    getPositionFromCoord(coordinates) {
+        if (!this.modelSize)
             return null;
-
-        return { x: x * this.modelSize.x, y: 0, z: this.modelSize.z * z };
+        coordinates.x = coordinates.x < 0 ? this.x - 1 : coordinates.x % this.x;
+        coordinates.y = coordinates.y < 0 ? this.z - 1 : coordinates.y % this.z;
+        return { x: coordinates.x * this.modelSize.x, y: 0, z: this.modelSize.z * coordinates.y };
     }
 }
