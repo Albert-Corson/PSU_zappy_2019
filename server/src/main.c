@@ -5,13 +5,21 @@
 ** main server file
 */
 
-#include <utils/get_opts.h>
+#include <stdlib.h>
+
+#include <game.h>
+
+static void server_atexit(void)
+{
+    game_destroy(&GAME);
+}
 
 int main(int argc, const char **argv)
 {
     int port = 0;
 
-    if (!get_opts(argc, argv, &port))
+    atexit(server_atexit);
+    if (!game_init(argc, argv, &port))
         return (84);
     return (0);
 }

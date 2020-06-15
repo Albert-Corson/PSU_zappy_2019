@@ -48,6 +48,11 @@ typedef struct player {
 void player_construct(player_t *player, sockd_t sockd);
 
 /**
+* @brief recursively free allocated members
+*/
+void player_destroy(player_t *player);
+
+/**
 * @brief add a callback to the queue if space is available
 * 
 * @param player the player in which to queue the callback
@@ -59,6 +64,6 @@ callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
 response_t *res, long timeout);
 
 /**
-* @brief return true if a player is still alive
+* @brief return true if a player is still alive and close the socket
 */
 bool player_is_alive(player_t *player);

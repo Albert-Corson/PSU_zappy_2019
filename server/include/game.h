@@ -20,3 +20,10 @@ game_t *g_game_location(void);
 * @brief returns the first player corresponding to a given `sockd`
 */
 player_t *game_get_player(sockd_t sockd);
+
+/**
+* @brief parses all argv and initializes GAME values, sets the value of `port`
+* 
+* @return success/error
+*/
+bool game_init(int argc, const char **argv, int *port);

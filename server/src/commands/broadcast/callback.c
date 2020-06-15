@@ -68,8 +68,7 @@ void cb_broadcast(callback_t *callback, player_t *player)
     player_t *it = NULL;
     size_t tile = 0;
 
-    SLIST_FOREACH(it, &GAME.players, next)
-    {
+    SLIST_FOREACH(it, &GAME.players, next) {
         if (it == player)
             continue;
         tile = get_sound_tile_dir(player, it);

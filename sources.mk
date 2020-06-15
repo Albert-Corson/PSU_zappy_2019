@@ -23,16 +23,18 @@ SRC_SRV		=	server/src/commands/broadcast/callback.c		\
 				server/src/commands/set/middleware.c			\
 				server/src/commands/take/callback.c				\
 				server/src/commands/take/middleware.c			\
-				server/src/game.c								\
+				server/src/game/flags.c							\
+				server/src/game/game.c							\
+				server/src/game/game_init.c						\
 				server/src/incantations.c						\
 				server/src/main.c								\
 				server/src/struct/callback.c					\
 				server/src/struct/egg.c							\
+				server/src/struct/game.c						\
 				server/src/struct/incantation.c					\
 				server/src/struct/player.c						\
+				server/src/struct/spectator.c					\
 				server/src/struct/team.c						\
-				server/src/utils/get_opts.c						\
-				server/src/utils/opt_handlers.c					\
 				server/src/utils/randbetween.c					\
 				server/src/utils/strtoelement.c					\
 				server/src/utils/strtotab.c
