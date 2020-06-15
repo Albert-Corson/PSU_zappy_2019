@@ -17,15 +17,14 @@ export class Model {
         }
     }
 
-    makeClone(copy) {
-        let { scene, mesh } = copy;
-
+    makeClone({ scene, mesh }) {
         this.mesh = mesh.clone();
 
+        console.log(this.mesh);
         scene.getScene().add(this.mesh);
     }
 
-    async load(path, sceneWrapper) {
+    async load(path, sceneWrapper, addToScene) {
         return new Promise((resolve, reject) => {
             new GLTFLoader().load(path, (gltf) => {
                 this.gltf = gltf;
@@ -46,7 +45,8 @@ export class Model {
                     sceneWrapper.addMixer(this.mixer);
                 }
 
-                sceneWrapper.getScene().add(this.mesh);
+                if (addToScene)
+                    sceneWrapper.getScene().add(this.mesh);
                 resolve();
             }, undefined, reject)
         });
