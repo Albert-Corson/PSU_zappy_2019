@@ -15,3 +15,13 @@ typedef struct spectator {
     SLIST_ENTRY(spectator) next;
     sockd_t sockd;
 } spectator_t;
+
+/**
+* @brief constructs a spectator and set it's `sockd` member
+*/
+void spectator_construct(spectator_t *spectator, sockd_t sockd);
+
+/**
+* @brief close the internal `sockd` member
+*/
+void spectator_destroy(spectator_t *spectator);

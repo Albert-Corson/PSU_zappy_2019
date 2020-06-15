@@ -2,17 +2,18 @@
 ** EPITECH PROJECT, 2020
 ** PSU_zappy_2019
 ** File description:
-** opt_handlers
+** flags
 */
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 
-#include <utils/get_opts.h>
 #include <game.h>
 
-int opt_handler_width(int argc, const char **argv)
+int find_argv(int argc, const char **argv, char *needle);
+
+int flag_width(int argc, const char **argv)
 {
     char *endptr = NULL;
     int idx = find_argv(argc, argv, "-x");
@@ -25,7 +26,7 @@ int opt_handler_width(int argc, const char **argv)
     return (true);
 }
 
-int opt_handler_height(int argc, const char **argv)
+int flag_height(int argc, const char **argv)
 {
     char *endptr = NULL;
     int idx = find_argv(argc, argv, "-y");
@@ -38,7 +39,7 @@ int opt_handler_height(int argc, const char **argv)
     return (true);
 }
 
-int opt_handler_freq(int argc, const char **argv)
+int flag_freq(int argc, const char **argv)
 {
     char *endptr = NULL;
     int idx = find_argv(argc, argv, "-f");
@@ -51,7 +52,7 @@ int opt_handler_freq(int argc, const char **argv)
     return (true);
 }
 
-int opt_handler_name(int argc, const char **argv)
+int flag_name(int argc, const char **argv)
 {
     team_t *it = NULL;
     int idx = find_argv(argc, argv, "-n");
@@ -75,7 +76,7 @@ int opt_handler_name(int argc, const char **argv)
     return (true);
 }
 
-int opt_handler_client_nb(int argc, const char **argv)
+int flag_client_nb(int argc, const char **argv)
 {
     team_t *it = NULL;
     char *endptr = NULL;

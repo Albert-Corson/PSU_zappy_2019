@@ -31,7 +31,7 @@ static bool check_is_possible(const incantation_t *inc, player_t *player)
 static void elevate(const incantation_t *inc, player_t *player, \
 request_t *req, response_t *res)
 {
-    size_t count = 1; 
+    size_t count = 1;
     player_t *it = SLIST_FIRST(&GAME.players);
 
     incantation_use_ingredients(inc, player);

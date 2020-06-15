@@ -6,6 +6,7 @@
 */
 
 #include <memory.h>
+#include <unistd.h>
 
 #include <utils/strtotab.h>
 #include <utils/randbetween.h>
@@ -66,4 +67,15 @@ response_t *res, long timeout)
 bool player_is_alive(player_t *player)
 {
     return (player != NULL && player->inventory[E_FOOD].amount != 0);
+}
+
+void player_destroy(player_t *player)
+{
+    const size_t n = sizeof(player->callbacks) / sizeof(*player->callbacks);
+
+    if (!player)
+        return;
+    for (size_t idx = 0; idx < n; ++idx)
+        callback_destroy(&player->callbacks[idx]);
+    close(player->sockd);
 }
