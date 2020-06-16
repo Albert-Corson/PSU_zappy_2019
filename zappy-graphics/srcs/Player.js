@@ -2,6 +2,7 @@ import * as THREE from '../Libs/Three/three.module.js'
 import { Model } from './wrappers/Model.js'
 import { DIR } from './constants.js'
 import { PLAYER_TYPE} from "./constants.js";
+import { Manager } from './sound/SoundManager.js';
 
 export class Player extends Model {
     constructor(ptr, opt = {}) {
@@ -42,8 +43,10 @@ export class Player extends Model {
                 this.coordinates.x += 1;
                 break;
         }
+
+        Manager.play('click');
         let vect = this.ptr(this.coordinates);
-        console.log(vect);
+
         this.setAnimationIndex(10);
         createjs.Tween
             .get(this.getMesh().position, {override : true})
@@ -51,14 +54,13 @@ export class Player extends Model {
                 x: vect.x,
                 y: vect.y,
                 z: vect.z
-            }, 600)
+            }, 150)
             .call(() => this.setAnimationIndex(2));
     }
 
     setDirection(event) {
         let keyCode = event.which || event.keyCode || event.charCode;
 
-        console.log(keyCode);
         switch (keyCode) {
             case 81:
                 this.rotateLeft();
@@ -77,6 +79,9 @@ export class Player extends Model {
                 break;
             case 88:
                 this.pickGem();
+                break;
+            case 89:
+                this.levelUp();
                 break;
         }
     }
@@ -98,6 +103,7 @@ export class Player extends Model {
     }
 
     levelUp() {
+        this.playAnimationOnce(3);
         this.level++;
         // TODO: Animation on level up
     }

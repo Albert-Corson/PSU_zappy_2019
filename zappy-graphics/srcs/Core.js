@@ -1,10 +1,9 @@
 import * as THREE from "../Libs/Three/three.module.js"
 import { Scene } from './wrappers/Scene.js';
-import { Model } from './wrappers/Model.js';
 import { Gem } from './Gem.js';
 import { Player } from './Player.js';
 import { Map } from './Map.js';
-
+import { Manager, SoundRef } from './sound/SoundManager.js';
 import { GEM_TYPE, PLAYER_TYPE } from "./constants.js";
 
 export class Core {
@@ -17,12 +16,18 @@ export class Core {
             let gem = new Gem('LINEMATE', this.sceneWrapper);
         })();
 
-       /* (async () => {
-            await Player.init(this.sceneWrapper)
- /!*           let player1 = new Player('ROBOT', this.sceneWrapper);
- *!/           /!*let player1 = new Player('ROBOT', this.sceneWrapper, {coordinates: { x: 0, y: 1 }})*!/
-        })();
-*/
+        Manager.register(
+            'ambient',
+            new SoundRef('../sounds/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
+            e => e.src === '../sounds/ambient.mp3' ? Manager.play('ambient') : null
+        );
+
+        Manager.register(
+            'click',
+            new SoundRef(['../sounds/click.ogg', '../sounds/click2.ogg'], { random: true })
+        );
+
+
         this.sceneWrapper.addLight(new THREE.HemisphereLight(0xffffff, 0xffffff, 1.5), {x: 0, y: 40, z: 0});
         this.sceneWrapper.addLight(new THREE.PointLight(0xebe3ce, 1.5, 50), {x: 10, y: 10, z: 10});
 
@@ -38,13 +43,5 @@ export class Core {
         await robot.load('../models/players/robot.glb', this.sceneWrapper, true);
         robot.setAnimationIndex(2);
         robot.getMesh().scale.set(0.3, 0.3, 0.3);
-/*
-        let pos = this.map.getPositionFromCoord(10, 0);
-
-        if (pos) {
-            robot.getMesh().position.set(pos.x, pos.y, pos.z);
-        } else {
-            console.error('Invalid coordinates')
-        }
-    */}
+    }
 }

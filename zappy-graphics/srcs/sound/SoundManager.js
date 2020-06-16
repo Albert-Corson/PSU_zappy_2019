@@ -77,63 +77,66 @@ const Manager = class {
 	 * Register a SoundRef with corresponding id and options
 	 * @param {string|number} id
 	 * @param {SoundRef} ref
+	 * @param listener
+	 * @param {SoundRef} ref
 	 * @return boolean
 	 * */
-	static register(id, ref) {
+	static register(id, ref, listener = null) {
+			this._ensureIsInitialized();
 
-		this._ensureIsInitialized();
+			let files;
 
-		let files;
-
-		if (!ref || !id) {
-			return false;
-		}
-
-		if (this._hasGroup(id)) {
-			console.error(`${id}: Reference id must be unique`);
-			return false;
-		}
-
-		createjs.Sound.on('fileerror', (e) => {
-			let idx;
-
-			console.error(`Error while loading ${e.src}, verify that the file exists`);
-			if (Array.isArray(files) && files.length && (idx = files.indexOf(e.id)) !== -1) {
-				files.splice(idx, 1);
+			if (!ref || !id) {
+				return false;
 			}
-		});
 
-		const pathPrefix = 'sounds/';
+			if (this._hasGroup(id)) {
+				console.error(`${id}: Reference id must be unique`);
+				return false;
+			}
 
-		if (typeof ref.source === 'string') {
-			const name = this._getFileName(ref.source);
+			createjs.Sound.on('fileerror', (e) => {
+				let idx;
 
-			createjs.Sound.registerSound(pathPrefix + ref.source, name);
-
-			files = [name];
-		} else if (Array.isArray(ref.source)) {
-			files = ref.source.map(path => {
-				const name = this._getFileName(path);
-
-				createjs.Sound.registerSound(pathPrefix + path, name);
-				return name;
+				console.error(`Error while loading ${e.src}, verify that the file exists`);
+				if (Array.isArray(files) && files.length && (idx = files.indexOf(e.id)) !== -1) {
+					files.splice(idx, 1);
+				}
 			});
-		}
 
-		if (files) {
-			this._groups[id] = {
-				files,
-				loop: ref.loop,
-				random: ref.random,
-				streamsLimit: ref.streamsLimit,
-				volume: ref.volume,
-				fadeIn: ref.fadeIn,
-				stream: []
-			};
-			return true;
-		}
+			const pathPrefix = '';
 
-		return false;
+			if (typeof ref.source === 'string') {
+				const name = this._getFileName(ref.source);
+
+				if (listener)
+					createjs.Sound.on('fileload', listener, true);
+				createjs.Sound.registerSound(pathPrefix + ref.source, name);
+
+				files = [name];
+			} else if (Array.isArray(ref.source)) {
+				files = ref.source.map(path => {
+					const name = this._getFileName(path);
+
+					createjs.Sound.registerSound(pathPrefix + path, name);
+					return name;
+				});
+			}
+
+			if (files) {
+				this._groups[id] = {
+					files,
+					loop: ref.loop,
+					random: ref.random,
+					streamsLimit: ref.streamsLimit,
+					volume: ref.volume,
+					fadeIn: ref.fadeIn,
+					stream: [],
+					loaded: false
+				};
+				return true;
+			}
+			return false;
 	}
 
 	/**
@@ -259,7 +262,7 @@ const Manager = class {
 	}
 
 	static set muted(b) {
-		this._muted = b
+		this._muted = b;
 		createjs.Sound.muted = b
 	}
 
