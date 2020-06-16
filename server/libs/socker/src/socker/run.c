@@ -28,9 +28,7 @@ static void handle_readable(sockd_t peer)
         return;
     }
     if (bytes <= 0) {
-        FDI_CLR(&G_SOCKER.fd_info, peer);
-        socket_close(peer);
-        socker_emit("disconnect", peer);
+        socker_disconnect(peer);
     } else {
         socker_emit("readable", peer, bytes);
     }

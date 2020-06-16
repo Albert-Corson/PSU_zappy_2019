@@ -57,3 +57,10 @@ sockd_t socker_accept(sockd_t listener)
     FDI_SET(FDI_READ, &G_SOCKER.fd_info, peer);
     return (peer);
 }
+
+void socker_disconnect(sockd_t peer)
+{
+    FDI_CLR(&G_SOCKER.fd_info, peer);
+    socket_close(peer);
+    socker_emit("disconnect", peer);
+}
