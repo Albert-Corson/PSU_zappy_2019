@@ -29,7 +29,6 @@ void delete_event_list(event_list_t *list)
     while (walker != NULL) {
         next = STAILQ_NEXT(walker, entries);
         delete_event_list_entry(walker);
-        free(walker);
         walker = next;
     }
     free(list);

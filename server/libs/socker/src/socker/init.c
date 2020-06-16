@@ -23,6 +23,7 @@ int socker_init(void)
     G_SOCKER.events = new_event_list();
     FDI_ZERO(&G_SOCKER.fd_info);
     G_SOCKER.ms_timeout = -1;
+    G_SOCKER.is_init = true;
     return (0);
 }
 

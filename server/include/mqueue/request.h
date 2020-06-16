@@ -10,7 +10,8 @@
 
 #include <stddef.h>
 
-#include "types.h"
+#include <socker/types.h>
+#include "message.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // REQUEST
@@ -22,7 +23,7 @@
 */
 typedef struct {
     sockd_t sender;
-    void *data;
+    message_t *message;
 } request_t;
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +36,7 @@ typedef struct {
 * to a request
 */
 typedef struct {
-    void (*send)(request_t *req, void *data, size_t len);
+    int (*send)(request_t *req, const void *data, size_t len);
 } response_t;
 
 #endif /* !REQUEST_H_ */

@@ -56,11 +56,33 @@ void socker_destroy(void);
 void socker_run(void);
 
 /**
-* @brief Queue a message to send to the given socket
-* @param sockd descriptor of the socket to which to send the message
-* @param message message to send (including header, body and footer)
-* @param size size of the message (in bytes)
+* @brief Set select(2) timeout
+* @param ms_timeout timeout time in milliseconds
 */
-int socker_send(sockd_t sockd, const void *message, size_t size);
+void socker_set_timeout(long ms_timeout);
+
+/**
+* @brief Start watching on read availability of the given socket
+* @param sockd socket descriptor
+*/
+void socker_watch_read(sockd_t sockd);
+
+/**
+* @brief Start watching on write availability of the given socket
+* @param sockd socket descriptor
+*/
+void socker_watch_write(sockd_t sockd);
+
+/**
+* @brief Stop watching on read availability of the given socket
+* @param sockd socket descriptor
+*/
+void socker_unwatch_read(sockd_t sockd);
+
+/**
+* @brief Stop watching on write availability of the given socket
+* @param sockd socket descriptor
+*/
+void socker_unwatch_write(sockd_t sockd);
 
 #endif /* !SOCKER_H_ */

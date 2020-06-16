@@ -5,13 +5,14 @@
 ** message queue
 */
 
-#ifndef MQ_H_
-#define MQ_H_
+#ifndef MQ_INTERNALS_H_
+#define MQ_INTERNALS_H_
 
 #include <sys/queue.h>
 #include <stddef.h>
 
-#include "types.h"
+#include <socker/types.h>
+#include "../mq.h"
 
 /**
 * @brief Message queue entry
@@ -22,6 +23,16 @@ typedef struct mq_entry {
     size_t len;
     fd_t fd;
 } mq_entry_t;
+
+/**
+* @brief Message queue head
+*/
+typedef TAILQ_HEAD(mq_head, mq_entry) mq_head_t;
+
+/**
+* @brief Create and initialize a new message queue head
+*/
+mq_head_t *new_mq_head(void);
 
 /**
 * @brief Create and initialize a new message queue entry
@@ -39,46 +50,55 @@ mq_entry_t *new_mq_entry(int fd, void *data, size_t len);
 void destroy_mq_entry(mq_head_t *head, mq_entry_t *entry);
 
 /**
-* @brief Message queue head
+* @brief Push a message queue entry in the given message queue head
+* @param head message queue head
+* @param entry message queue entry
 */
-typedef TAILQ_HEAD(mq_head, mq_entry) mq_head_t;
-
-/**
-* @brief Create and initialize a new message queue head
-*/
-mq_head_t *new_mq_head(void);
+void mq_push_entry(mq_head_t *head, mq_entry_t *entry);
 
 /**
 * @brief Message queue
 */
 typedef struct mq {
-    mq_head_t *read_head;
     mq_head_t *write_head;
+    message_reader_t reader;
+    message_writer_t writer;
 } mq_t;
 
 /**
+* @brief Default message reader function (does nothing but print warnings)
+* @param peer readable peer socket
+* @param peer number of readable bytes on socket
+*/
+message_t *default_message_reader(sockd_t peer, size_t size);
+
+/**
+* @brief Default message writer function (writes given data as is)
+* @param request request to which the message is responding (can be NULL)
+* @param data message data
+* @param len message data length
+* @return allocated buffer containing the entire message to write
+*/
+message_t *default_message_writer(request_t *req, const void *data, size_t len);
+
+/**
+* @brief Message queue static storage location
+*/
+mq_t **mq_location(void);
+
+/**
+* @brief A macro to access the globally stored message queue
+*/
+#define G_MQ (*mq_location())
+
+/**
 * @brief Add a message to the message queue, to be sent to the given fd
-* @param mq message queue to which to push message
 * @param to_fd addressee file (or socket) descriptor
 * @param data message to send (will be copied)
 * @param len message length
 * @return -1 in case of error (not enough memory), 0 otherwise
 */
-int mq_push(mq_t *mq, int to_fd, const void *data, size_t len);
-
-/**
-* @brief Retrieve the first message from the message queue
-* @param mq message queue from which to retrieve message
-* @param from_fd mq_pop will fill the value pointed by from_fd with the
-* fd of the message emitter (can be NULL if irrelevant)
-* @param buffer mq_pop will fill the value pointed by buffer with the
-* allocated received message
-* @param len mq_pop will fill the value pointed by msq_len with the
-* received message length (can be NULL if irrelevant)
-* @return -1 in case of error (message queue does not exist), 0 if no more
-* messages are available, 1 if one message was retrieved.
-*/
-int mq_pop(mq_t *mq, int *from_fd, char **buffer, size_t *len);
+int mq_send(int to_fd, const void *data, size_t len);
 
 /**
 * @brief Open a new message queue
@@ -107,19 +127,11 @@ void mq_clear(mq_t *mq);
 void mq_clear_fd(mq_t *mq, int fd);
 
 /**
-* @brief Read a available messages from given file (or socket) descriptor
-* @param mq message queue to read from
-* @param fd file (or socket) descriptor
-* @return -1 if case of error (message queue does not exist), 0 otherwise
-*/
-int mq_read(mq_t *mq, int fd);
-
-/**
 * @brief Write all available messages to given file (or socket) descriptor
 * @param mq message queue to write to
 * @param fd file (or socket) descriptor
 * @return -1 if case of error (message queue does not exist), 0 otherwise
 */
-int mq_write(mq_t *mq, int fd);
+int mq_write(int fd);
 
-#endif /* !MQ_H_ */
+#endif /* !MQ_INTERNALS_H_ */

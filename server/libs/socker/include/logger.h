@@ -22,6 +22,8 @@
 #define LOG_WARN(fmt, ...)
 #define LOG_ERROR(fmt, ...)
 
+#define SOCKER_LOG_LEVEL LOG_LEVEL_ALL
+
 #ifdef SOCKER_LOG_LEVEL
 
     #include <stdio.h>

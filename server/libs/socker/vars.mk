@@ -6,11 +6,12 @@
 ##
 
 FLAGS_DEBUG		=	-g -DDEBUG
-FLAGS_INCLUDES	=	-I$(DIR_HEADERS) $(FLAGS_DEBUG)
+FLAGS_INCLUDES	=	-I$(DIR_HEADERS)
 
 override CFLAGS	+=	$(FLAGS_INCLUDES)		\
 					-Wall					\
-					-Wextra
+					-Wextra					\
+					-g
 
 ROOT_LIB		:=	$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 

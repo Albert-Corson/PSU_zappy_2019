@@ -11,6 +11,7 @@
 #include <unistd.h>
 
 #include "internals/select.h"
+#include "internals/socket.h"
 #include "internals/socker.h"
 #include "logger.h"
 
@@ -28,6 +29,7 @@ static void handle_readable(sockd_t peer)
     }
     if (bytes <= 0) {
         FDI_CLR(&G_SOCKER.fd_info, peer);
+        socket_close(peer);
         socker_emit("disconnect", peer);
     } else {
         socker_emit("readable", peer, bytes);
@@ -37,7 +39,6 @@ static void handle_readable(sockd_t peer)
 static void handle_writable(sockd_t peer)
 {
     socker_emit("writable", peer);
-    FDI_UNSET(FDI_WRITE, &G_SOCKER.fd_info, peer);
 }
 
 void socker_run(void)
@@ -46,10 +47,12 @@ void socker_run(void)
     fd_set writefds;
 
     if (G_SOCKER.is_init == false) {
-        LOG_WARN("Socker is being run uninitialized.");
+        LOG_WARN("%s", "Socker is being run uninitialized.");
     }
     if (select_update(&readfds, &writefds, G_SOCKER.ms_timeout) == -1) {
-        LOG_ERROR("Select failed: %s", strerror(errno));
+        if (errno != EINTR) {
+            LOG_ERROR("Select failed: %s", strerror(errno));
+        }
         return;
     }
     for (int index = 0; index < FD_SETSIZE; ++index) {

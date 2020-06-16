@@ -13,6 +13,7 @@
 #include <errno.h>
 
 #include "logger.h"
+#include "internals/stream.h"
 #include "internals/socket.h"
 
 sockd_t socket_open(socket_type_t type)
@@ -87,6 +88,8 @@ int socket_connect(sockd_t sockd, in_port_t port, in_addr_t addr)
 
 void socket_close(sockd_t sockd)
 {
+    if (socket_remove_sockstream(sockd) == true)
+        return;
     if (sockd >= 0)
         close(sockd);
 }
