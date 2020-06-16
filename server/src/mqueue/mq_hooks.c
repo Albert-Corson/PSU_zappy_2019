@@ -38,7 +38,7 @@ void mq_on_readable(va_list ap)
         return;
     }
     socker_emit("message", &req, &res);
-    free(req.message);
+    message_destroy(req.message);
 }
 
 void mq_on_writable(va_list ap)

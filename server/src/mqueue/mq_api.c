@@ -34,10 +34,13 @@ int mq_send(int to_fd, const void *data, size_t len)
 int mq_respond(request_t *req, const void *data, size_t len)
 {
     message_t *message = G_MQ->writer(req, data, len);
+    int status = 0;
 
     if (message == NULL) {
         LOG_ERROR("%s", "Couldn't send response: message writer returned NULL");
         return (-1);
     }
-    return (mq_send(req->sender, message->data, message->len));
+    status = mq_send(req->sender, message->data, message->len);
+    message_destroy(message);
+    return (status);
 }

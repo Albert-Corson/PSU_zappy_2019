@@ -13,6 +13,6 @@
 #include "types.h"
 
 // Get line from socket
-ssize_t socket_getline(sockd_t sockd, char **lineptr);
+ssize_t socket_getline(sockd_t sockd, char **lineptr, size_t *length);
 
 #endif /* !SOCKER_STREAM_H_ */

@@ -17,3 +17,9 @@ message_t *new_message(void *data, size_t len)
     message->len = len;
     return (message);
 }
+
+void message_destroy(message_t *message)
+{
+    free(message->data);
+    free(message);
+}

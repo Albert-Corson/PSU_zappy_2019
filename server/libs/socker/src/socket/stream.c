@@ -33,8 +33,13 @@ sockstream_t *socket_add_sockstream(sockd_t sockd)
     *walker = malloc(sizeof(sockstream_t));
     if (*walker == NULL)
         return (NULL);
+    (*walker)->next = NULL;
     (*walker)->sockd = sockd;
     (*walker)->stream = fdopen(sockd, "r");
+    if ((*walker)->stream == NULL) {
+        free(walker);
+        return (NULL);
+    }
     return (*walker);
 }
 
@@ -61,12 +66,11 @@ FILE *socket_get_stream(sockd_t sockd)
     return (walker->stream);
 }
 
-ssize_t socket_getline(sockd_t sockd, char **lineptr)
+ssize_t socket_getline(sockd_t sockd, char **lineptr, size_t *length)
 {
     FILE *stream = socket_get_stream(sockd);
-    static size_t result = 0;
 
     if (stream == NULL || lineptr == NULL)
         return (-1);
-    return (getline(lineptr, &result, stream));
+    return (getline(lineptr, length, stream));
 }
