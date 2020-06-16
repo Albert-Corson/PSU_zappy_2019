@@ -11,7 +11,7 @@
 
 void cb_incantation(callback_t *callback, player_t *player);
 
-static bool check_is_possible(const incantation_t *inc, player_t *player)
+static bool elevation_is_possible(const incantation_t *inc, player_t *player)
 {
     size_t count = 1;
     player_t *it = SLIST_FIRST(&GAME.players);
@@ -35,7 +35,7 @@ request_t *req, response_t *res)
     player_t *it = SLIST_FIRST(&GAME.players);
 
     incantation_use_ingredients(inc, player);
-    res->send(&req->sender, "Elevation underway\n");
+    send_str(req, res, "Elevation underway\n");
     while (it && count < inc->nb_players) {
         if (it != player && incantation_is_recipe_ok(inc, it)) {
             incantation_use_ingredients(inc, it);
@@ -51,18 +51,18 @@ request_t *req, response_t *res)
 bool mw_incantation(request_t *req, response_t *res)
 {
     callback_t *callback = NULL;
-    player_t *player = game_get_player(req->sender.sockd);
+    player_t *player = game_get_player(req->sender);
     const incantation_t *inc = NULL;
 
     if (player)
         inc = incantations_get_recipe(player->level);
-    if (!inc || !check_is_possible(inc, player)) {
-        res->send(&req->sender, "ko\n");
+    if (!inc || !elevation_is_possible(inc, player)) {
+        send_str(req, res, "ko\n");
         return (false);
     }
     elevate(inc, player, req, res);
     callback = player_queue_callback(player, cb_incantation, res, 7);
     if (callback)
-        callback_set_argv(callback, strtotab(req->body, " \t\n", true));
+        callback_set_argv(callback, strtotab(req->message->data, " \t\n", true));
     return (false);
 }

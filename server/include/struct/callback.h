@@ -9,7 +9,7 @@
 
 #include <time.h>
 
-#include <plugins/router.h>
+#include <mqueue/request.h>
 
 typedef struct player player_t;
 

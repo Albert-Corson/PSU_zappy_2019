@@ -11,10 +11,10 @@ void cb_look(callback_t *callback, player_t *player);
 
 bool mw_look(request_t *req, response_t *res)
 {
-    player_t *player = game_get_player(req->sender.sockd);
+    player_t *player = game_get_player(req->sender);
 
     if (!player)
-        res->send(&req->sender, "ko\n");
+        send_str(req, res, "ko\n");
     else if (!player_queue_callback(player, cb_look, res, 7))
         return (true);
     return (false);

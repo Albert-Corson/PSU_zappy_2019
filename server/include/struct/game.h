@@ -7,6 +7,8 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #include <struct/player.h>
 #include <struct/egg.h>
 #include <struct/spectator.h>
@@ -29,6 +31,7 @@ typedef struct tile {
 } tile_t;
 
 typedef struct {
+    bool running;
     int width;
     int height;
     long freq;

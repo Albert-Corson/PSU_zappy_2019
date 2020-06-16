@@ -10,6 +10,7 @@
 game_t *g_game_location(void)
 {
     static game_t game = {
+        .running = true,
         .width = 0,
         .height = 0,
         .freq = 100,

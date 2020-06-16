@@ -8,6 +8,7 @@
 #pragma once
 
 #include <sys/queue.h>
+#include <stdbool.h>
 
 #include <libs/socker/types.h>
 #include <struct/team.h>

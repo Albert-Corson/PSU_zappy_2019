@@ -27,3 +27,5 @@ player_t *game_get_player(sockd_t sockd);
 * @return success/error
 */
 bool game_init(int argc, const char **argv, int *port);
+
+int send_str(request_t *req, response_t *res, const char *str);

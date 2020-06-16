@@ -37,6 +37,7 @@ SRC_SRV		=	server/src/commands/broadcast/callback.c		\
 				server/src/struct/team.c						\
 				server/src/utils/randbetween.c					\
 				server/src/utils/strtoelement.c					\
+				server/src/utils/send_str.c						\
 				server/src/utils/strtotab.c						\
 				server/src/mqueue/mq.c							\
 				server/src/mqueue/mq_api.c						\
