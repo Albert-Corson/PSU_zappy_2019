@@ -31,7 +31,6 @@ typedef struct {
 
 typedef struct player {
     SLIST_ENTRY(player) next;
-    bool initialized;
     sockd_t sockd;
     team_t *team;
     callback_t callbacks[10];
@@ -49,11 +48,6 @@ typedef struct player {
 void player_construct(player_t *player, sockd_t sockd);
 
 /**
-* @brief recursively free allocated members
-*/
-void player_destroy(player_t *player);
-
-/**
 * @brief add a callback to the queue if space is available
 * 
 * @param player the player in which to queue the callback
@@ -62,7 +56,7 @@ void player_destroy(player_t *player);
 * @param timeout the time after which to execute the callback
 */
 callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
-response_t *res, long timeout);
+long timeout);
 
 /**
 * @brief return true if a player is still alive and close the socket

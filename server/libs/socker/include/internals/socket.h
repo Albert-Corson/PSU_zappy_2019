@@ -41,7 +41,8 @@ sockd_t socket_open(socket_type_t type);
 int socket_listen(sockd_t sockd, in_port_t port, in_addr_t addr, int size);
 
 /**
-* @brief Accept an incoming connection to socket, and store its socket descriptor
+* @brief Accept an incoming connection to socket,
+* and store its socket descriptor
 * @param sockd listener socket descriptor
 */
 sockd_t socket_accept(sockd_t sockd);

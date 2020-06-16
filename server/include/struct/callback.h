@@ -15,15 +15,15 @@ typedef struct player player_t;
 
 typedef struct callback callback_t;
 
-typedef void (*callback_fcn_t)(callback_t *callback, player_t *player);
+typedef bool (*callback_fcn_t)(request_t *, response_t *, player_t *, char *);
 
 struct callback {
     callback_fcn_t callback;
+    request_t *req;
     response_t *res;
     time_t start;
     long timeout;
-    int argc;
-    char **argv;
+    char *data;
 };
 
 /**
@@ -32,17 +32,6 @@ struct callback {
 void callback_clear(callback_t *callback);
 
 /**
-* @brief free callback->argv before calling `callback_clear`
-*/
-void callback_destroy(callback_t *callback);
-
-/**
 * @brief constructs a `callback` and initializes its start timestamp
 */
-void callback_constuct(callback_t *callback, callback_fcn_t fcn, \
-response_t *res, long timeout);
-
-/**
-* @brief sets the argv to be passed to the callback when it's called
-*/
-void callback_set_argv(callback_t *callback, char **argv);
+void callback_constuct(callback_t *callback, callback_fcn_t fcn, long timeout);

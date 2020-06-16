@@ -28,7 +28,6 @@ static void player_list_destroy(struct player_list *list)
 
     while (n1 != NULL) {
         n2 = SLIST_NEXT((player_t *)n1, next);
-        player_destroy(n1);
         free(n1);
         n1 = n2;
     }
@@ -53,7 +52,6 @@ static void spectator_list_destroy(struct spectator_list *list)
 
     while (n1 != NULL) {
         n2 = SLIST_NEXT((spectator_t *)n1, next);
-        spectator_destroy(n1);
         free(n1);
         n1 = n2;
     }

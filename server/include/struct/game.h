@@ -14,6 +14,11 @@
 #include <struct/spectator.h>
 #include <elements.h>
 
+typedef struct pending_client {
+    SLIST_ENTRY(pending_client) next;
+    sockd_t sockd;
+} pending_client_t;
+
 typedef struct egg_container {
     SLIST_ENTRY(egg_container) next;
     egg_t *egg;
@@ -40,6 +45,7 @@ typedef struct {
     SLIST_HEAD(player_list, player) players;
     SLIST_HEAD(egg_list, egg) eggs;
     SLIST_HEAD(spectator_list, spectator) spectators;
+    SLIST_HEAD(pending_client_list, pending_client) pendings;
 } game_t;
 
 /**

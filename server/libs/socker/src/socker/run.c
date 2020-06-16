@@ -13,12 +13,13 @@
 #include "internals/select.h"
 #include "internals/socket.h"
 #include "internals/socker.h"
+#include "socker.h"
 #include "logger.h"
 
 static void handle_readable(sockd_t peer)
 {
     size_t bytes = 0;
-    
+
     if (FDI_ISSET(FDI_LISTENER, &G_SOCKER.fd_info, peer)) {
         socker_accept(peer);
         return;

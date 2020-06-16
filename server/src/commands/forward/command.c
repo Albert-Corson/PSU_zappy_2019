@@ -5,14 +5,15 @@
 ** callback
 */
 
-#include <struct/player.h>
+#include <game.h>
 
-void cb_forward(callback_t *callback, player_t *player)
+bool exec_forward(request_t *req, response_t *res, player_t *player, char *data)
 {
     if (player->dir == NORTH || player->dir == SOUTH) {
         player->pos.y += (int)player->dir - 1;
     } else {
         player->pos.x += (int)player->dir - 2;
     }
-    // TO DO: notify graph clients and send ok response
+    respond_str(req, res, "ok\n");
+    return (true);
 }

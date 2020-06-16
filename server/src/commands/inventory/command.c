@@ -7,7 +7,9 @@
 
 #include <struct/player.h>
 
-void cb_look(callback_t *callback, player_t *player)
+bool exec_inventory(request_t *req, response_t *res, player_t *player, \
+char *data)
 {
     // TO DO
+    return (false);
 }

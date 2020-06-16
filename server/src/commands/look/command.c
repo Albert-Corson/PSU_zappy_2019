@@ -7,7 +7,8 @@
 
 #include <struct/player.h>
 
-void cb_take(callback_t *callback, player_t *player)
+bool exec_look(request_t *req, response_t *res, player_t *player, char *data)
 {
     // TO DO
+    return (false);
 }

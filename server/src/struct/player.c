@@ -14,7 +14,6 @@
 
 static const player_t template = {
     .next = { 0 },
-    .initialized = false,
     .sockd = -1,
     .team = NULL,
     .callbacks = { { 0 } },
@@ -47,7 +46,7 @@ void player_construct(player_t *player, sockd_t sockd)
 }
 
 callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
-response_t *res, long timeout)
+long timeout)
 {
     callback_t *avail = NULL;
     const size_t arrsize = sizeof(player->callbacks) / sizeof(callback_t);
@@ -60,22 +59,11 @@ response_t *res, long timeout)
     }
     if (!avail)
         return (NULL);
-    callback_constuct(avail, fcn, res, timeout);
+    callback_constuct(avail, fcn, timeout);
     return (avail);
 }
 
 bool player_is_alive(player_t *player)
 {
     return (player != NULL && player->inventory[E_FOOD].amount != 0);
-}
-
-void player_destroy(player_t *player)
-{
-    const size_t n = sizeof(player->callbacks) / sizeof(*player->callbacks);
-
-    if (!player)
-        return;
-    for (size_t idx = 0; idx < n; ++idx)
-        callback_destroy(&player->callbacks[idx]);
-    close(player->sockd);
 }

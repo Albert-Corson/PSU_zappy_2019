@@ -9,12 +9,12 @@
 
 #include <struct/spectator.h>
 
+void spectator_send_init(spectator_t *spectator)
+{
+    // TO DO
+}
+
 void spectator_construct(spectator_t *spectator, sockd_t sockd)
 {
     spectator->sockd = sockd;
-}
-
-void spectator_destroy(spectator_t *spectator)
-{
-    close(spectator->sockd);
 }

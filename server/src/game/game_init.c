@@ -12,12 +12,6 @@
 
 #include <game.h>
 
-int flag_client_nb(int argc, const char **argv);
-int flag_name(int argc, const char **argv);
-int flag_freq(int argc, const char **argv);
-int flag_height(int argc, const char **argv);
-int flag_width(int argc, const char **argv);
-
 int find_argv(int argc, const char **argv, char *needle)
 {
     int idx = 0;

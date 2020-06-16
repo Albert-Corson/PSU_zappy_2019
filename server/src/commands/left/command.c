@@ -5,14 +5,15 @@
 ** callback
 */
 
-#include <struct/player.h>
+#include <game.h>
 
-void cb_left(callback_t *callback, player_t *player)
+bool exec_left(request_t *req, response_t *res, player_t *player, char *data)
 {
     if (player->dir == EAST) {
         player->dir = NORTH;
     } else {
         player->dir += 1;
     }
-    // TO DO: send notification and response
+    respond_str(req, res, "ok\n");
+    return (true);
 }

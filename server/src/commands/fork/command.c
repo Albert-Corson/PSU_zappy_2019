@@ -8,13 +8,14 @@
 #include <stdlib.h>
 #include <game.h>
 
-void cb_fork(callback_t *callback, player_t *player)
+bool exec_fork(request_t *req, response_t *res, player_t *player, char *data)
 {
     egg_t *egg = malloc(sizeof(*egg));
 
     if (!egg)
-        return;
+        exit(84);
     egg_construct(egg, player->team, &player->pos);
     SLIST_INSERT_HEAD(&GAME.eggs, egg, next);
-    // TO DO: send responses and notifications
+    respond_str(req, res, "ok\n");
+    return (true);
 }

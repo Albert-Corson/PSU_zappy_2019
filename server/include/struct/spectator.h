@@ -22,6 +22,6 @@ typedef struct spectator {
 void spectator_construct(spectator_t *spectator, sockd_t sockd);
 
 /**
-* @brief close the internal `sockd` member
+* @brief send all necessary informations about the ongoing game
 */
-void spectator_destroy(spectator_t *spectator);
+void spectator_send_init(spectator_t *spectator);

@@ -85,4 +85,16 @@ void socker_unwatch_read(sockd_t sockd);
 */
 void socker_unwatch_write(sockd_t sockd);
 
+/**
+* @brief Accept incoming connection and bind it to read
+* @param listener listener socket receiving connection
+*/
+sockd_t socker_accept(sockd_t listener);
+
+/**
+* @brief Close a socket and disconnect the corresponding peer from socker
+* @param peer peer to disconnect
+*/
+void socker_disconnect(sockd_t peer);
+
 #endif /* !SOCKER_H_ */

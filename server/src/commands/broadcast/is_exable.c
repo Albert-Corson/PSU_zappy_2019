@@ -2,12 +2,12 @@
 ** EPITECH PROJECT, 2020
 ** PSU_zappy_2019
 ** File description:
-** callback
+** middleware
 */
 
 #include <struct/player.h>
 
-void cb_inventory(callback_t *callback, player_t *player)
+bool is_exable_broadcast(player_t *player, char *data)
 {
-    // TO DO
+    return (data != NULL);
 }

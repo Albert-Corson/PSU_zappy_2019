@@ -88,16 +88,4 @@ socker_t *socker_location(void);
 */
 #define G_SOCKER (*socker_location())
 
-/**
-* @brief Accept incoming connection and bind it to read
-* @param listener listener socket receiving connection
-*/
-sockd_t socker_accept(sockd_t listener);
-
-/**
-* @brief Close a socket and disconnect the corresponding peer from socker
-* @param peer peer to disconnect
-*/
-void socker_disconnect(sockd_t peer);
-
 #endif /* !SOCKER_INTERNALS_H_ */

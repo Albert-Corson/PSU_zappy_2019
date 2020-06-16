@@ -6,6 +6,9 @@
 */
 
 #include <math.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include <struct/broadcast.h>
 #include <game.h>
@@ -63,15 +66,21 @@ static size_t get_sound_tile_dir(player_t *emitter, player_t *receiver)
     return (get_tile_idx(&p1, &p2, receiver->dir));
 }
 
-void cb_broadcast(callback_t *callback, player_t *player)
+bool exec_broadcast(request_t *req, response_t *res, player_t *player, \
+char *data)
 {
     player_t *it = NULL;
     size_t tile = 0;
+    char *message = malloc(sizeof(char) * (strlen(data) + 14));
 
+    if (sprintf(message, "message K, %s\n", data) < 0)
+        exit(84);
     SLIST_FOREACH(it, &GAME.players, next) {
         if (it == player)
             continue;
         tile = get_sound_tile_dir(player, it);
-        // TO DO: send broadcast message 
+        message[8] = tile + 48;
+        send_str(it->sockd, message);
     }
+    return (true);
 }

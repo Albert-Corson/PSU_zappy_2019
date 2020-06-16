@@ -5,6 +5,8 @@
 ** callback
 */
 
+#include <stdio.h>
+
 #include <game.h>
 
 static const vector_t move_to[] = {
@@ -30,13 +32,16 @@ static size_t get_ejected_tile_idx(direction_e dir, direction_e from)
 static void eject(player_t *player, direction_e from)
 {
     size_t tile = get_ejected_tile_idx(player->dir, from);
+    char message[16] = { 0 };
 
+    if (sprintf(message, "eject: %lu\n", tile) < 0)
+        exit(84);
     player->pos.x += move_to[from].x;
     player->pos.y += move_to[from].y;
-    // TO DO: send ejection message
+    send_str(player->sockd, message);
 }
 
-void cb_eject(callback_t *callback, player_t *player)
+bool exec_eject(request_t *req, response_t *res, player_t *player, char *data)
 {
     player_t *it = NULL;
 
@@ -47,5 +52,5 @@ void cb_eject(callback_t *callback, player_t *player)
             continue;
         eject(it, player->dir);
     }
-    // TO DO: send notification
+    return (true);
 }
