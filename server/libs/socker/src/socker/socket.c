@@ -5,6 +5,9 @@
 ** socket
 */
 
+#include <string.h>
+#include <errno.h>
+
 #include "internals/socker.h"
 #include "internals/socket.h"
 #include "logger.h"
@@ -38,7 +41,7 @@ sockd_t socker_connect(in_port_t port, in_addr_t addr)
         LOG_ERROR("Couldn't connect: %s", socket_strerror());
         return (-1);
     }
-    FDI_SET(FDI_READ | FDI_WRITE, &G_SOCKER.fd_info, peer);
+    FDI_SET(FDI_READ, &G_SOCKER.fd_info, peer);
     return (0);
 }
 

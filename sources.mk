@@ -37,7 +37,17 @@ SRC_SRV		=	server/src/commands/broadcast/callback.c		\
 				server/src/struct/team.c						\
 				server/src/utils/randbetween.c					\
 				server/src/utils/strtoelement.c					\
-				server/src/utils/strtotab.c
+				server/src/utils/strtotab.c						\
+				server/src/mqueue/mq.c							\
+				server/src/mqueue/mq_api.c						\
+				server/src/mqueue/mq_clear.c					\
+				server/src/mqueue/mq_hooks.c					\
+				server/src/mqueue/mq_init.c						\
+				server/src/mqueue/mq_output.c					\
+				server/src/mqueue/mq_reader.c					\
+				server/src/mqueue/mq_writer.c					\
+				server/src/mqueue/mq_message.c
+				# $(SRC_SHARED)
 
 SRC_AI		=	client/src/main.c				\
 				# $(SRC_SHARED)

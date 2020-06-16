@@ -10,6 +10,7 @@ SRC_LIB		=	src/socket/converts.c		\
 				src/socket/info.c			\
 				src/socket/io.c				\
 				src/socket/socket.c			\
+				src/socket/stream.c			\
 				src/select/select.c			\
 				src/events/bind.c			\
 				src/events/emit.c			\
@@ -26,7 +27,8 @@ DIR_HEADERS	=	include
 SRC_HEADERS	=	socker.h	\
 				events.h	\
 				types.h		\
-				logger.h
+				logger.h	\
+				stream.h
 
 HEADERS	=	$(SRC_HEADERS:%.h=$(INCLUDES_PATH)/$(NAME)/%.h)
 

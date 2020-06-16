@@ -9,7 +9,7 @@ ifeq ($(INCLUDES_PATH),)
 $(error INCLUDES_PATH is not set)
 endif
 
-include vars.mk sources.mk plugins.mk
+include vars.mk sources.mk
 
 all: 	$(TARGET_LIB) $(HEADERS)
 

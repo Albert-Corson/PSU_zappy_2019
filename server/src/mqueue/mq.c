@@ -7,7 +7,7 @@
 
 #include <stdlib.h>
 
-#include "internals/mq.h"
+#include "mqueue/internals/mq.h"
 
 mq_head_t *new_mq_head(void)
 {
@@ -41,14 +41,4 @@ void destroy_mq_entry(mq_head_t *head, mq_entry_t *entry)
 inline void mq_push_entry(mq_head_t *head, mq_entry_t *entry)
 {
     TAILQ_INSERT_TAIL(head, entry, entries);
-}
-
-inline mq_entry_t *mq_pop_entry(mq_head_t *head)
-{
-    mq_entry_t *front = head->tqh_first;
-
-    if (front == NULL)
-        return (NULL);
-    TAILQ_REMOVE(head, front, entries);
-    return (front);
 }

@@ -26,7 +26,7 @@ OBJ_AI		=	$(SRC_AI:%.c=$(BUILD_AI)/%.o)
 
 PROJECT_ROOT	:=	$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-INCLUDES_PATH	=	$(PROJECT_ROOT)/server/include/libs
+INCLUDES_PATH_SRV	=	$(PROJECT_ROOT)/server/include/libs
 
 override LDFLAGS	+=	
 
