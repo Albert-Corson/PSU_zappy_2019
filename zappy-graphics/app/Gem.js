@@ -1,7 +1,5 @@
-import { Model } from './wrappers/Model.js'
-import * as THREE from '../libs/three/three.module.js'
-import { GEM_TYPE }  from './constants.js'
-
+import { Model } from '@/app/wrappers/Model';
+import { GEM_TYPE }  from '@/app/constants';
 
 export class Gem extends Model {
     constructor(type, scene) {
@@ -17,7 +15,7 @@ export class Gem extends Model {
             let promises = Object.keys(GEM_TYPE).map(async key => {
                 let model = new Model();
 
-                await model.load(`../models/gems/${GEM_TYPE[key].name}.glb`, sceneWrapper, false);
+                await model.load(`static/assets/models/gems/${GEM_TYPE[key].name}.glb`, sceneWrapper, false);
                 GEM_TYPE[key].mesh = model.getMesh();
             });
 

@@ -1,8 +1,7 @@
-import * as THREE from '../../libs/three/three.module.js'
-import { GLTFLoader } from "../../libs/three/GLTFLoader.js";
-import { EventDispatcher } from "../../libs/three.module.js";
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 
-export class Model extends EventDispatcher {
+export class Model extends THREE.EventDispatcher {
     constructor(copy = null) {
         super();
 

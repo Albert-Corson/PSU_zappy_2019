@@ -1,4 +1,4 @@
-import {Model} from './wrappers/Model.js'
+import { Model } from '@/app/wrappers/Model';
 
 export class Bloc extends Model {
     constructor(idx, copy = null) {

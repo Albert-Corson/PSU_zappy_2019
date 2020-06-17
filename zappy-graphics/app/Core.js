@@ -1,10 +1,10 @@
-import * as THREE from "../libs/three/three.module.js"
-import { Scene } from './wrappers/Scene.js';
-import { Gem } from './Gem.js';
-import { Player } from './Player.js';
-import { Map } from './Map.js';
-import { DIR } from './constants.js';
-import { Manager, SoundRef } from './sound/SoundManager.js';
+import * as THREE from 'three';
+import { Scene } from '@/app/wrappers/Scene';
+import { Gem } from '@/app/Gem';
+import { Player } from '@/app/Player';
+import { Map } from '@/app/Map';
+import { DIR } from '@/app/constants';
+import { Manager, SoundRef } from '@/app/sound/SoundManager';
 
 export class Core {
     constructor(opt = {}) {
@@ -24,15 +24,15 @@ export class Core {
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
-        /*Manager.register(
-            'ambient',
-            new SoundRef('../sounds/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
-            e => e.src === '../sounds/ambient.mp3' ? Manager.play('ambient') : null
-        );*/
+        // Manager.register(
+        //     'ambient',
+        //     new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
+        //     e => e.src === 'static/assets/audio/ambient.mp3' ? Manager.play('ambient') : null
+        // );
 
         Manager.register(
             'click',
-            new SoundRef(['../sounds/click.ogg', '../sounds/click2.ogg'], { random: true, streamsLimit: 2 })
+            new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
         );
 
 
@@ -79,7 +79,7 @@ export class Core {
     async addPlayer(coordinates) {
         let robot = new Player(this.map, { coordinates });
 
-        await robot.load('../models/players/robot.glb', this.sceneWrapper, true);
+        await robot.load('static/assets/models/players/robot.glb', this.sceneWrapper, true);
         robot.updatePosition();
         robot.setAnimationIndex(2);
         robot.getMesh().scale.set(0.3, 0.3, 0.3);

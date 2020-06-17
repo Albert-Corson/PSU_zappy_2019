@@ -1,8 +1,7 @@
-import * as THREE from '../libs/three/three.module.js'
-import { Model } from './wrappers/Model.js'
-import { DIR } from './constants.js'
-import { PLAYER_TYPE} from "./constants.js";
-import { Manager } from './sound/SoundManager.js';
+import * as THREE from 'three';
+import { Model } from '@/app/wrappers/Model';
+import { DIR } from '@/app/constants';
+import { Manager } from '@/app/sound/SoundManager';
 
 export class Player extends Model {
     constructor(map, opt = {}) {

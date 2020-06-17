@@ -1,5 +1,6 @@
-import { Gem } from './Gem.js'
-import { Bloc } from './Bloc.js'
+import { Gem } from '@/app/Gem';
+import { Bloc } from '@/app/Bloc';
+
 export class Map {
     constructor(opt = {}) {
         this.size_x = opt.x || 10;
@@ -20,7 +21,7 @@ export class Map {
         let first = true;
 
         let block = new Bloc(0);
-        await block.load('../models/ground.glb', sceneWrapper, true);
+        await block.load('static/assets/models/ground.glb', sceneWrapper, true);
         block.initRaycaster();
 
         this.blocks.push(block);
