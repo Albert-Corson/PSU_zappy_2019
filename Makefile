@@ -10,9 +10,9 @@ all: ai_z server_z ## Build the binary and relinks if needed
 
 include server.mk ai.mk
 
-server_z: $(NAME_SRV)
+server_z: $(NAME_SRV) ## build the server binary (or you can substituate with the binary name wich has the same effect)
 
-ai_z: $(NAME_AI)
+ai_z: $(NAME_AI) ## build the ai/client binary (or you can substituate with the binary name wich has the same effect)
 
 tests_run: override LDLIBS	+=	-lcriterion --coverage
 tests_run: all ## build and execute unit tests

@@ -1,5 +1,5 @@
 from zappy_ai.trantorian import Trantorian
-import socket
+import asyncore, socket
 
 class Error(Exception):
     pass
@@ -8,6 +8,11 @@ class CmdLineErrors(Error):
     def __init__(self, expression, message):
         self.expression = expression
         self.message = message
+
+class ReceiverHandler(asyncore.dispatcher):
+    def __init__(self, host, port):
+        asyncore.dispatcher.__init__(self)
+        self.sockfd = socket.create_connection((host, port))
 
 #TODO: Vision handling and ressources managements
 
@@ -36,27 +41,38 @@ def arg_gestion(ac, av):
     #[print(x + " => " + dicto[x]) for x in dicto]
     return dicto["-p"], dicto["-name"], dicto["-h"]
 
-def init_communication(sockfd, player):
+def init_communication(sockfd, team_name):
     msg = sockfd.recv(1280).decode("Utf8")
     print("receive => " + msg)
-    sockfd.send((player.name + "\n").encode("Utf8"))
+    sockfd.send((team_name + "\n").encode("Utf8"))
     buffer = sockfd.recv(1280).decode("Utf8").split('\n')
     remaining_client = int(buffer[0])
     word_dimensions = list(map(int, buffer[1].split(' ')))
     return remaining_client, word_dimensions
 
+def genese(player, word_dim):
+    player.set_map_dimension(word_dim[0], word_dim[1])
+    player.randomize_spawn()
+    player.look()
+    player.inventory()
+
 def begin_ai(ac, av):
+    response = ""
     port, name , host = arg_gestion(ac - 1, av[1:])
     host = socket.gethostbyname(host)
-    player = Trantorian(name)
-
     # begin socket stuff here
-    sockfd = socket.create_connection((host, port))
-    remaining_client, word_dim = init_communication(sockfd, player)
+    client = ReceiverHandler(host, port)
+    sockfd = client.sockfd
+    remaining_client, word_dim = init_communication(sockfd, name)
+    if remaining_client < 1:
+        print("No slot availiable, can't connect")
+        sockfd.close()
+        exit(0)
 
-    sockfd.send("look\n".encode("Utf8"))
-    foo = sockfd.recv(1280).decode("Utf8")
-    print(foo)
-    # AI stuff here
-
+    player = Trantorian(name, sockfd)
+    genese(player, word_dim)
+    while player.level != 8 or response == "dead":
+        # AI stuff here
+        # TODO: test dead reponse with our server
+        response = sockfd.recv(1280).decode("Utf8")
     sockfd.close()

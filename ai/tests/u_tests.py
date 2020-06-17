@@ -1,9 +1,11 @@
 import unittest
 from zappy_ai.trantorian import Trantorian
+import socket
 
 class TrantorianElevationTestCase (unittest.TestCase):
     def setUp(self):
-        self.trantorian = Trantorian("toto")
+        sockfd = socket.socket(socket.AF_INET, socket.SOCK_STREAM, socket.IPPROTO_IP)
+        self.trantorian = Trantorian("toto", sockfd)
 
     def test_no_elevation(self):
         self.trantorian.check_ressources()
@@ -64,3 +66,4 @@ class TrantorianElevationTestCase (unittest.TestCase):
                 "mendiane": 2, "phiras": 2, "thystame": 1 }
         self.trantorian.check_ressources()
         self.assertEqual(self.trantorian.level, 8)
+
