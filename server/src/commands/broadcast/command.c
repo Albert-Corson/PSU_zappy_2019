@@ -17,7 +17,7 @@ static size_t get_tile_idx(vector_t *src, vector_t *dest, direction_e dir)
     size_t best_idx = 0;
     double best_dist = 0;
     double dist = 0;
-    vector_t tiles[] = {
+    const vector_t tiles[] = {
         { dest->x, dest->y - 1 }, { dest->x - 1, dest->y - 1 },
         { dest->x - 1, dest->y }, { dest->x - 1, dest->y + 1 },
         { dest->x, dest->y + 1 }, { dest->x + 1, dest->y + 1 },
@@ -60,8 +60,7 @@ static size_t get_sound_tile_dir(player_t *emitter, player_t *receiver)
     return (get_tile_idx(&p1, &p2, receiver->dir));
 }
 
-bool exec_broadcast(request_t *req, response_t *res, player_t *player, \
-char *data)
+bool exec_broadcast(player_t *player, char *data)
 {
     player_t *it = NULL;
     size_t tile = 0;

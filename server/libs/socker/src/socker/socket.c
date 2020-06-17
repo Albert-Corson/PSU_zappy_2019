@@ -53,7 +53,7 @@ sockd_t socker_accept(sockd_t listener)
         LOG_ERROR("Couldn't accept connection: %s", strerror(errno));
         return (-1);
     }
-    socker_emit("connect", &peer);
+    socker_emit("connect", peer);
     FDI_SET(FDI_READ, &G_SOCKER.fd_info, peer);
     return (peer);
 }

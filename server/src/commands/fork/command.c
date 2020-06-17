@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <game.h>
 
-bool exec_fork(request_t *req, response_t *res, player_t *player, char *data)
+bool exec_fork(player_t *player, char *data)
 {
     egg_t *egg = malloc(sizeof(*egg));
 
@@ -16,6 +16,6 @@ bool exec_fork(request_t *req, response_t *res, player_t *player, char *data)
         exit(84);
     egg_construct(egg, player->team, &player->pos);
     SLIST_INSERT_HEAD(&GAME.eggs, egg, next);
-    respond_str(req, res, "ok\n");
+    send_str(player->sockd, "ok\n");
     return (true);
 }

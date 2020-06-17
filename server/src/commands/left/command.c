@@ -7,13 +7,13 @@
 
 #include <game.h>
 
-bool exec_left(request_t *req, response_t *res, player_t *player, char *data)
+bool exec_left(player_t *player, char *data)
 {
     if (player->dir == EAST) {
         player->dir = NORTH;
     } else {
         player->dir += 1;
     }
-    respond_str(req, res, "ok\n");
+    send_str(player->sockd, "ok\n");
     return (true);
 }

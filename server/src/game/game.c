@@ -13,7 +13,7 @@ game_t *g_game_location(void)
         .running = true,
         .width = 0,
         .height = 0,
-        .freq = 100,
+        .freq = 100.0,
         .map = NULL,
         .teams = SLIST_HEAD_INITIALIZER(game.teams),
         .players = SLIST_HEAD_INITIALIZER(game.players),

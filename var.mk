@@ -38,8 +38,7 @@ override CFLAGS		+=	-Wall \
 						-Wshadow \
 						-Wsign-compare \
 						-Wno-unused-parameter \
-						-Wno-unused-variable \
-						-g
+						-Wno-unused-variable
 
 override CPPFLAGS	+=	-I./share/include		\
 						-I./server/include		\

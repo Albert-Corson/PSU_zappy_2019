@@ -72,7 +72,7 @@ void pending_client_init(pending_client_t *clt, request_t *req, response_t *res)
     size_t len = 0;
     team_t *it = NULL;
 
-    if (!strcmp("-", req->message->data))
+    if (!strcmp("-spectator", req->message->data))
         new_spectator(req, res);
     else if (!pending_client_init_player(req, res))
         return;

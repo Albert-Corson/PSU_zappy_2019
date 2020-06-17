@@ -5,11 +5,16 @@
 ** callback
 */
 
-#include <struct/player.h>
+#include <game.h>
 
-bool exec_inventory(request_t *req, response_t *res, player_t *player, \
-char *data)
+bool exec_inventory(player_t *player, char *data)
 {
-    // TO DO
+    sbuffer_t buf;
+
+    sbuffer_init(&buf);
+    if (!player_print_inventory(player, &buf) || !sbuffer_write(&buf, "\n"))
+        exit(84);
+    send_str(player->sockd, buf.buffer);
+    sbuffer_destroy(&buf);
     return (false);
 }

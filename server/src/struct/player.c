@@ -17,7 +17,7 @@ static const player_t template = {
     .sockd = -1,
     .team = NULL,
     .callbacks = { { 0 } },
-    .birth = 0,
+    .birth = { 0 },
     .level = 1,
     .elevating_with = NULL,
     .dir = NORTH,
@@ -37,16 +37,16 @@ void player_construct(player_t *player, sockd_t sockd)
 {
     if (!player)
         return;
-    memcpy(player, &template, sizeof(player));
+    memcpy(player, &template, sizeof(template));
     player->sockd = sockd;
-    player->birth = time(NULL);
+    gettimeofday(&player->birth, NULL);
     player->dir = randbetween(0, 3);
     player->pos.x = randbetween(0, GAME.width - 1);
     player->pos.y = randbetween(0, GAME.height - 1);
 }
 
 callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
-long timeout)
+long timeout, char *data)
 {
     callback_t *avail = NULL;
     const size_t arrsize = sizeof(player->callbacks) / sizeof(callback_t);
@@ -59,11 +59,22 @@ long timeout)
     }
     if (!avail)
         return (NULL);
-    callback_constuct(avail, fcn, timeout);
+    callback_constuct(avail, fcn, timeout, data);
     return (avail);
 }
 
-bool player_is_alive(player_t *player)
+bool player_print_inventory(player_t *player, sbuffer_t *buf)
 {
-    return (player != NULL && player->inventory[E_FOOD].amount != 0);
+    const size_t size = sizeof(player->inventory) / sizeof(*player->inventory);
+    bool good = sbuffer_write(buf, "[");
+
+    for (size_t idx = 0; good && idx < size; ++idx) {
+        good = sbuffer_printf(buf, "%s %lu", player->inventory[idx].name, \
+        player->inventory[idx].amount);
+        if (good && idx + 1 < size)
+            good = sbuffer_write(buf, ", ");
+    }
+    if (good)
+        good = sbuffer_write(buf, "]");
+    return (good);
 }

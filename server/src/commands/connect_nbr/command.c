@@ -9,8 +9,7 @@
 
 #include <game.h>
 
-bool exec_connect_nbr(request_t *req, response_t *res, player_t *player, \
-char *data)
+bool exec_connect_nbr(player_t *player, char *data)
 {
     int n = 0;
     char response[32] = { 0 };
@@ -25,6 +24,6 @@ char *data)
         n = 0;
     if (snprintf(response, 32, "%d\n", n) < 0)
         exit(84);
-    respond_str(req, res, response);
+    send_str(player->sockd, response);
     return (true);
 }

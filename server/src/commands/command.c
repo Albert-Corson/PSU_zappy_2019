@@ -39,14 +39,16 @@ static const command_t *command_find(const char *cmdname)
 
 static void parse_cmdline(char *buffer, char **data)
 {
-    *data = buffer + strcspn(buffer, " \t\n");
-    if (**data) {
-        **data = 0;
-        *data += 1;
+    char *tmp = NULL;
+
+    tmp = buffer + strcspn(buffer, " \t\n");
+    if (*tmp) {
+        *tmp = 0;
+        tmp += 1;
     }
-    *data += strspn(*data, " \t\n");
-    if (!**data)
-        *data = NULL;
+    tmp += strspn(tmp, " \t\n");
+    if (*tmp)
+        *data = strdup(tmp);
 }
 
 void command_handle_request(request_t *req, response_t *res, player_t *player)
@@ -58,18 +60,16 @@ void command_handle_request(request_t *req, response_t *res, player_t *player)
 
     parse_cmdline(req->message->data, &data);
     cmd = command_find(cmdname);
-    if (!cmd || (!cmd->is_executable && !cmd->is_executable(player, data))) {
+    if (!cmd || (cmd->is_executable && !cmd->is_executable(player, data))) {
         respond_str(req, res, "ko\n");
     } else if (cmd->timeout == 0) {
-        if (!cmd->exec(req, res, player, data)) {
+        if (!cmd->exec(player, data)) {
             respond_str(req, res, "ko\n");
         }
     } else {
-        cb = player_queue_callback(player, cmd->exec, cmd->timeout);
-        if (cb) {
-            cb->req = req;
-            cb->res = res;
-            cb->data = data;
+        cb = player_queue_callback(player, cmd->exec, cmd->timeout, data);
+        if (!cb) {
+            free(data);
         }
     }
 }

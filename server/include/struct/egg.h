@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <time.h>
+#include <sys/time.h>
 #include <sys/queue.h>
 
 #include <struct/team.h>
@@ -15,7 +15,7 @@
 
 typedef struct egg {
     SLIST_ENTRY(egg) next;
-    time_t laying;
+    struct timeval laying;
     team_t *parent;
     vector_t pos;
 } egg_t;

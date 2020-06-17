@@ -30,8 +30,7 @@ static bool elevation_is_possible(const incantation_t *inc, player_t *player)
     return (true);
 }
 
-bool exec_incantation(request_t *req, response_t *res, player_t *player, \
-char *data)
+bool exec_incantation(player_t *player, char *data)
 {
     bool good = true;
     player_t *it = NULL;
@@ -40,7 +39,7 @@ char *data)
 
     if (!elevation_is_possible(inc, player))
         good = false;
-    else if (sprintf(message, "Current level: %lu\n", player->level + 1) < 0)
+    else if (sprintf(message, "Current level: %d\n", player->level + 1) < 0)
         exit(84);
     for (; it; it = SLIST_NEXT(it, next)) {
         if (it->elevating_with != player) {

@@ -10,8 +10,7 @@ FLAGS_INCLUDES	=	-I$(DIR_HEADERS)
 
 override CFLAGS	+=	$(FLAGS_INCLUDES)		\
 					-Wall					\
-					-Wextra					\
-					-g
+					-Wextra
 
 ROOT_LIB		:=	$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 

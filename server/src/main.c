@@ -8,6 +8,7 @@
 #include <stdlib.h>
 #include <signal.h>
 #include <stdbool.h>
+#include <arpa/inet.h>
 
 #include <libs/socker/socker.h>
 #include <libs/socker/events.h>
@@ -54,9 +55,13 @@ int main(int argc, const char **argv)
     mq_init();
     if (!set_sighandler() || !game_init(argc, argv, &port))
         return (84);
-    if (!socker_listen(htons(4242), INADDR_ANY, SOMAXCONN))
+    if (socker_listen(htons(port), INADDR_ANY, SOMAXCONN) < 0)
         return (84);
     init_listeners();
-    // TO DO: game loop
+    socker_set_timeout(1);
+    while (GAME.running) {
+        socker_run();
+        game_run();
+    }
     return (0);
 }

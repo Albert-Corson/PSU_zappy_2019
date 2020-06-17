@@ -46,8 +46,8 @@ int flag_freq(int argc, const char **argv)
 
     if (!argv[idx] || !argv[idx + 1])
         return (true);
-    GAME.freq = strtol(argv[idx + 1], &endptr, 10);
-    if (!endptr || endptr[0] || GAME.freq <= 0)
+    GAME.freq = strtod(argv[idx + 1], &endptr);
+    if (!endptr || endptr[0] || GAME.freq <= 0.0)
         return (false);
     return (true);
 }

@@ -38,9 +38,8 @@ void on_message(va_list ap)
     if (init_pending(req, res))
         return;
     player = game_get_player(req->sender);
-    if (!player)
-        respond_str(req, res, "ko\n");
-    command_handle_request(req, res, player);
+    if (player)
+        command_handle_request(req, res, player);
 }
 
 void on_connect(va_list ap)

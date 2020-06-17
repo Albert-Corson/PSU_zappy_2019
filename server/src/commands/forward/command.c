@@ -7,13 +7,17 @@
 
 #include <game.h>
 
-bool exec_forward(request_t *req, response_t *res, player_t *player, char *data)
+bool exec_forward(player_t *player, char *data)
 {
     if (player->dir == NORTH || player->dir == SOUTH) {
         player->pos.y += (int)player->dir - 1;
     } else {
         player->pos.x += (int)player->dir - 2;
     }
-    respond_str(req, res, "ok\n");
+    if (player->pos.x >= GAME.width)
+        player->pos.x -= GAME.width;
+    if (player->pos.y >= GAME.height)
+        player->pos.y -= GAME.width;
+    send_str(player->sockd, "ok\n");
     return (true);
 }

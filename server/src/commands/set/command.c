@@ -5,10 +5,17 @@
 ** callback
 */
 
-#include <struct/player.h>
+#include <utils/strtoelement.h>
+#include <game.h>
 
-bool exec_set(request_t *req, response_t *res, player_t *player, char *data)
+bool exec_set(player_t *player, char *data)
 {
-    // TO DO
-    return (false);
+    element_e elem = strtoelement(data);
+
+    if (player->inventory[elem].amount == 0)
+        return (false);
+    --player->inventory[elem].amount;
+    ++GAME.map[player->pos.y][player->pos.x].inventory[elem].amount;
+    send_str(player->sockd, "ok\n");
+    return (true);
 }

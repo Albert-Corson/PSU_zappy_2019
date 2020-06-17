@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <time.h>
+#include <sys/time.h>
 
 #include <mqueue/request.h>
 
@@ -15,13 +15,11 @@ typedef struct player player_t;
 
 typedef struct callback callback_t;
 
-typedef bool (*callback_fcn_t)(request_t *, response_t *, player_t *, char *);
+typedef bool (*callback_fcn_t)(player_t *, char *);
 
 struct callback {
     callback_fcn_t callback;
-    request_t *req;
-    response_t *res;
-    time_t start;
+    struct timeval start;
     long timeout;
     char *data;
 };
@@ -34,4 +32,4 @@ void callback_clear(callback_t *callback);
 /**
 * @brief constructs a `callback` and initializes its start timestamp
 */
-void callback_constuct(callback_t *callback, callback_fcn_t fcn, long timeout);
+void callback_constuct(callback_t *callback, callback_fcn_t fcn, long timeout, char *data);

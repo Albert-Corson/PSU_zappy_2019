@@ -11,6 +11,7 @@
 #include <stdbool.h>
 
 #include <libs/socker/types.h>
+#include <sbuffer/sbuffer.h>
 #include <struct/team.h>
 #include <struct/callback.h>
 #include <struct/vector.h>
@@ -34,8 +35,8 @@ typedef struct player {
     sockd_t sockd;
     team_t *team;
     callback_t callbacks[10];
-    time_t birth;
-    size_t level;
+    struct timeval birth;
+    int level;
     struct player *elevating_with;
     direction_e dir;
     vector_t pos;
@@ -56,9 +57,12 @@ void player_construct(player_t *player, sockd_t sockd);
 * @param timeout the time after which to execute the callback
 */
 callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
-long timeout);
+long timeout, char *data);
 
 /**
-* @brief return true if a player is still alive and close the socket
+* @brief appends a human readable version of the player's inventory into `buf`
+* without any trailing new lines
+*
+* @return false on allocation error, otherwise true
 */
-bool player_is_alive(player_t *player);
+bool player_print_inventory(player_t *player, sbuffer_t *buf);

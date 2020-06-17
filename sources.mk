@@ -18,6 +18,7 @@ SRC_SRV		=	server/src/commands/broadcast/command.c			\
 				server/src/game/flags.c							\
 				server/src/game/game.c							\
 				server/src/game/init.c							\
+				server/src/game/run.c							\
 				server/src/incantations.c						\
 				server/src/listeners.c							\
 				server/src/main.c								\

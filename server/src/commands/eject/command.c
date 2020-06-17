@@ -38,10 +38,14 @@ static void eject(player_t *player, direction_e from)
         exit(84);
     player->pos.x += move_to[from].x;
     player->pos.y += move_to[from].y;
+    if (player->pos.x >= GAME.width)
+        player->pos.x -= GAME.width;
+    if (player->pos.y >= GAME.height)
+        player->pos.y -= GAME.width;
     send_str(player->sockd, message);
 }
 
-bool exec_eject(request_t *req, response_t *res, player_t *player, char *data)
+bool exec_eject(player_t *player, char *data)
 {
     player_t *it = NULL;
 
@@ -52,5 +56,6 @@ bool exec_eject(request_t *req, response_t *res, player_t *player, char *data)
             continue;
         eject(it, player->dir);
     }
+    send_str(player->sockd, "ok\n");
     return (true);
 }

@@ -31,15 +31,13 @@ typedef struct player_container {
 
 typedef struct tile {
     object_t inventory[7];
-    SLIST_HEAD(player_container_list, player_container) players;
-    SLIST_HEAD(egg_container_list, egg_container) eggs;
 } tile_t;
 
 typedef struct {
     bool running;
     int width;
     int height;
-    long freq;
+    double freq;
     tile_t **map;
     SLIST_HEAD(team_list, team) teams;
     SLIST_HEAD(player_list, player) players;

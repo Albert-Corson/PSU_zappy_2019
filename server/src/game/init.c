@@ -12,6 +12,18 @@
 
 #include <game.h>
 
+static const tile_t template = {
+    .inventory = {
+        { E_FOOD, "food", 0 },
+        { E_LINEMATE, "linemate", 0 },
+        { E_DERAUMERE, "deraumere", 0 },
+        { E_SIBUR, "sibur", 0 },
+        { E_MENDIANE, "mendiane", 0 },
+        { E_PHIRAS, "phiras", 0 },
+        { E_THYSTAME, "thystame", 0 }
+    }
+};
+
 int find_argv(int argc, const char **argv, char *needle)
 {
     int idx = 0;
@@ -36,13 +48,14 @@ static bool flag_port(int argc, const char **argv, int *port)
 
 static bool init_map(void)
 {
-    char *memory = calloc(GAME.width * GAME.height, sizeof(**GAME.map));
+    char *memory = malloc(GAME.width * GAME.height * sizeof(**GAME.map));
 
     GAME.map = malloc(GAME.height * sizeof(*GAME.map));
     if (!memory || !GAME.map)
         return (false);
     for (int idx = 0; idx < GAME.height; ++idx) {
         GAME.map[idx] = (tile_t *)memory;
+        memcpy(GAME.map[idx], &template, sizeof(template));
         memory += GAME.width;
     }
     return (true);

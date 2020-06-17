@@ -35,5 +35,10 @@ player_t *game_get_player(sockd_t sockd);
 */
 bool game_init(int argc, const char **argv, int *port);
 
+/**
+* @brief run the game: respawn items, check for deaths and egg hatching
+*/
+void game_run(void);
+
 int send_str(sockd_t sockd, const char *str);
 int respond_str(request_t *req, response_t *res, const char *str);
