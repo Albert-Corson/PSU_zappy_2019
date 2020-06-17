@@ -17,7 +17,7 @@ SRC_SRV		=	server/src/commands/broadcast/command.c			\
 				server/src/commands/take/is_exable.c			\
 				server/src/game/flags.c							\
 				server/src/game/game.c							\
-				server/src/game/game_init.c						\
+				server/src/game/init.c							\
 				server/src/incantations.c						\
 				server/src/listeners.c							\
 				server/src/main.c								\
@@ -31,6 +31,9 @@ SRC_SRV		=	server/src/commands/broadcast/command.c			\
 				server/src/mqueue/mq_reader.c					\
 				server/src/mqueue/mq_writer.c					\
 				server/src/pending_init.c						\
+				server/src/sbuffer/allocate.c					\
+				server/src/sbuffer/sbuffer.c					\
+				server/src/sbuffer/writers.c					\
 				server/src/struct/callback.c					\
 				server/src/struct/egg.c							\
 				server/src/struct/game.c						\
@@ -38,6 +41,7 @@ SRC_SRV		=	server/src/commands/broadcast/command.c			\
 				server/src/struct/player.c						\
 				server/src/struct/spectator.c					\
 				server/src/struct/team.c						\
+				server/src/struct/vector.c						\
 				server/src/utils/randbetween.c					\
 				server/src/utils/strtoelement.c					\
 				server/src/utils/strtotab.c						\
@@ -47,3 +51,4 @@ SRC_AI		=	client/src/main.c
 
 SRC_TEST	=	$(filter-out server/src/main.c, $(SRC_SRV))	\
 				$(filter-out client/src/main.c, $(SRC_AI))	\
+				server/tests/sbuffer.c

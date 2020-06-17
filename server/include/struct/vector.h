@@ -11,3 +11,8 @@ typedef struct {
     int x;
     int y;
 } vector_t;
+
+/**
+* @brief calculates the distance between two points in a 2D space
+*/
+double vector_distance(vector_t *p1, vector_t *p2);

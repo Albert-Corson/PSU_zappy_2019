@@ -31,6 +31,8 @@ static const char *names[] = {
 
 element_e strtoelement(const char *str)
 {
+    if (!str)
+        return (E_UNKNOWN);
     for (size_t idx = 0; idx < sizeof(names) / sizeof(*names); ++idx) {
         if (!strcasecmp(str, names[idx]))
             return (elements[idx]);

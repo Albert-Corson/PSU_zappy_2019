@@ -24,7 +24,7 @@ size_t nb_teammates)
     player_construct(player, req->sender);
     player->team = team;
     SLIST_INSERT_HEAD(&GAME.players, player, next);
-    if (sprintf(response, "%lu\n", team->max_clients - (int)nb_teammates) < 0)
+    if (sprintf(response, "%d\n", team->max_clients - (int)nb_teammates) < 0)
         exit(84);
     respond_str(req, res, response);
     if (sprintf(response, "%d %d\n", player->pos.x, player->pos.y) < 0)

@@ -5,18 +5,12 @@
 ** callback
 */
 
-#include <math.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
 #include <struct/broadcast.h>
 #include <game.h>
-
-static double vector_distance(vector_t *p1, vector_t *p2)
-{
-    return (sqrt(pow(p2->x - p1->x, 2) + pow(p2->y - p1->y, 2)));
-}
 
 static size_t get_tile_idx(vector_t *src, vector_t *dest, direction_e dir)
 {
@@ -73,8 +67,10 @@ char *data)
     size_t tile = 0;
     char *message = malloc(sizeof(char) * (strlen(data) + 14));
 
-    if (sprintf(message, "message K, %s\n", data) < 0)
+    if (!message || sprintf(message, "message K, %s\n", data) < 0) {
+        free(message);
         exit(84);
+    }
     SLIST_FOREACH(it, &GAME.players, next) {
         if (it == player)
             continue;
@@ -82,5 +78,6 @@ char *data)
         message[8] = tile + 48;
         send_str(it->sockd, message);
     }
+    free(message);
     return (true);
 }
