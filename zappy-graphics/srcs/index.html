@@ -3,16 +3,24 @@
     <head>
         <meta charset="UTF-8">
         <title>Zappy</title>
-        <style>
-            body {
-                margin: 0;
-            }
-        </style>
+        <link rel="stylesheet" href="https://use.typekit.net/mvz1daw.css">
+        <link rel="stylesheet" href="../libs/Bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="./style/main.css">
+        <script src="https://kit.fontawesome.com/5f75b6bf72.js" crossorigin="anonymous"></script>
     </head>
     <body>
-        <script src="../libs/Perlin/perlin.js"></script>
-        <script src="../libs/Tween/tweenjs.min.js"></script>
-        <script src="../libs/Sound/soundjs.min.js"></script>
+        <div id="control-panel">
+            <h1>Control panel</h1>
+            <div id="info">
+            </div>
+            <ul id="gems">
+            </ul>
+            <!--<input type="submit" class="btn btn-outline-primary btn-block" value="First person view">-->
+        </div>
+        <i class="fas fa-volume-up" id="mute"></i>
+        <script src="../libs/perlin/perlin.js"></script>
+        <script src="../libs/tween/tweenjs.min.js"></script>
+        <script src="../libs/sound/soundjs.min.js"></script>
         <script type="module">
             import { Core } from "./Core.js"
 

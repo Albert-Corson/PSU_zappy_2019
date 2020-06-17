@@ -1,8 +1,11 @@
-import * as THREE from '../../Libs/Three/three.module.js'
-import { GLTFLoader } from "../../Libs/Three/GLTFLoader.js";
+import * as THREE from '../../libs/three/three.module.js'
+import { GLTFLoader } from "../../libs/three/GLTFLoader.js";
+import { EventDispatcher } from "../../libs/three.module.js";
 
-export class Model {
+export class Model extends EventDispatcher {
     constructor(copy = null) {
+        super();
+
         this.mesh = null;
         this.skeleton = null;
         this.mixer = null;
@@ -46,6 +49,7 @@ export class Model {
 
                 if (addToScene)
                     sceneWrapper.getScene().add(this.mesh);
+                this.dispatchEvent({ type: 'modelLoaded' });
                 resolve();
             }, undefined, reject)
         });

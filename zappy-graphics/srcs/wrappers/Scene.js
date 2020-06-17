@@ -1,5 +1,5 @@
-import * as THREE from '../../Libs/Three/three.module.js'
-import { OrbitControls } from "../../Libs/Three/OrbitControls.js";
+import * as THREE from '../../libs/three.module.js'
+import { OrbitControls } from "../../libs/OrbitControls.js";
 
 export class Scene {
     constructor(color = 'black', width = window.innerWidth, height = window.innerHeight) {

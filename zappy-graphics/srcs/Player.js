@@ -1,11 +1,11 @@
-import * as THREE from '../Libs/Three/three.module.js'
+import * as THREE from '../libs/three/three.module.js'
 import { Model } from './wrappers/Model.js'
 import { DIR } from './constants.js'
 import { PLAYER_TYPE} from "./constants.js";
 import { Manager } from './sound/SoundManager.js';
 
 export class Player extends Model {
-    constructor(ptr, opt = {}) {
+    constructor(map, opt = {}) {
         super();
 
         this.teamId = opt.teamId || 1;
@@ -13,8 +13,16 @@ export class Player extends Model {
         this.direction = opt.dir || DIR.S;
         this.coordinates = opt.coordinates || new THREE.Vector2(0, 0);
         this.level = 1;
-        this.ptr = ptr;
+        this.map = map;
+        this.gems = {};
+
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
+    }
+
+    updatePosition() {
+        let pos = this.map.getPositionFromCoord(this.coordinates);
+
+        this.getMesh().position.set(pos.x, pos.y, pos.z);
     }
 
     rotateLeft() {
@@ -45,15 +53,15 @@ export class Player extends Model {
         }
 
         Manager.play('click');
-        let vect = this.ptr(this.coordinates);
+        let vec = this.map.getPositionFromCoord(this.coordinates);
 
         this.setAnimationIndex(10);
         createjs.Tween
             .get(this.getMesh().position, {override : true})
             .to({
-                x: vect.x,
-                y: vect.y,
-                z: vect.z
+                x: vec.x,
+                y: vec.y,
+                z: vec.z
             }, 150)
             .call(() => this.setAnimationIndex(2));
     }
@@ -62,10 +70,10 @@ export class Player extends Model {
         let keyCode = event.which || event.keyCode || event.charCode;
 
         switch (keyCode) {
-            case 81:
+            case 68:
                 this.rotateLeft();
                 break;
-            case 68:
+            case 81:
                 this.rotateRight();
                 break;
             case 90:
@@ -76,9 +84,6 @@ export class Player extends Model {
                 break;
             case 67:
                 this.ejectAnimation();
-                break;
-            case 88:
-                this.pickGem();
                 break;
             case 89:
                 this.levelUp();
@@ -97,14 +102,35 @@ export class Player extends Model {
         // TODO: Animation ejecting another player, like "dégage sale cake"
     }
 
-    pickGem() {
-        this.playAnimationOnce(1);
-        // TODO: Animation pick up a gem on ground
+    pickGem(type, scene) {
+        //this.playAnimationOnce(1);
+
+        if (this.map.deleteGem({ x: this.coordinates.x, z: this.coordinates.y }, type, scene)) {
+            this.gems[type] = this.gems[type] == undefined ? 1 : this.gems[type] + 1
+        }
     }
 
     levelUp() {
         this.playAnimationOnce(3);
         this.level++;
         // TODO: Animation on level up
+    }
+
+    getControlPanelInfo() {
+        let list = document.getElementById('gems');
+        let info = document.getElementById('info');
+
+        let tmp = `<p>Name: <i>${ this.playerName }</i></p>`;
+        tmp += `<p>Team: <i>${ this.teamId }</i></p>`;
+        tmp += `<p>Level: <i>${ this.level }</i></p>`;
+        tmp += `<p>Inventory:</p>`;
+
+        info.innerHTML = tmp;
+
+
+        list.innerHTML = '';
+        Object.keys(this.gems).map(e => {
+            list.innerHTML += `<li>${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
+        });
     }
 }
