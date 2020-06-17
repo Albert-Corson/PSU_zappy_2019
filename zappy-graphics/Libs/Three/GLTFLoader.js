@@ -1470,7 +1470,7 @@ var GLTFLoader = ( function () {
 		// loader object cache
 		this.cache = new GLTFRegistry();
 
-		// associations between Three.js objects and glTF elements
+		// associations between three.js objects and glTF elements
 		this.associations = new Map();
 
 		// BufferGeometry caching

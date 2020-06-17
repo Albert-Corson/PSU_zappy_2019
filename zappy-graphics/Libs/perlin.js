@@ -237,7 +237,7 @@
 
   };
 
-  // ##### Perlin noise stuff
+  // ##### perlin noise stuff
 
   function fade(t) {
     return t*t*t*(t*(t*6-15)+10);
@@ -247,7 +247,7 @@
     return (1-t)*a + t*b;
   }
 
-  // 2D Perlin Noise
+  // 2D perlin Noise
   module.perlin2 = function(x, y) {
     // Find unit grid cell containing point
     var X = Math.floor(x), Y = Math.floor(y);
@@ -272,7 +272,7 @@
        fade(y));
   };
 
-  // 3D Perlin Noise
+  // 3D perlin Noise
   module.perlin3 = function(x, y, z) {
     // Find unit grid cell containing point
     var X = Math.floor(x), Y = Math.floor(y), Z = Math.floor(z);
