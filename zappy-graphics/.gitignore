@@ -1,2 +1,5 @@
 .DS_Store
-./.idea
+.idea
+.idea/dictionaries
+.idea/jsLibraryMappings.xml
+.idea/test.iml
