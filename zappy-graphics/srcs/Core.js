@@ -3,6 +3,7 @@ import { Scene } from './wrappers/Scene.js';
 import { Gem } from './Gem.js';
 import { Player } from './Player.js';
 import { Map } from './Map.js';
+import { DIR } from './constants.js';
 import { Manager, SoundRef } from './sound/SoundManager.js';
 
 export class Core {
@@ -10,32 +11,24 @@ export class Core {
         this.sceneWrapper = new Scene('white');
         this.map = new Map({ x: 10, y: 10});
         this.players = [];
+        this.oldCameraSettings = {
+            rotation: {...this.sceneWrapper.camera.rotation},
+            position: {...this.sceneWrapper.camera.position}
+        };
 
-        let muteToggle = document.getElementById('mute');
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
         window.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
 
-        muteToggle.addEventListener('click', () => {
-            let icon = muteToggle.className.split(' ')[1];
+        document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
+        document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
+        document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
-            muteToggle.classList.remove(icon);
-
-            let state = icon.split('-');
-            let oldState = state.pop();
-            state.push(oldState === 'up' ? 'off' : 'up');
-
-            let className = state.join('-');
-            muteToggle.classList.add(className);
-
-            Manager.muted = oldState === 'up';
-        });
-
-        Manager.register(
+        /*Manager.register(
             'ambient',
             new SoundRef('../sounds/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
             e => e.src === '../sounds/ambient.mp3' ? Manager.play('ambient') : null
-        );
+        );*/
 
         Manager.register(
             'click',
@@ -50,8 +43,11 @@ export class Core {
             await this.map.generate(this.sceneWrapper);
 
             await Gem.init(this.sceneWrapper);
-            let player = await this.addPlayer({ x: 0, y: 0 });
-            player.getMesh().callback = player.getControlPanelInfo.bind(player);
+
+            let player1 = await this.addPlayer({ x: 0, y: 0 });
+            player1.getMesh().callback = player1.getControlPanelInfo.bind(player1);
+            let player2 = await this.addPlayer({ x: 0, y: 1 });
+            player2.getMesh().callback = player2.getControlPanelInfo.bind(player2);
 
             this.map.addGem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
             this.map.addGem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
@@ -64,15 +60,16 @@ export class Core {
             this.map.addGem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
             this.map.addGem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
             this.map.addGem({x: 0, z: 0}, 'DERAUMERE', this.sceneWrapper);
-            player.pickGem('LINEMATE', this.sceneWrapper);
-            player.pickGem('SIBUR', this.sceneWrapper);
-            player.pickGem('MENDIANE', this.sceneWrapper);
-            player.pickGem('MENDIANE', this.sceneWrapper);
-            player.pickGem('MENDIANE', this.sceneWrapper);
-            player.pickGem('DERAUMERE', this.sceneWrapper);
-            player.pickGem('PHIRAS', this.sceneWrapper);
+            player1.pickGem('LINEMATE', this.sceneWrapper);
+            player1.pickGem('SIBUR', this.sceneWrapper);
+            player1.pickGem('MENDIANE', this.sceneWrapper);
+            player1.pickGem('MENDIANE', this.sceneWrapper);
+            player1.pickGem('MENDIANE', this.sceneWrapper);
+            player1.pickGem('DERAUMERE', this.sceneWrapper);
+            player1.pickGem('PHIRAS', this.sceneWrapper);
 
-            this.players.push(player);
+            this.players.push(player1);
+            this.players.push(player2);
         })();
 
 
@@ -87,6 +84,64 @@ export class Core {
         robot.setAnimationIndex(2);
         robot.getMesh().scale.set(0.3, 0.3, 0.3);
         return robot;
+    }
+
+    toggleSound(e) {
+        let muteToggle = e.target;
+        let icon = muteToggle.className.split(' ')[1];
+
+        muteToggle.classList.remove(icon);
+
+        let state = icon.split('-');
+        let oldState = state.pop();
+        state.push(oldState === 'up' ? 'off' : 'up');
+
+        let className = state.join('-');
+        muteToggle.classList.add(className);
+
+        Manager.muted = oldState === 'up';
+    }
+
+    setFirstPersonView(e) {
+        let player = this.getPlayerByName(e.target.getAttribute('name'));
+
+        if (!player)
+            return;
+
+        let cam = this.sceneWrapper.camera;
+
+        if (player.isFPV && e.type === 'click') {
+            let old = this.oldCameraSettings;
+
+            player.isFPV = false;
+
+            cam.rotation.set(old.rotation.x, old.rotation.y, old.rotation.z);
+            cam.position.set(old.position.x, old.position.y, old.position.z);
+            cam.updateProjectionMatrix();
+
+            this.sceneWrapper.controls.enabled = true;
+            this.sceneWrapper.launch();
+            return;
+        }
+        
+        player.isFPV = true;
+        this.sceneWrapper.controls.enabled = false;
+
+        
+        let pos = player.getMesh().position;
+        let rotation = player.getMesh().rotation;
+
+        cam.position.set(pos.x, pos.y + .7, pos.z);
+
+
+        if (player.direction === DIR.N || player.direction === DIR.S)
+            cam.position.z =  cam.position.z + (player.direction === DIR.N ? -.30 : .30);
+        else
+            cam.position.x =  cam.position.x + (player.direction === DIR.E ? -.30 : .30);
+
+        cam.rotation.set(rotation.x, rotation.y - Math.PI, rotation.z);
+
+        cam.updateProjectionMatrix();
     }
 
     onDocumentMouseDown(event) {
@@ -109,9 +164,15 @@ export class Core {
             else if (intersects[0].object.root && intersects[0].object.root.callback)
                 intersects[0].object.root.callback();
         } else {
-            document.getElementById('gems').innerHTML = '';
-            document.getElementById('info').innerHTML = '';
+            //document.getElementById('gems').innerHTML = '';
+            //document.getElementById('info').innerHTML = '';
         }
+    }
+
+    getPlayerByName(name) {
+        let arr = this.players.filter(player => player.playerName === name);
+
+        return arr.length ? arr[0] : null;
     }
 
     onDocumentMouseMove(event) {
@@ -128,8 +189,8 @@ export class Core {
         if (intersects.length === 0 || intersects[0].object.twin)
             return;
 
-        if (typeof intersects[0].object.name === "function")
-            intersects[0].object.name();
+        //if (typeof intersects[0].object.name === "function")
+        //intersects[0].object.name();
 
         intersects[0].object.twin = true;
         new createjs.Tween.get(intersects[0].object.scale).to({

@@ -35,7 +35,8 @@ export class Scene {
         const animate = () => {
             requestAnimationFrame(animate);
 
-            this.controls.update();
+            if (this.controls.enabled)
+                this.controls.update();
             let mixerUpdateDelta = this.clock.getDelta();
 
             // Update the animation mixer, the stats panel, and render this frame

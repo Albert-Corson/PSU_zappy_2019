@@ -15,6 +15,7 @@ export class Player extends Model {
         this.level = 1;
         this.map = map;
         this.gems = {};
+        this.isFPV = false;
 
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
     }
@@ -55,15 +56,19 @@ export class Player extends Model {
         Manager.play('click');
         let vec = this.map.getPositionFromCoord(this.coordinates);
 
-        this.setAnimationIndex(10);
-        createjs.Tween
-            .get(this.getMesh().position, {override : true})
-            .to({
-                x: vec.x,
-                y: vec.y,
-                z: vec.z
-            }, 150)
-            .call(() => this.setAnimationIndex(2));
+        if (this.isFPV) {
+            this.getMesh().position.set(vec.x, vec.y, vec.z)
+        } else {
+            this.setAnimationIndex(10);
+            createjs.Tween
+                .get(this.getMesh().position, {override : true})
+                .to({
+                    x: vec.x,
+                    y: vec.y,
+                    z: vec.z
+                }, 150)
+                .call(() => this.setAnimationIndex(2));
+        }
     }
 
     setDirection(event) {
@@ -89,6 +94,8 @@ export class Player extends Model {
                 this.levelUp();
                 break;
         }
+        if (this.isFPV)
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
     }
 
     forkAnimation() {
@@ -119,6 +126,7 @@ export class Player extends Model {
     getControlPanelInfo() {
         let list = document.getElementById('gems');
         let info = document.getElementById('info');
+        let fpv = document.getElementById('first-person')
 
         let tmp = `<p>Name: <i>${ this.playerName }</i></p>`;
         tmp += `<p>Team: <i>${ this.teamId }</i></p>`;
@@ -127,10 +135,11 @@ export class Player extends Model {
 
         info.innerHTML = tmp;
 
-
         list.innerHTML = '';
         Object.keys(this.gems).map(e => {
             list.innerHTML += `<li>${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
         });
+
+        fpv.setAttribute('name', this.playerName);
     }
 }
