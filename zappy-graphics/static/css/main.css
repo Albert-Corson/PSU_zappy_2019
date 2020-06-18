@@ -26,6 +26,17 @@ body {
     color: #2D2D2A;
 }
 
+#team-panel {
+    background-color: rgba(132, 143, 165, 0.36);
+
+    bottom: 10px;
+    height: 400px;
+    padding: 10px;
+
+    text-align: center;
+    color: #2D2D2A;
+}
+
 #button-container {
     top: 420px;
 }

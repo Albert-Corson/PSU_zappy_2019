@@ -5,13 +5,14 @@ import { Player } from '@/app/Player';
 import { Map } from '@/app/Map';
 import { DIR } from '@/app/constants';
 import { Manager, SoundRef } from '@/app/sound/SoundManager';
+import { TeamManager, Team } from '@/app/Team';
 
 export class Core {
     constructor(opt = {}) {
         this.sceneWrapper = new Scene('white');
         this.map = new Map({ x: 10, y: 10});
         this.players = [];
-
+        this.teamManager = new TeamManager;
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
         window.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
@@ -20,11 +21,14 @@ export class Core {
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
+        this.teamManager.addTeam(new Team('les bg du binks', 5));
+        this.teamManager.addTeam(new Team('la cité en i', 3));
         // Manager.register(
         //     'ambient',
         //     new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
         //     e => e.src === 'static/assets/audio/ambient.mp3' ? Manager.play('ambient') : null
         // );
+
 
         Manager.register(
             'click',
@@ -78,7 +82,7 @@ export class Core {
         await robot.load('static/assets/models/players/robot.glb', this.sceneWrapper, true);
         robot.updatePosition();
         robot.setAnimationIndex(2);
-        robot.getMesh().scale.set(0.3, 0.3, 0.3);
+        robot.getMesh().scale.set(.1, .1, .1);
         return robot;
     }
 
