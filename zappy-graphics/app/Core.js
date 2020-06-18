@@ -14,14 +14,13 @@ export class Core {
         this.teamManager = new TeamManager;
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
-        //window.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
 
         document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
-        this.teamManager.addTeam(new Team('ah', 5));
-        this.teamManager.addTeam(new Team('la cité en i', 3));
+        this.teamManager.addTeam('la cité en i', 5);
+        this.teamManager.addTeam('ah', 5);
         // Manager.register(
         //     'ambient',
         //     new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
@@ -43,10 +42,12 @@ export class Core {
 
             await Item.init(this.sceneWrapper);
 
-            let player1 = await this.teamManager.addPlayer({ x: 0, y: 0 }, 1, 'ah', this.sceneWrapper, this.map);
+             await this.teamManager.addPlayerInTeam({coordinates: { x: 0, y: 0 }, id: 1}, 'ah', this.sceneWrapper, this.map);
+            let player2 = await this.teamManager.addPlayerInTeam({coordinates: { x: 1, y: 0 }, id: 1}, 'ah', this.sceneWrapper, this.map);
 
+            let player1 = this.teamManager.getPlayerById(1);
 
-            console.log(this.teamManager.getPlayerById(1))
+            //console.log(this.teamManager.getPlayerById(1))
 
 
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
@@ -160,7 +161,7 @@ export class Core {
             ...this.sceneWrapper.getScene().children
         ]);
 
-        let isFPV = this.players.filter(player => player.isFPV).length > 0;
+        let isFPV = this.teamManager.getAllPlayers().filter(player => player.isFPV).length > 0;
 
         console.log(isFPV);
 
@@ -174,36 +175,5 @@ export class Core {
             //document.getElementById('info').innerHTML = '';
             //document.getElementById('fpv').style.display = 'none';
         }
-    }
-
-    onDocumentMouseMove(event) {
-        let raycaster = new THREE.Raycaster();
-        let mouse = new THREE.Vector2();
-
-        event.preventDefault();
-        mouse.x = (event.clientX / this.sceneWrapper.renderer.domElement.clientWidth) * 2 - 1;
-        mouse.y = -(event.clientY / this.sceneWrapper.renderer.domElement.clientHeight) * 2 + 1;
-        raycaster.setFromCamera(mouse, this.sceneWrapper.camera);
-
-        let intersects = raycaster.intersectObjects(this.map.blocks.map(model => model.mesh.children[0]));
-
-
-        let isFPV = this.players.filter(player => player.isFPV).length > 0;
-
-        if (intersects.length === 0 || intersects[0].object.twin || isFPV)
-            return;
-
-        intersects[0].object.twin = true;
-        new createjs.Tween.get(intersects[0].object.scale).to({
-            x: 0.009,
-            y: 0.009,
-        }, 200).call(() => {
-            new createjs.Tween.get(intersects[0].object.scale).to({
-                x: 0.01,
-                y: 0.01,
-            }, 200).call(() => {
-                intersects[0].object.twin = false;
-            });
-        });
     }
 }

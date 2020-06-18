@@ -1,98 +1,50 @@
 import * as THREE from 'three';
 import { Player } from '@/app/Player';
 
-class Team {
-    constructor(name, size = 1) {
-        this.name = name;
-        this.size = size;
-        this.players = []
-    }
-
-    expendTeam() {
-        this.size++;
-    }
-
-    getSize() {
-        return this.size;
-    }
-
-    getName() {
-        return this.name;
-    }
-
-    async addPlayer(coordinates, id, scene, map) {
-        let tmp_player = new Player(map, { coordinates, id });
-
-        await tmp_player.initInstance(scene);
-        this.players.push(tmp_player);
-        return tmp_player;
-    }
-
-    removePlayer(playerId) {
-        let index = this.playersId.indexOf(playerId);
-
-        if (index !== -1) {
-            this.playersId.splice(index, 1);
-            return true;
-        }
-        return false;
-    }
-}
-
 class TeamManager {
     constructor() {
-        this.nbTeam = 0;
         this.teams = [];
     }
 
-    addTeam(team) {
-        if (this.teams.indexOf(team) !== -1)
-            return false;
-        this.teams.push(team);
-        this.nbTeam++;
+    addTeam(teamName, size) {
+        this.teams.push({ teamName, size, players: [] });
+    }
+
+    getTeamsCount() {
+        return this.teams.length
+    }
+
+    async addPlayerInTeam(playerOpt, teamName, scene, map) {
+        let teamId = this.teams.map(team => team.teamName).indexOf(teamName);
+        let team = this.teams[teamId];
+
+        if (team === -1)
+            return;
+        let player = new Player(map, { ...playerOpt, teamName });
+
+        await player.initInstance(scene);
+        team.players.push(player);
         this.updateTeamPanel();
-        return true;
+        return player;
     }
 
-    async addPlayer(coordinates, playerId, teamName, scene, map) {
-        let arr = this.teams.filter(team => team.name === teamName);
-        let team = arr.length ? arr[0] : null;
+    getPlayerById(playerId) {
+        for (let team of this.teams) {
+            let index = team.players.map(player => player.playerId).indexOf(playerId);
 
-        console.log(this.teams);
-/*
-        console.log(team.addPLayer);
-*/
-        if (!team)
-            return null;
-        let tmp_player = new Player(map, { coordinates, playerId });
+            if (index !== -1) {
+                return team.players[index];
+            }
+        }
 
-        await tmp_player.initInstance(scene);
-        team.players.push(tmp_player);
-        console.log(tmp_player)
-        return tmp_player;
-        /*return await team.addPLayer(coordinates, playerId, scene, map);*/
+        return null;
     }
 
-    getPlayerById(id) {
-        let fetch = null;
-        let arr = this.teams.map(team => {
-            let tmp = team.players.filter(player => player.playerId === id);
-            if (tmp.length)
-                fetch = tmp[0];
-        });
+    getAllPlayers() {
+        let ret = [];
 
-        return fetch;
-    }
-
-
-    removeTeam(teamName) {
-        let arr = this.teams.filter(team => team.name === teamName);
-        let team = arr.length ? arr[0] : null;
-
-        if (!team)
-            return false;
-        this.teams.splice(this.teams.indexOf(team), 1);
-        return true;
+        this.teams.map(team => team.players.map(player => ret.push(player)));
+        return ret;
     }
 
     updateTeamPanel() {
@@ -100,12 +52,11 @@ class TeamManager {
         let tmp = '';
 
         this.teams.map(team => {
-            tmp += `<li>${team.name}: ${team.players.length}/${team.getSize()}</li>`
+            tmp += `<li>${team.teamName}: ${team.players.length}/${team.size}</li>`
         });
-
 
         teams.innerHTML = tmp;
     }
 }
 
-export { TeamManager, Team };
+export { TeamManager };
