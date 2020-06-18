@@ -7,7 +7,7 @@ export class Player extends Model {
     constructor(map, opt = {}) {
         super();
 
-        this.teamId = opt.teamId || 1;
+        this.teamName = opt.teamName;
         this.playerId = opt.id || 0;
         this.direction = opt.dir || DIR.S;
         this.coordinates = opt.coordinates || new THREE.Vector2(0, 0);
@@ -141,8 +141,8 @@ export class Player extends Model {
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
 
-        let tmp = `<p>Name: <i>${ this.playerId }</i></p>`;
-        tmp += `<p>Team: <i>${ this.teamId }</i></p>`;
+        let tmp = `<p>ID: <i>${ this.playerId }</i></p>`;
+        tmp += `<p>Team: <i>${ this.teamName }</i></p>`;
         tmp += `<p>Level: <i>${ this.level }</i></p>`;
         tmp += `<p>Food: <i>${ this.food }</i></p>`;
         tmp += `<p>Inventory:</p>`;
