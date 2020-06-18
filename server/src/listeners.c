@@ -47,7 +47,6 @@ void on_connect(va_list ap)
     sockd_t peer = va_arg(ap, sockd_t);
     pending_client_t *client = malloc(sizeof(*client));
 
-
     if (!client)
         exit(84);
     send_str(peer, "WELCOME\n");

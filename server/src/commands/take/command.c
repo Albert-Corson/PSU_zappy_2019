@@ -12,6 +12,8 @@ bool exec_take(player_t *player, char *data)
 {
     element_e elem = strtoelement(data);
 
+    if (elem == E_UNKNOWN)
+        return (false);
     if (GAME.map[player->pos.y][player->pos.x].inventory[elem].amount == 0)
         return (false);
     ++player->inventory[elem].amount;

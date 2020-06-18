@@ -1,25 +1,24 @@
 SRC_SRV		=	server/src/commands/broadcast/command.c			\
-				server/src/commands/broadcast/is_exable.c		\
 				server/src/commands/command.c					\
 				server/src/commands/connect_nbr/command.c		\
 				server/src/commands/eject/command.c				\
 				server/src/commands/fork/command.c				\
 				server/src/commands/forward/command.c			\
 				server/src/commands/incantation/command.c		\
-				server/src/commands/incantation/is_exable.c		\
+				server/src/commands/incantation/preliminaries.c	\
 				server/src/commands/inventory/command.c			\
 				server/src/commands/left/command.c				\
 				server/src/commands/look/command.c				\
 				server/src/commands/right/command.c				\
 				server/src/commands/set/command.c				\
-				server/src/commands/set/is_exable.c				\
 				server/src/commands/take/command.c				\
-				server/src/commands/take/is_exable.c			\
+				server/src/game/eggs.c							\
 				server/src/game/flags.c							\
 				server/src/game/game.c							\
 				server/src/game/init.c							\
+				server/src/game/players.c						\
 				server/src/game/run.c							\
-				server/src/incantations.c						\
+				server/src/recipes.c							\
 				server/src/listeners.c							\
 				server/src/main.c								\
 				server/src/mqueue/mq_api.c						\
@@ -38,15 +37,15 @@ SRC_SRV		=	server/src/commands/broadcast/command.c			\
 				server/src/struct/callback.c					\
 				server/src/struct/egg.c							\
 				server/src/struct/game.c						\
-				server/src/struct/incantation.c					\
+				server/src/struct/recipe.c						\
 				server/src/struct/player.c						\
 				server/src/struct/spectator.c					\
 				server/src/struct/team.c						\
 				server/src/struct/vector.c						\
+				server/src/utils/write_str.c					\
+				server/src/utils/getelapsedms.c					\
 				server/src/utils/randbetween.c					\
-				server/src/utils/strtoelement.c					\
-				server/src/utils/strtotab.c						\
-				server/src/write_str.c
+				server/src/utils/strtoelement.c
 
 SRC_AI		=	client/src/main.c
 

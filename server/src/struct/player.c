@@ -8,7 +8,6 @@
 #include <memory.h>
 #include <unistd.h>
 
-#include <utils/strtotab.h>
 #include <utils/randbetween.h>
 #include <game.h>
 
@@ -17,9 +16,9 @@ static const player_t template = {
     .sockd = -1,
     .team = NULL,
     .callbacks = { { 0 } },
-    .birth = { 0 },
+    .timer = { 0 },
     .level = 1,
-    .elevating_with = NULL,
+    .incantation = NULL,
     .dir = NORTH,
     .pos = { 0, 0 },
     .inventory = {
@@ -33,19 +32,20 @@ static const player_t template = {
     }
 };
 
-void player_construct(player_t *player, sockd_t sockd)
+void player_construct(player_t *player, sockd_t sockd, team_t *team)
 {
     if (!player)
         return;
     memcpy(player, &template, sizeof(template));
     player->sockd = sockd;
-    gettimeofday(&player->birth, NULL);
+    gettimeofday(&player->timer, NULL);
+    player->team = team;
     player->dir = randbetween(0, 3);
     player->pos.x = randbetween(0, GAME.width - 1);
     player->pos.y = randbetween(0, GAME.height - 1);
 }
 
-callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
+callback_t *player_queue_callback(player_t *player, callback_exec_t fcn, \
 long timeout, char *data)
 {
     callback_t *avail = NULL;
@@ -54,7 +54,7 @@ long timeout, char *data)
     if (!player || !fcn)
         return (NULL);
     for (size_t idx = 0; !avail && idx < arrsize; ++idx) {
-        if (!player->callbacks[idx].callback)
+        if (!player->callbacks[idx].exec)
             avail = &player->callbacks[idx];
     }
     if (!avail)
@@ -77,4 +77,29 @@ bool player_print_inventory(player_t *player, sbuffer_t *buf)
     if (good)
         good = sbuffer_write(buf, "]");
     return (good);
+}
+
+void player_pop_callback(player_t *player)
+{
+    const size_t size = sizeof(player->callbacks) / sizeof(*player->callbacks);
+    callback_t *cb = player->callbacks;
+
+    free(cb->data);
+    memcpy(cb, cb + 1, (size - 1) * sizeof(*cb));
+    callback_clear(cb + (size - 1));
+}
+
+void player_prepare_next_callback(player_t *player)
+{
+    const size_t size = sizeof(player->callbacks) / sizeof(*player->callbacks);
+    callback_t *cb = player->callbacks;
+
+    for (size_t idx = 0; idx < size; ++idx) {
+        if (!cb->exec || !cb->pre_exec || cb->pre_exec(player, cb->data)) {
+            gettimeofday(&cb->start, NULL);
+            break;
+        }
+        send_str(player->sockd, "ko\n");
+        player_pop_callback(player);
+    }
 }

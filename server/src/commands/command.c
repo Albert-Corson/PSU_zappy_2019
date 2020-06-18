@@ -12,29 +12,36 @@
 #include <game.h>
 
 static const command_t cmds[] = {
-    { "broadcast", is_exable_broadcast, 7, exec_broadcast },
-    { "connect_nbr", NULL, 0, exec_connect_nbr },
-    { "eject", NULL, 7, exec_eject },
-    { "fork", NULL, 42, exec_fork },
-    { "forward", NULL, 7, exec_forward },
-    { "incantation", is_exable_incantation, 300, exec_incantation },
-    { "inventory", NULL, 1, exec_inventory },
-    { "left", NULL, 7, exec_left },
-    { "look", NULL, 7, exec_look },
-    { "right", NULL, 7, exec_right },
-    { "set", is_exable_set, 7, exec_set },
-    { "take", is_exable_take, 7, exec_take }
+    { "broadcast", 7, pre_exec_broadcast, exec_broadcast },
+    { "connect_nbr", 0, NULL, exec_connect_nbr },
+    { "eject", 7, NULL, exec_eject },
+    { "fork", 42, NULL, exec_fork },
+    { "forward", 7, NULL, exec_forward },
+    { "incantation", 300, pre_exec_incantation, exec_incantation },
+    { "inventory", 1, NULL, exec_inventory },
+    { "left", 7, NULL, exec_left },
+    { "look", 7, NULL, exec_look },
+    { "right", 7, NULL, exec_right },
+    { "set", 7, pre_exec_set, exec_set },
+    { "take", 7, NULL, exec_take },
+    { "", 0, NULL, exec_not_found }
 };
+
+bool exec_not_found(player_t *player, char *data)
+{
+    return (false);
+}
 
 static const command_t *command_find(const char *cmdname)
 {
-    const command_t *cmd = NULL;
+    size_t idx = 0;
 
-    for (size_t idx = 0; !cmd && idx < sizeof(cmds) / sizeof(*cmds); ++idx) {
+    while (idx < sizeof(cmds) / sizeof(*cmds)) {
         if (!strcasecmp(cmds[idx].name, cmdname))
-            cmd = &cmds[idx];
+            break;
+        ++idx;
     }
-    return (cmd);
+    return (&cmds[idx]);
 }
 
 static void parse_cmdline(char *buffer, char **data)
@@ -57,19 +64,16 @@ void command_handle_request(request_t *req, response_t *res, player_t *player)
     char *data = NULL;
     const command_t *cmd = NULL;
     callback_t *cb = NULL;
+    bool prepare = player->callbacks->exec == NULL;
 
     parse_cmdline(req->message->data, &data);
     cmd = command_find(cmdname);
-    if (!cmd || (cmd->is_executable && !cmd->is_executable(player, data))) {
-        respond_str(req, res, "ko\n");
-    } else if (cmd->timeout == 0) {
-        if (!cmd->exec(player, data)) {
-            respond_str(req, res, "ko\n");
-        }
-    } else {
-        cb = player_queue_callback(player, cmd->exec, cmd->timeout, data);
-        if (!cb) {
-            free(data);
-        }
+    cb = player_queue_callback(player, cmd->exec, cmd->timeout, data);
+    if (!cb) {
+        free(data);
+        return;
     }
+    cb->pre_exec = cmd->pre_exec;
+    if (prepare)
+        player_prepare_next_callback(player);
 }

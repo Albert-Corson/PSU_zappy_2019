@@ -21,8 +21,7 @@ size_t nb_teammates)
 
     if (!player)
         exit(84);
-    player_construct(player, req->sender);
-    player->team = team;
+    player_construct(player, req->sender, team);
     SLIST_INSERT_HEAD(&GAME.players, player, next);
     if (sprintf(response, "%d\n", team->max_clients - (int)nb_teammates) < 0)
         exit(84);
@@ -59,7 +58,7 @@ static bool pending_client_init_player(request_t *req, response_t *res)
         if (team && player->team == team)
             ++n;
     }
-    if (!team || team->max_clients - (int)n <= 0) {
+    if (!team || (size_t)team->max_clients <= n) {
         socker_disconnect(req->sender);
         return (false);
     }
@@ -77,4 +76,5 @@ void pending_client_init(pending_client_t *clt, request_t *req, response_t *res)
     else if (!pending_client_init_player(req, res))
         return;
     SLIST_REMOVE(&GAME.pendings, clt, pending_client, next);
+    free(clt);
 }

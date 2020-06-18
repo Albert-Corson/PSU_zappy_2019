@@ -12,6 +12,11 @@
 #include <struct/broadcast.h>
 #include <game.h>
 
+bool pre_exec_broadcast(player_t *player, char *data)
+{
+    return (data != NULL);
+}
+
 static size_t get_tile_idx(vector_t *src, vector_t *dest, direction_e dir)
 {
     size_t best_idx = 0;

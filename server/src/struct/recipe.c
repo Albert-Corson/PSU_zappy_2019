@@ -5,9 +5,9 @@
 ** incantation
 */
 
-#include <struct/incantation.h>
+#include <struct/recipe.h>
 
-bool incantation_is_recipe_ok(const incantation_t *inc, const player_t *player)
+bool recipe_is_doable(const recipe_t *inc, const player_t *player)
 {
     bool good = true;
     const object_t *inv = NULL;
@@ -27,7 +27,7 @@ bool incantation_is_recipe_ok(const incantation_t *inc, const player_t *player)
     return (good);
 }
 
-void incantation_use_ingredients(const incantation_t *inc, player_t *player)
+void recipe_use_ingredients(const recipe_t *inc, player_t *player)
 {
     const object_t *rcp = NULL;
     object_t *inv = NULL;

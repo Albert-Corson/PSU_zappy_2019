@@ -33,17 +33,26 @@ typedef struct tile {
     object_t inventory[7];
 } tile_t;
 
+typedef SLIST_HEAD(team_list, team) team_list_t;
+typedef SLIST_HEAD(player_list, player) player_list_t;
+typedef SLIST_HEAD(egg_list, egg) egg_list_t;
+typedef SLIST_HEAD(spectator_list, spectator) spectator_list_t;
+typedef SLIST_HEAD(pending_client_list, pending_client) pending_client_list_t;
+
 typedef struct {
     bool running;
     int width;
     int height;
     double freq;
     tile_t **map;
-    SLIST_HEAD(team_list, team) teams;
-    SLIST_HEAD(player_list, player) players;
-    SLIST_HEAD(egg_list, egg) eggs;
-    SLIST_HEAD(spectator_list, spectator) spectators;
-    SLIST_HEAD(pending_client_list, pending_client) pendings;
+    team_list_t teams;
+    player_list_t players;
+    egg_list_t eggs;
+    spectator_list_t spectators;
+    pending_client_list_t pendings;
+    size_t player_next_id;
+    size_t egg_next_id;
+    struct timeval respawn;
 } game_t;
 
 /**

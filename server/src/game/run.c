@@ -5,52 +5,57 @@
 ** run
 */
 
-#include <memory.h>
+#include <stdio.h>
 
+#include <utils/randbetween.h>
+#include <utils/getelapsedms.h>
 #include <game.h>
 
-static double get_elapsed_ms(struct timeval *start, struct timeval *end)
+static void game_process_map(struct timeval *now)
 {
-    double sec = end->tv_sec - start->tv_sec;
-    double usec = end->tv_usec - start->tv_usec;
+    struct timeval new = { 0 };
+    vector_t pos = { 0 };
+    element_e elem = E_UNKNOWN;
+    const double lim = (RESPAWN / GAME.freq) * 1000;
+    double elapsed = getelapsedms(&GAME.respawn, now);
 
-    sec *= 1000;
-    usec /= 1000;
-    return (usec + sec);
+    if (elapsed < lim)
+        return;
+    new.tv_usec = (elapsed - lim) * 1000;
+    timeradd(&GAME.respawn, &new, &GAME.respawn);
+    pos.x = randbetween(0, GAME.width - 1);
+    pos.y = randbetween(0, GAME.height - 1);
+    elem = randbetween(E_FOOD, E_THYSTAME);
+    GAME.map[pos.y][pos.x].inventory[elem].amount += 1;
 }
 
-static void process_callback(player_t *player, struct timeval *now)
-{
-    const size_t off = sizeof(player->callbacks) - sizeof(*player->callbacks);
-    callback_t *cb = player->callbacks;
-    double elapsed_ms = 0;
-
-    if (!cb->callback)
-        return;
-    elapsed_ms = get_elapsed_ms(&cb->start, now);
-    if (elapsed_ms < (cb->timeout * 1000 / GAME.freq))
-        return;
-    if (!cb->callback(player, cb->data))
-        send_str(player->sockd, "ko\n");
-    free(cb->data);
-    memcpy(cb, cb + 1, off);
-    callback_clear(cb + off);
-    memcpy(&cb->start, now, sizeof(*now));
-}
-
-static void process_players(struct timeval *now)
+static bool game_process_team_win(team_t *team)
 {
     player_t *it = NULL;
+    size_t max_lvl = 0;
 
     SLIST_FOREACH(it, &GAME.players, next) {
-        process_callback(it, now);
+        if (it->team == team && it->level == 8)
+            max_lvl++;
     }
+    return (max_lvl >= 6);
 }
 
 void game_run(void)
 {
-    struct timeval now;
+    team_t *it = NULL;
+    struct timeval now = { 0 };
 
     gettimeofday(&now, NULL);
-    process_players(&now);
+    game_process_players(&now);
+    game_process_eggs(&now);
+    game_process_map(&now);
+    SLIST_FOREACH(it, &GAME.teams, next) {
+        if (game_process_team_win(it)) {
+            GAME.running = false;
+            break;
+        }
+    }
+    if (!GAME.running && it)
+        printf("Team '%s' won!\n", it->name);
 }

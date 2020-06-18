@@ -12,16 +12,17 @@
 
 typedef struct {
     const char * const name;
-    bool (*is_executable)(player_t *, char *);
     long timeout;
-    callback_fcn_t exec;
+    callback_pre_exec_t pre_exec;
+    callback_exec_t exec;
 } command_t;
 
-// these functions check if a command is executable
-bool is_exable_broadcast(player_t *, char *);
-bool is_exable_incantation(player_t *, char *);
-bool is_exable_set(player_t *, char *);
-bool is_exable_take(player_t *, char *);
+// these function are called just before the timer starts running for the 
+// execution of a callback, they are used to check if the callback
+// can still get called
+bool pre_exec_broadcast(player_t *, char *);
+bool pre_exec_incantation(player_t *, char *);
+bool pre_exec_set(player_t *, char *);
 
 // these functions execute a command and responds directly to the client in
 // case of success. Otherwise they return false, in which case it the duty
@@ -38,5 +39,7 @@ bool exec_look(player_t *, char *);
 bool exec_right(player_t *, char *);
 bool exec_set(player_t *, char *);
 bool exec_take(player_t *, char *);
+
+bool exec_not_found(player_t *, char *);
 
 void command_handle_request(request_t *req, response_t *res, player_t *player);

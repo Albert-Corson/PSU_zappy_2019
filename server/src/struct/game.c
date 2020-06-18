@@ -7,53 +7,51 @@
 
 #include <stdlib.h>
 
-#include <struct/game.h>
+#include <game.h>
 
-static void team_list_destroy(struct team_list *list)
+static void team_list_destroy(team_list_t *list)
 {
     team_t *n1 = SLIST_FIRST(list);
-    team_t *n2 = NULL;
 
-    while (n1 != NULL) {
-        n2 = SLIST_NEXT((team_t *)n1, next);
+    while (!SLIST_EMPTY(list)) {
+        n1 = SLIST_FIRST(list);
+        SLIST_REMOVE_HEAD(list, next);
         free(n1);
-        n1 = n2;
     }
 }
 
-static void player_list_destroy(struct player_list *list)
+static void player_list_destroy(player_list_t *list)
 {
     player_t *n1 = SLIST_FIRST(list);
-    player_t *n2 = NULL;
 
-    while (n1 != NULL) {
-        n2 = SLIST_NEXT((player_t *)n1, next);
+    while (!SLIST_EMPTY(list)) {
+        n1 = SLIST_FIRST(list);
+        if (n1->incantation)
+            game_break_incatation(n1->incantation);
+        SLIST_REMOVE_HEAD(list, next);
         free(n1);
-        n1 = n2;
     }
 }
 
-static void egg_list_destroy(struct egg_list *list)
+static void egg_list_destroy(egg_list_t *list)
 {
     egg_t *n1 = SLIST_FIRST(list);
-    egg_t *n2 = NULL;
 
-    while (n1 != NULL) {
-        n2 = SLIST_NEXT((egg_t *)n1, next);
+    while (!SLIST_EMPTY(list)) {
+        n1 = SLIST_FIRST(list);
+        SLIST_REMOVE_HEAD(list, next);
         free(n1);
-        n1 = n2;
     }
 }
 
-static void spectator_list_destroy(struct spectator_list *list)
+static void spectator_list_destroy(spectator_list_t *list)
 {
     spectator_t *n1 = SLIST_FIRST(list);
-    spectator_t *n2 = NULL;
 
-    while (n1 != NULL) {
-        n2 = SLIST_NEXT((spectator_t *)n1, next);
+    while (!SLIST_EMPTY(list)) {
+        n1 = SLIST_FIRST(list);
+        SLIST_REMOVE_HEAD(list, next);
         free(n1);
-        n1 = n2;
     }
 }
 

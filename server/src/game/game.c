@@ -19,7 +19,10 @@ game_t *g_game_location(void)
         .players = SLIST_HEAD_INITIALIZER(game.players),
         .eggs = SLIST_HEAD_INITIALIZER(game.eggs),
         .spectators = SLIST_HEAD_INITIALIZER(game.spectators),
-        .pendings = SLIST_HEAD_INITIALIZER(game.pendings)
+        .pendings = SLIST_HEAD_INITIALIZER(game.pendings),
+        .player_next_id = 0,
+        .egg_next_id = 0,
+        .respawn = { 0 }
     };
 
     return (&game);

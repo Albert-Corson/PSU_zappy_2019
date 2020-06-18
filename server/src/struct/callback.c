@@ -17,7 +17,8 @@ void callback_clear(callback_t *callback)
     memset(callback, 0, sizeof(*callback));
 }
 
-void callback_constuct(callback_t *callback, callback_fcn_t fcn, long timeout, char *data)
+void callback_constuct(callback_t *callback, callback_exec_t fcn, \
+long timeout, char *data)
 {
     if (!callback) {
         return;
@@ -25,7 +26,7 @@ void callback_constuct(callback_t *callback, callback_fcn_t fcn, long timeout, c
         callback_clear(callback);
         return;
     }
-    callback->callback = fcn;
+    callback->exec = fcn;
     gettimeofday(&callback->start, NULL);
     callback->timeout = timeout;
     callback->data = data;

@@ -9,17 +9,17 @@
 
 #include <struct/player.h>
 
-typedef struct {
+typedef struct recipe {
     size_t nb_players;
     object_t recipe[7];
-} incantation_t;
+} recipe_t;
 
 /**
 * @brief checks if a player has all the required ingredients for an incatation
 */
-bool incantation_is_recipe_ok(const incantation_t *inc, const player_t *player);
+bool recipe_is_doable(const recipe_t *inc, const player_t *player);
 
 /**
 * @brief consumes the required ingredients for an incatation
 */
-void incantation_use_ingredients(const incantation_t *inc, player_t *player);
+void recipe_use_ingredients(const recipe_t *inc, player_t *player);

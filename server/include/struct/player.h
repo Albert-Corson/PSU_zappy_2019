@@ -30,14 +30,22 @@ typedef struct {
     size_t amount;
 } object_t;
 
+typedef struct recipe recipe_t;
+
+typedef struct {
+    vector_t pos;
+    const recipe_t *recipe;
+    player_t *initiator;
+} incantation_t;
+
 typedef struct player {
     SLIST_ENTRY(player) next;
     sockd_t sockd;
     team_t *team;
     callback_t callbacks[10];
-    struct timeval birth;
+    struct timeval timer;
     int level;
-    struct player *elevating_with;
+    incantation_t *incantation;
     direction_e dir;
     vector_t pos;
     object_t inventory[7];
@@ -46,7 +54,7 @@ typedef struct player {
 /**
 * @brief construct a player and sets its default values and birth date
 */
-void player_construct(player_t *player, sockd_t sockd);
+void player_construct(player_t *player, sockd_t sockd, team_t *team);
 
 /**
 * @brief add a callback to the queue if space is available
@@ -56,7 +64,7 @@ void player_construct(player_t *player, sockd_t sockd);
 * @param res the method to use to send a response to the player
 * @param timeout the time after which to execute the callback
 */
-callback_t *player_queue_callback(player_t *player, callback_fcn_t fcn, \
+callback_t *player_queue_callback(player_t *player, callback_exec_t fcn, \
 long timeout, char *data);
 
 /**
@@ -66,3 +74,14 @@ long timeout, char *data);
 * @return false on allocation error, otherwise true
 */
 bool player_print_inventory(player_t *player, sbuffer_t *buf);
+
+/**
+* @brief pops callbacks as long as they can't be ran (!pre_exec)
+* and sets the start timestamp to the first one that can
+*/
+void player_prepare_next_callback(player_t *player);
+
+/**
+* @brief pop and destroy the first callback
+*/
+void player_pop_callback(player_t *player);

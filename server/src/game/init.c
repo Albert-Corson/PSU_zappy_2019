@@ -48,14 +48,15 @@ static bool flag_port(int argc, const char **argv, int *port)
 
 static bool init_map(void)
 {
-    char *memory = malloc(GAME.width * GAME.height * sizeof(**GAME.map));
+    tile_t *memory = calloc(GAME.width * GAME.height, sizeof(**GAME.map));
 
-    GAME.map = malloc(GAME.height * sizeof(*GAME.map));
+    GAME.map = calloc(GAME.height, sizeof(*GAME.map));
     if (!memory || !GAME.map)
-        return (false);
-    for (int idx = 0; idx < GAME.height; ++idx) {
-        GAME.map[idx] = (tile_t *)memory;
-        memcpy(GAME.map[idx], &template, sizeof(template));
+        exit(84);
+    for (int y = 0; y < GAME.height; ++y) {
+        GAME.map[y] = memory;
+        for (int x = 0; x < GAME.width; ++x)
+            memcpy(&GAME.map[y][x], &template, sizeof(template));
         memory += GAME.width;
     }
     return (true);
@@ -77,5 +78,6 @@ bool game_init(int argc, const char **argv, int *port)
         dprintf(2, "%s: memory allocation error\n", argv[0]);
         return (false);
     }
+    gettimeofday(&GAME.respawn, NULL);
     return (true);
 }

@@ -7,6 +7,6 @@
 
 #pragma once
 
-#include <struct/incantation.h>
+#include <struct/recipe.h>
 
-const incantation_t *incantations_get_recipe(size_t current_lvl);
+const recipe_t *recipes_get(size_t current_lvl);

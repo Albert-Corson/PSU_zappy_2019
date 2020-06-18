@@ -5,9 +5,9 @@
 ** incantations
 */
 
-#include <struct/incantation.h>
+#include <struct/recipe.h>
 
-static const incantation_t incantations[] = {
+static const recipe_t incantations[] = {
     {
         .nb_players = 1,
         .recipe = {
@@ -94,7 +94,7 @@ static const incantation_t incantations[] = {
     }
 };
 
-const incantation_t *incantations_get_recipe(size_t current_lvl)
+const recipe_t *recipes_get(size_t current_lvl)
 {
     if (current_lvl <= 0 || current_lvl >= 8)
         return (NULL);
