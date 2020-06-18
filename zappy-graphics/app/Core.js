@@ -11,7 +11,6 @@ export class Core {
     constructor(opt = {}) {
         this.sceneWrapper = new Scene('white');
         this.map = new Map({ x: 10, y: 10});
-        this.players = [];
         this.teamManager = new TeamManager;
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
@@ -21,7 +20,7 @@ export class Core {
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
-        this.teamManager.addTeam(new Team('les bg du binks', 5));
+        this.teamManager.addTeam(new Team('ah', 5));
         this.teamManager.addTeam(new Team('la cité en i', 3));
         // Manager.register(
         //     'ambient',
@@ -44,8 +43,11 @@ export class Core {
 
             await Item.init(this.sceneWrapper);
 
-            let player1 = await this.addPlayer({ x: 0, y: 0 }, 1);
-            let player2 = await this.addPlayer({ x: 0, y: 1 }, 2);
+            let player1 = await this.teamManager.addPlayer({ x: 0, y: 0 }, 1, 'ah', this.sceneWrapper, this.map);
+
+
+            console.log(this.teamManager.getPlayerById(1))
+
 
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
@@ -72,20 +74,10 @@ export class Core {
             player1.pickItem('PHIRAS', this.sceneWrapper);
 
             player1.pickItem('FOOD', this.sceneWrapper);
-
-
-            this.players.push(player1);
-            this.players.push(player2);
         })();
 
 
         this.sceneWrapper.launch();
-    }
-
-    async addPlayer(coordinates, id) {
-        let robot = new Player(this.map, { coordinates, id });
-
-        return await robot.initInstance(this.sceneWrapper);
     }
 
     toggleSound(e) {
@@ -182,14 +174,6 @@ export class Core {
             //document.getElementById('info').innerHTML = '';
             //document.getElementById('fpv').style.display = 'none';
         }
-    }
-
-    getPlayerById(id) {
-        let arr = this.players.filter(player => {
-            return player.playerId === parseInt(id);
-        });
-
-        return arr.length ? arr[0] : null;
     }
 
     onDocumentMouseMove(event) {
