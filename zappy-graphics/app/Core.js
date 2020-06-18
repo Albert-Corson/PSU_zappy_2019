@@ -163,8 +163,6 @@ export class Core {
 
         let isFPV = this.teamManager.getAllPlayers().filter(player => player.isFPV).length > 0;
 
-        console.log(isFPV);
-
         if (intersects.length > 0 && !isFPV) {
             if (typeof intersects[0].object.name === "function")
                 intersects[0].object.name();

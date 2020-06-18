@@ -88,7 +88,6 @@ export class Map {
         let pos = this.getPositionFromCoord(coordinates);
         let block = this.itemSlots[this.size_x * coordinates.y + coordinates.x];
 
-        console.log(block);
         let index = block.playerFreeIndexes[~~(Math.random() * block.playerFreeIndexes.length)];
 
         block.playerFreeIndexes.splice(block.playerFreeIndexes.indexOf(index), 1);
