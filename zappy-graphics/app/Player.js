@@ -4,9 +4,10 @@ import { DIR } from '@/app/constants';
 import { Manager } from '@/app/sound/SoundManager';
 
 export class Player extends Model {
-    constructor(map, opt = {}) {
+    constructor(map, sceneWrapper, opt = {}) {
         super();
 
+        this.scene = sceneWrapper;
         this.teamName = opt.teamName;
         this.playerId = opt.id || 0;
         this.direction = opt.dir || DIR.S;
@@ -102,6 +103,7 @@ export class Player extends Model {
                 break;
             case 89:
                 this.levelUp();
+                this.speak();
                 break;
         }
         if (this.isFPV)
@@ -134,6 +136,36 @@ export class Player extends Model {
         this.playAnimationOnce(3);
         this.level++;
         // TODO: Animation on level up
+    }
+
+    speak() {
+        let planeGeometry1 = new THREE.Plane( new THREE.Vector3( -1, 0, 0 ), this.map.modelSize.x * (this.map.size_x - 0.5) );
+        let planeGeometry2 = new THREE.Plane( new THREE.Vector3( 1, 0, 0 ), 0.5);
+        let planeGeometry3 = new THREE.Plane( new THREE.Vector3( 0, 0, -1 ), this.map.modelSize.z * (this.map.size_z - 0.5) );
+        let planeGeometry4 = new THREE.Plane( new THREE.Vector3( 0, 0, 1 ), 0.5);
+        let groundMaterial = new THREE.MeshStandardMaterial( {
+            color: 0xffffff,
+            clippingPlanes: [ planeGeometry1, planeGeometry2, planeGeometry3, planeGeometry4 ],
+        } );
+        let objectGeometry = new THREE.TorusBufferGeometry( 1, 0.01, 6, 28 );
+        objectGeometry.rotateX(Math.PI / 2);
+        let mesh = new THREE.Mesh( objectGeometry, groundMaterial );
+
+        mesh.position.set( this.getMesh().position.x, this.getMesh().position.y, this.getMesh().position.z);
+        createjs.Tween
+            .get(mesh.scale, {override : true})
+            .to({
+                x: this.map.size_x * this.map.size_z * .15,
+                y: 5,
+                z: this.map.size_x * this.map.size_z * .15,
+            }, this.map.size_x * this.map.size_z * 13)
+            .call(() => {
+                mesh.geometry.dispose();
+                mesh.material.dispose();
+                this.scene.getScene().remove(mesh);
+            });
+
+        this.scene.getScene().add( mesh );
     }
 
     getControlPanelInfo() {

@@ -7,6 +7,8 @@ import { DIR } from '@/app/constants';
 import { Manager, SoundRef } from '@/app/sound/SoundManager';
 import { TeamManager, Team } from '@/app/Team';
 
+import { Sky } from 'three/examples/jsm/objects/Sky';
+
 export class Core {
     constructor(opt = {}) {
         this.sceneWrapper = new Scene('white');
@@ -33,9 +35,33 @@ export class Core {
             new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
         );
 
+        let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);//, {x: 0, y: -30, z: 0});
+        hemiLight.color.setHSL( 0.6, 1, 0.6 );
+        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
+        hemiLight.position.set( 0, 50, 0 );
+        this.sceneWrapper.getScene().add( hemiLight );
 
-        this.sceneWrapper.addLight(new THREE.HemisphereLight(0xffffff, 0x000000, 3), {x: 0, y: -30, z: 0});
+        let dirLight = new THREE.DirectionalLight( 0xffffff, 1.6);//0.8 );
+        dirLight.color.setHSL( 0.1, 1, 0.95 );
+        dirLight.position.set( - 1, 1.75, 1 );
+        dirLight.position.multiplyScalar( 30 );
+        this.sceneWrapper.getScene().add( dirLight );
+
+/*
+        let groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
+        let groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+        groundMat.color.setHSL( 0.095, 1, 0.75 );
+
+        let ground = new THREE.Mesh( groundGeo, groundMat );
+        ground.position.y = - 33;
+        ground.rotation.x = - Math.PI / 2;
+        ground.receiveShadow = true;
+        this.sceneWrapper.getScene().add( ground );
+*/
+
+        /*
         this.sceneWrapper.addLight(new THREE.PointLight(0xffffff, 1.7, 50), {x: 4, y: 20, z: 5});
+        */
 
         (async () => {
             await this.map.generate(this.sceneWrapper);
@@ -77,7 +103,7 @@ export class Core {
             player1.pickItem('FOOD', this.sceneWrapper);
         })();
 
-
+        this.initSky();
         this.sceneWrapper.launch();
     }
 
@@ -176,4 +202,31 @@ export class Core {
             //document.getElementById('fpv').style.display = 'none';
         }
     }
+
+    initSky() {
+        let sky = new Sky();
+
+        sky.scale.setScalar(450000);
+
+        let uniforms = sky.material.uniforms;
+
+        uniforms["turbidity"].value = 10;
+        uniforms["rayleigh"].value = 2;
+        uniforms["mieCoefficient"].value = 0.005;
+        uniforms["mieDirectionalG"].value = 0.8;
+        uniforms["luminance"].value = 1;
+
+        let theta = Math.PI * ( 0.2256 - 0.5 );
+        let phi = 2 * Math.PI * ( 0.2472 - 0.5 );
+        let position = {}
+
+        position.x = 400000 * Math.cos( phi );
+        position.y = 400000 * Math.sin( phi ) * Math.sin( theta );
+        position.z = 400000 * Math.sin( phi ) * Math.cos( theta );
+
+        uniforms["sunPosition"].value.copy( position );
+
+        this.sceneWrapper.getScene().add(sky);
+    }
 }
+
