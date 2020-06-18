@@ -18,6 +18,9 @@ export class Bloc extends Model {
     getControlPanelInfo() {
         let list = document.getElementById('gems');
         let info = document.getElementById('info');
+        let fpv = document.getElementById('first-person');
+
+        fpv.style.display = 'none';
 
         let tmp = `<p>Tile: bloc <i>${this.idx}</i></p>`;
         tmp += `<p>Gems on this tile:</i></p>`;

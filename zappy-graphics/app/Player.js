@@ -8,7 +8,7 @@ export class Player extends Model {
         super();
 
         this.teamId = opt.teamId || 1;
-        this.playerName = opt.name || "bob";
+        this.playerId = opt.id || 0;
         this.direction = opt.dir || DIR.S;
         this.coordinates = opt.coordinates || new THREE.Vector2(0, 0);
         this.level = 1;
@@ -125,9 +125,9 @@ export class Player extends Model {
     getControlPanelInfo() {
         let list = document.getElementById('gems');
         let info = document.getElementById('info');
-        let fpv = document.getElementById('first-person')
+        let fpv = document.getElementById('first-person');
 
-        let tmp = `<p>Name: <i>${ this.playerName }</i></p>`;
+        let tmp = `<p>Name: <i>${ this.playerId }</i></p>`;
         tmp += `<p>Team: <i>${ this.teamId }</i></p>`;
         tmp += `<p>Level: <i>${ this.level }</i></p>`;
         tmp += `<p>Inventory:</p>`;
@@ -139,6 +139,7 @@ export class Player extends Model {
             list.innerHTML += `<li>${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
         });
 
-        fpv.setAttribute('name', this.playerName);
+        fpv.style.display = 'block';
+        fpv.setAttribute('name', this.playerId);
     }
 }
