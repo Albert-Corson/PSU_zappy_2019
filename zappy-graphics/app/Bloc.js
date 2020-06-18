@@ -19,6 +19,9 @@ export class Bloc extends Model {
     getControlPanelInfo() {
         let list = document.getElementById('items');
         let info = document.getElementById('info');
+        let fpv = document.getElementById('first-person');
+
+        fpv.style.display = 'none';
 
         let tmp = `<p>Tile: bloc <i>${this.idx}</i></p>`;
         tmp += `<p>Items on this tile:</i></p>`;

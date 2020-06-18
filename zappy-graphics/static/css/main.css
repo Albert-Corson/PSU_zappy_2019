@@ -1,25 +1,37 @@
 body {
     margin: 0;
 }
-#control-panel {
+
+.left-panel {
     display:block;
     position: absolute;
-
-    background-color: rgba(132, 143, 165, 0.36);
-
-    top: 10px;
     right: 10px;
-    width: 300px;
-    height: 460px;
-    padding: 10px;
-
     z-index: 10000;
 
-    text-align: center;
-    color: #2D2D2A;
     font-weight: 500;
     font-style: normal;
     font-size: 2em;
+
+    width: 300px;
+}
+
+#control-panel {
+    background-color: rgba(132, 143, 165, 0.36);
+
+    top: 10px;
+    height: 400px;
+    padding: 10px;
+
+    text-align: center;
+    color: #2D2D2A;
+}
+
+#button-container {
+    top: 420px;
+}
+
+#first-person {
+    display: none;
 }
 
 #mute {
@@ -31,14 +43,6 @@ body {
 
     z-index: 10000;
 
-    font-size: 50px;
-}
-
-#fpv {
-    display: block;
-    position: absolute;
-    top: 480px;
-    right: 10px;
     font-size: 50px;
 }
 

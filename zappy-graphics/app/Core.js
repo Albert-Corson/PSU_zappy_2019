@@ -11,10 +11,6 @@ export class Core {
         this.sceneWrapper = new Scene('white');
         this.map = new Map({ x: 10, y: 10});
         this.players = [];
-        this.oldCameraSettings = {
-            rotation: {...this.sceneWrapper.camera.rotation},
-            position: {...this.sceneWrapper.camera.position}
-        };
 
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
@@ -44,9 +40,9 @@ export class Core {
 
             await Item.init(this.sceneWrapper);
 
-            let player1 = await this.addPlayer({ x: 0, y: 0 });
+            let player1 = await this.addPlayer({ x: 0, y: 0 }, 1);
             player1.getMesh().callback = player1.getControlPanelInfo.bind(player1);
-            let player2 = await this.addPlayer({ x: 0, y: 1 });
+            let player2 = await this.addPlayer({ x: 0, y: 1 }, 2);
             player2.getMesh().callback = player2.getControlPanelInfo.bind(player2);
 
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
@@ -84,8 +80,8 @@ export class Core {
         this.sceneWrapper.launch();
     }
 
-    async addPlayer(coordinates) {
-        let robot = new Player(this.map, { coordinates });
+    async addPlayer(coordinates, id) {
+        let robot = new Player(this.map, { coordinates, id });
 
         await robot.load('static/assets/models/players/robot.glb', this.sceneWrapper, true);
         robot.updatePosition();
@@ -111,7 +107,7 @@ export class Core {
     }
 
     setFirstPersonView(e) {
-        let player = this.getPlayerByName(e.target.getAttribute('name'));
+        let player = this.getPlayerById(e.target.getAttribute('name'));
 
         if (!player)
             return;
@@ -131,11 +127,19 @@ export class Core {
             this.sceneWrapper.launch();
             return;
         }
-        
+
+        if (!player.isFPV) {
+            this.oldCameraSettings = {
+                rotation: {...this.sceneWrapper.camera.rotation},
+                position: {...this.sceneWrapper.camera.position}
+            };
+        }
+
         player.isFPV = true;
         this.sceneWrapper.controls.enabled = false;
 
-        
+
+
         let pos = player.getMesh().position;
         let rotation = player.getMesh().rotation;
 
@@ -166,7 +170,11 @@ export class Core {
             ...this.sceneWrapper.getScene().children
         ]);
 
-        if (intersects.length > 0) {
+        let isFPV = this.players.filter(player => player.isFPV).length > 0;
+
+        console.log(isFPV);
+
+        if (intersects.length > 0 && !isFPV) {
             if (typeof intersects[0].object.name === "function")
                 intersects[0].object.name();
             else if (intersects[0].object.root && intersects[0].object.root.callback)
@@ -174,11 +182,14 @@ export class Core {
         } else {
             //document.getElementById('items').innerHTML = '';
             //document.getElementById('info').innerHTML = '';
+            //document.getElementById('fpv').style.display = 'none';
         }
     }
 
-    getPlayerByName(name) {
-        let arr = this.players.filter(player => player.playerName === name);
+    getPlayerById(id) {
+        let arr = this.players.filter(player => {
+            return player.playerId === parseInt(id);
+        });
 
         return arr.length ? arr[0] : null;
     }
@@ -194,7 +205,10 @@ export class Core {
 
         let intersects = raycaster.intersectObjects(this.map.blocks.map(model => model.mesh.children[0]));
 
-        if (intersects.length === 0 || intersects[0].object.twin)
+
+        let isFPV = this.players.filter(player => player.isFPV).length > 0;
+
+        if (intersects.length === 0 || intersects[0].object.twin || isFPV)
             return;
 
         //if (typeof intersects[0].object.name === "function")
