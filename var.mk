@@ -24,9 +24,13 @@ OBJ_SRV		=	$(SRC_SRV:%.c=$(BUILD_SRV)/%.o)
 
 OBJ_AI		=	$(SRC_AI:%.c=$(BUILD_AI)/%.o)
 
-override LDFLAGS	+=
+PROJECT_ROOT	:=	$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 
-override LDLIBS		+= 
+INCLUDES_PATH_SRV	=	$(PROJECT_ROOT)/server/include/libs
+
+override LDFLAGS	+=	
+
+override LDLIBS		+=  -Lserver/libs -lsocker -lm
 
 override CFLAGS		+=	-Wall \
 						-Wextra \
@@ -34,9 +38,10 @@ override CFLAGS		+=	-Wall \
 						-Wshadow \
 						-Wsign-compare \
 						-Wno-unused-parameter \
-						-Wno-unused-variable \
+						-Wno-unused-variable
 
 override CPPFLAGS	+=	-I./share/include		\
 						-I./server/include		\
+						-I./server/include/libs	\
 
 override DEPFLAGS	+=	-MT $@ -MMD -MP -MF $(@:.o=.d)

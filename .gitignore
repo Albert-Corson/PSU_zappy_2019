@@ -1,1 +1,16 @@
+.vscode
 .DS_Store
+*.o
+*.a
+*.d
+*.gcno
+*.gcda
+
+zappy_server
+unit_tests
+
+server/include/libs/socker/types.h
+server/include/libs/socker/logger.h
+server/include/libs/socker/events.h
+server/include/libs/socker/socker.h
+server/include/libs/socker/stream.h
