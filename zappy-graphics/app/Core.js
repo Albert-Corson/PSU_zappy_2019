@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Scene } from '@/app/wrappers/Scene';
-import { Gem } from '@/app/Gem';
+import { Item } from '@/app/Item';
 import { Player } from '@/app/Player';
 import { Map } from '@/app/Map';
 import { DIR } from '@/app/constants';
@@ -42,31 +42,39 @@ export class Core {
         (async () => {
             await this.map.generate(this.sceneWrapper);
 
-            await Gem.init(this.sceneWrapper);
+            await Item.init(this.sceneWrapper);
 
             let player1 = await this.addPlayer({ x: 0, y: 0 });
             player1.getMesh().callback = player1.getControlPanelInfo.bind(player1);
             let player2 = await this.addPlayer({ x: 0, y: 1 });
             player2.getMesh().callback = player2.getControlPanelInfo.bind(player2);
 
-            this.map.addGem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'SIBUR', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'LINEMATE', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
-            this.map.addGem({x: 0, z: 0}, 'DERAUMERE', this.sceneWrapper);
-            player1.pickGem('LINEMATE', this.sceneWrapper);
-            player1.pickGem('SIBUR', this.sceneWrapper);
-            player1.pickGem('MENDIANE', this.sceneWrapper);
-            player1.pickGem('MENDIANE', this.sceneWrapper);
-            player1.pickGem('MENDIANE', this.sceneWrapper);
-            player1.pickGem('DERAUMERE', this.sceneWrapper);
-            player1.pickGem('PHIRAS', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'SIBUR', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'LINEMATE', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'DERAUMERE', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
+            this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
+
+            this.map.addItem({x: 3, z: 3}, 'FOOD', this.sceneWrapper);
+
+            player1.pickItem('LINEMATE', this.sceneWrapper);
+            player1.pickItem('SIBUR', this.sceneWrapper);
+            player1.pickItem('MENDIANE', this.sceneWrapper);
+            player1.pickItem('MENDIANE', this.sceneWrapper);
+            player1.pickItem('MENDIANE', this.sceneWrapper);
+            player1.pickItem('DERAUMERE', this.sceneWrapper);
+            player1.pickItem('PHIRAS', this.sceneWrapper);
+
+            player1.pickItem('FOOD', this.sceneWrapper);
+
 
             this.players.push(player1);
             this.players.push(player2);
@@ -164,7 +172,7 @@ export class Core {
             else if (intersects[0].object.root && intersects[0].object.root.callback)
                 intersects[0].object.root.callback();
         } else {
-            //document.getElementById('gems').innerHTML = '';
+            //document.getElementById('items').innerHTML = '';
             //document.getElementById('info').innerHTML = '';
         }
     }

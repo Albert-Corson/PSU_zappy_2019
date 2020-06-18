@@ -1,15 +1,15 @@
-import { Gem } from '@/app/Gem';
+import { Item } from '@/app/Item';
 import { Bloc } from '@/app/Bloc';
 
 export class Map {
     constructor(opt = {}) {
         this.size_x = opt.x || 10;
         this.size_z = opt.z || 10;
-        this.gemSlots = new Array(this.size_x * this.size_z).fill({});
-        this.gemSlots = this.gemSlots.map(_ => {
+        this.itemSlots = new Array(this.size_x * this.size_z).fill({});
+        this.itemSlots = this.itemSlots.map(_ => {
             return {
                 freeIndexes: new Array(9).fill(0).map((a, i) => i),
-                gems: {}
+                items: {}
             }
         });
         this.blocks = [];
@@ -58,48 +58,48 @@ export class Map {
         return { x: coordinates.x * this.modelSize.x, y: 0, z: this.modelSize.z * coordinates.y };
     }
 
-    addGem({ x, z }, type, sceneWrapper) {
+    addItem({ x, z }, type, sceneWrapper) {
         if (z == undefined || x == undefined || x > this.size_x - 1 || z > this.size_z - 1)
             return;
 
-        let block = this.gemSlots[this.size_x * z + x];
+        let block = this.itemSlots[this.size_x * z + x];
 
-        if (!block.gems[type]) {
+        if (!block.items[type]) {
             let index = block.freeIndexes[~~(Math.random() * block.freeIndexes.length)];
 
             block.freeIndexes.splice(block.freeIndexes.indexOf(index), 1);
 
-            block.gems[type] = {nb: 1, index, model: new Gem(type, sceneWrapper)};
+            block.items[type] = {nb: 1, index, model: new Item(type, sceneWrapper)};
 
             let pos = this.getPositionFromCoord({x, y: z}, false);
             pos.x = pos.x - this.modelSize.x / 3 + (index % 3 * this.modelSize.x / 3);
             pos.z = pos.z - this.modelSize.z / 3 + (Math.floor(index / 3) * this.modelSize.z / 3);
 
-            block.gems[type].model.getMesh().position.set(pos.x, pos.y, pos.z);
+            block.items[type].model.getMesh().position.set(pos.x, pos.y, pos.z);
         } else {
-            block.gems[type].nb++;
+            block.items[type].nb++;
         }
 
-        this.blocks[this.size_x * z + x].putGemOnBlock(type);
+        this.blocks[this.size_x * z + x].putItemOnBlock(type);
     }
 
-    deleteGem({ x, z }, type, sceneWrapper) {
+    deleteItem({ x, z }, type, sceneWrapper) {
         if (z == undefined || x == undefined || x > this.size_x - 1 || z > this.size_z - 1)
             return false;
 
-        let block = this.gemSlots[this.size_x * z + x];
+        let block = this.itemSlots[this.size_x * z + x];
 
-        if (!block.gems[type])
+        if (!block.items[type])
             return false;
 
-        block.gems[type].nb--;
-        this.blocks[this.size_x * z + x].subGemOnBlock(type);
+        block.items[type].nb--;
+        this.blocks[this.size_x * z + x].subItemOnBlock(type);
 
 
-        if (block.gems[type].nb <= 0) {
-            sceneWrapper.getScene().remove(block.gems[type].model.getMesh());
-            block.freeIndexes.push(block.gems[type].index);
-            block.gems[type] = undefined;
+        if (block.items[type].nb <= 0) {
+            sceneWrapper.getScene().remove(block.items[type].model.getMesh());
+            block.freeIndexes.push(block.items[type].index);
+            block.items[type] = undefined;
         }
         return true;
     }
