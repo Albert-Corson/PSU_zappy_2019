@@ -8,19 +8,18 @@
         <link rel="stylesheet" href="https://use.typekit.net/mvz1daw.css">
     </head>
     <body>
-        <div id="control-panel">
+        <div id="control-panel" class="left-panel">
             <h1>Control panel</h1>
             <div id="info">
             </div>
             <ul id="gems">
             </ul>
-            <div>
-                <button type="button" class="btn btn-outline-info" id="first-person">Toggle First Person View</button>
-            </div>
             <!--<input type="submit" class="btn btn-outline-primary btn-block" value="First person view">-->
         </div>
+        <div id="button-container" class="left-panel">
+            <button type="button" class="btn btn-outline-info btn-block" id="first-person">Toggle First Person View</button>
+        </div>
         <i class="fas fa-volume-up" id="mute"></i>
-        <i class="fas fa-eye" id="fpv"></i>
         <script src="https://kit.fontawesome.com/5f75b6bf72.js" crossorigin="anonymous"></script>
         <script src="vendor/perlin/perlin.js"></script>
         <script src="vendor/createjs/soundjs.min.js"></script>
