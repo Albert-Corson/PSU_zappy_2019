@@ -31,7 +31,7 @@ export class Player extends Model {
     }
 
     updatePosition() {
-        let pos = this.map.getPositionFromCoord(this.coordinates);
+        let pos = this.map.getPlayerPositionFromCord(this.coordinates);
 
         this.getMesh().position.set(pos.x, pos.y, pos.z);
     }
@@ -64,7 +64,7 @@ export class Player extends Model {
         }
 
         Manager.play('click');
-        let vec = this.map.getPositionFromCoord(this.coordinates);
+        let vec = this.map.getPlayerPositionFromCord(this.coordinates);
 
         if (this.isFPV) {
             this.getMesh().position.set(vec.x, vec.y, vec.z)

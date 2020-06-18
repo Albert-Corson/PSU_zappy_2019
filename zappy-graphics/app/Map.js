@@ -9,6 +9,7 @@ export class Map {
         this.itemSlots = this.itemSlots.map(_ => {
             return {
                 freeIndexes: new Array(16).fill(0).map((a, i) => i),
+                playerFreeIndexes: new Array(9).fill(0).map((a, i) => i),
                 items: {}
             }
         });
@@ -81,6 +82,21 @@ export class Map {
         }
 
         this.blocks[this.size_x * z + x].putItemOnBlock(type);
+    }
+
+    getPlayerPositionFromCord(coordinates) {
+        let pos = this.getPositionFromCoord(coordinates);
+        let block = this.itemSlots[this.size_x * coordinates.y + coordinates.x];
+
+        console.log(block);
+        let index = block.playerFreeIndexes[~~(Math.random() * block.playerFreeIndexes.length)];
+
+        block.playerFreeIndexes.splice(block.playerFreeIndexes.indexOf(index), 1);
+
+        pos.x = pos.x - this.modelSize.x / 2 + (index % 3 * this.modelSize.x / 3) + this.modelSize.x / 6;
+        pos.z = pos.z - this.modelSize.z / 2 + (Math.floor(index / 3) * this.modelSize.z / 3)  + this.modelSize.x / 6;
+
+        return { x: pos.x * this.modelSize.x, y: 0, z: this.modelSize.z * pos.z };
     }
 
     deleteItem({ x, z }, type, sceneWrapper) {
