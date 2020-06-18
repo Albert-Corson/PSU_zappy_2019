@@ -5,31 +5,32 @@ export class Bloc extends Model {
         super(copy);
 
         this.idx = idx;
-        this.gems = {
+        this.items = {
             'LINEMATE': 0,
             'DERAUMERE': 0,
             'SIBUR': 0,
             'MENDIANE': 0,
             'PHIRAS': 0,
-            'THYSTAME': 0
+            'THYSTAME': 0,
+            'FOOD': 0,
         };
     }
 
     getControlPanelInfo() {
-        let list = document.getElementById('gems');
+        let list = document.getElementById('items');
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
 
         fpv.style.display = 'none';
 
         let tmp = `<p>Tile: bloc <i>${this.idx}</i></p>`;
-        tmp += `<p>Gems on this tile:</i></p>`;
+        tmp += `<p>Items on this tile:</i></p>`;
 
         info.innerHTML = tmp;
 
         list.innerHTML = '';
-        Object.keys(this.gems).map(e => {
-            list.innerHTML += `<li>${e.toLowerCase()}: ${this.gems[e] ? this.gems[e].toString() : 0}</li>`
+        Object.keys(this.items).map(e => {
+            list.innerHTML += `<li>${e.toLowerCase()}: ${this.items[e] ? this.items[e].toString() : 0}</li>`
         });
     }
 
@@ -37,11 +38,11 @@ export class Bloc extends Model {
         this.getMesh().children[0].name = this.getControlPanelInfo.bind(this);
     }
 
-    putGemOnBlock(type) {
-        this.gems[type]++;
+    putItemOnBlock(type) {
+        this.items[type]++;
     }
 
-    subGemOnBlock(type) {
-        this.gems[type] = this.gems[type] <= 1 ? 0 : this.gems[type] - 1;
+    subItemOnBlock(type) {
+        this.items[type] = this.items[type] <= 1 ? 0 : this.items[type] - 1;
     }
 }

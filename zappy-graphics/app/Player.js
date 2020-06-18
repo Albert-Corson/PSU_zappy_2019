@@ -14,6 +14,7 @@ export class Player extends Model {
         this.level = 1;
         this.map = map;
         this.gems = {};
+        this.food = 0;
         this.isFPV = false;
 
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
@@ -108,11 +109,14 @@ export class Player extends Model {
         // TODO: Animation ejecting another player, like "dégage sale cake"
     }
 
-    pickGem(type, scene) {
+    pickItem(type, scene) {
         //this.playAnimationOnce(1);
 
-        if (this.map.deleteGem({ x: this.coordinates.x, z: this.coordinates.y }, type, scene)) {
-            this.gems[type] = this.gems[type] == undefined ? 1 : this.gems[type] + 1
+        if (this.map.deleteItem({ x: this.coordinates.x, z: this.coordinates.y }, type, scene)) {
+            if (type !== 'FOOD')
+                this.gems[type] = this.gems[type] === undefined ? 1 : this.gems[type] + 1
+            else
+                this.food += 1
         }
     }
 
@@ -123,13 +127,14 @@ export class Player extends Model {
     }
 
     getControlPanelInfo() {
-        let list = document.getElementById('gems');
+        let list = document.getElementById('items');
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
 
         let tmp = `<p>Name: <i>${ this.playerId }</i></p>`;
         tmp += `<p>Team: <i>${ this.teamId }</i></p>`;
         tmp += `<p>Level: <i>${ this.level }</i></p>`;
+        tmp += `<p>Food: <i>${ this.food }</i></p>`;
         tmp += `<p>Inventory:</p>`;
 
         info.innerHTML = tmp;
