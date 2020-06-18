@@ -55,7 +55,6 @@ static bool process_food(player_t *player, struct timeval *now)
         timeradd(&player->timer, &newbirth, &player->timer);
         player->inventory[E_FOOD].amount -= 1;
         elapsed -= foodtime;
-        printf("eaten\n");
     }
     printf("next\n");
     if (player->inventory[E_FOOD].amount == 0) {
