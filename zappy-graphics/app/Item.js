@@ -6,7 +6,7 @@ export class Item extends Model {
         super({ scene, mesh: ITEM_TYPE[type].mesh });
 
         this.type = type;
-        this.mesh.scale.set(0.3, 0.3, 0.3)
+        this.mesh.scale.set(.08, .08, .08);
     }
 
     static init(sceneWrapper) {
@@ -17,7 +17,6 @@ export class Item extends Model {
 
                 await model.load(`static/assets/models/items/${ITEM_TYPE[key].name}.glb`, sceneWrapper, false);
                 ITEM_TYPE[key].mesh = model.getMesh();
-                /*console.log(ITEM_TYPE[key].mesh);*/
             });
 
             await Promise.all(promises);

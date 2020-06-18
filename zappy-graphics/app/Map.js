@@ -8,7 +8,7 @@ export class Map {
         this.itemSlots = new Array(this.size_x * this.size_z).fill({});
         this.itemSlots = this.itemSlots.map(_ => {
             return {
-                freeIndexes: new Array(9).fill(0).map((a, i) => i),
+                freeIndexes: new Array(16).fill(0).map((a, i) => i),
                 items: {}
             }
         });
@@ -72,8 +72,8 @@ export class Map {
             block.items[type] = {nb: 1, index, model: new Item(type, sceneWrapper)};
 
             let pos = this.getPositionFromCoord({x, y: z}, false);
-            pos.x = pos.x - this.modelSize.x / 3 + (index % 3 * this.modelSize.x / 3);
-            pos.z = pos.z - this.modelSize.z / 3 + (Math.floor(index / 3) * this.modelSize.z / 3);
+            pos.x = pos.x - this.modelSize.x / 2 + (index % 4 * this.modelSize.x / 4) + this.modelSize.x / 8;
+            pos.z = pos.z - this.modelSize.z / 2 + (Math.floor(index / 4) * this.modelSize.z / 4)  + this.modelSize.x / 8;
 
             block.items[type].model.getMesh().position.set(pos.x, pos.y, pos.z);
         } else {

@@ -19,7 +19,7 @@ body {
     background-color: rgba(132, 143, 165, 0.36);
 
     top: 10px;
-    height: 400px;
+    height: 440px;
     padding: 10px;
 
     text-align: center;
@@ -38,7 +38,7 @@ body {
 }
 
 #button-container {
-    top: 420px;
+    top: 460px;
 }
 
 #first-person {

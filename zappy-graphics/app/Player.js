@@ -20,6 +20,16 @@ export class Player extends Model {
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
     }
 
+    async initInstance(sceneWrapper) {
+        await this.load('static/assets/models/players/robot.glb', sceneWrapper, true);
+
+        this.updatePosition();
+        this.setAnimationIndex(2);
+        this.getMesh().scale.set(.08, .08, .08);
+        this.getMesh().callback = this.getControlPanelInfo.bind(this);
+        return this;
+    }
+
     updatePosition() {
         let pos = this.map.getPositionFromCoord(this.coordinates);
 

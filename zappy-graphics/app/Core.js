@@ -15,7 +15,7 @@ export class Core {
         this.teamManager = new TeamManager;
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
-        window.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
+        //window.addEventListener('mousemove', this.onDocumentMouseMove.bind(this), false);
 
         document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
@@ -45,9 +45,7 @@ export class Core {
             await Item.init(this.sceneWrapper);
 
             let player1 = await this.addPlayer({ x: 0, y: 0 }, 1);
-            player1.getMesh().callback = player1.getControlPanelInfo.bind(player1);
             let player2 = await this.addPlayer({ x: 0, y: 1 }, 2);
-            player2.getMesh().callback = player2.getControlPanelInfo.bind(player2);
 
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
@@ -87,11 +85,7 @@ export class Core {
     async addPlayer(coordinates, id) {
         let robot = new Player(this.map, { coordinates, id });
 
-        await robot.load('static/assets/models/players/robot.glb', this.sceneWrapper, true);
-        robot.updatePosition();
-        robot.setAnimationIndex(2);
-        robot.getMesh().scale.set(.1, .1, .1);
-        return robot;
+        return await robot.initInstance(this.sceneWrapper);
     }
 
     toggleSound(e) {
@@ -147,7 +141,7 @@ export class Core {
         let pos = player.getMesh().position;
         let rotation = player.getMesh().rotation;
 
-        cam.position.set(pos.x, pos.y + .7, pos.z);
+        cam.position.set(pos.x, pos.y + .3, pos.z);
 
 
         if (player.direction === DIR.N || player.direction === DIR.S)
@@ -214,9 +208,6 @@ export class Core {
 
         if (intersects.length === 0 || intersects[0].object.twin || isFPV)
             return;
-
-        //if (typeof intersects[0].object.name === "function")
-        //intersects[0].object.name();
 
         intersects[0].object.twin = true;
         new createjs.Tween.get(intersects[0].object.scale).to({
