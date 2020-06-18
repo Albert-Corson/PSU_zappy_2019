@@ -197,7 +197,10 @@ export class Core {
 
         let intersects = raycaster.intersectObjects(this.map.blocks.map(model => model.mesh.children[0]));
 
-        if (intersects.length === 0 || intersects[0].object.twin)
+
+        let isFPV = this.players.filter(player => player.isFPV).length > 0;
+
+        if (intersects.length === 0 || intersects[0].object.twin || isFPV)
             return;
 
         //if (typeof intersects[0].object.name === "function")
