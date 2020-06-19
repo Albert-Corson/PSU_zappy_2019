@@ -47,9 +47,14 @@ export class Map {
             }
         }
 
+        sceneWrapper.controls.target.set(
+            this.size_x * this.modelSize.x / 2,
+            0,
+            this.size_z * this.modelSize.z / 2,
+        );
         sceneWrapper.camera.position.set(
             this.size_x * this.modelSize.x / 2,
-            sceneWrapper.camera.position.y,
+            (this.size_x * this.modelSize.x * this.size_z * this.modelSize.z) / 20,
             this.size_z * this.modelSize.z / 2,
         );
         //sceneWrapper.camera.updateProjectionMatrix();

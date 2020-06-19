@@ -167,7 +167,6 @@ export class Player extends Model {
                 this.scene.getScene().remove(mesh);
             });
 
-        console.log("je suis un pute");
         this.scene.getScene().add( mesh );
     }
 

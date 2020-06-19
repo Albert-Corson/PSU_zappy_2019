@@ -33,39 +33,10 @@ export class Core {
         //     e => e.src === 'static/assets/audio/ambient.mp3' ? Manager.play('ambient') : null
         // );
 
-
         Manager.register(
             'click',
             new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
         );
-
-        let hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 1);//, {x: 0, y: -30, z: 0});
-        hemiLight.color.setHSL( 0.6, 1, 0.6 );
-        hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
-        hemiLight.position.set( 0, 50, 0 );
-        this.sceneWrapper.getScene().add( hemiLight );
-
-        let dirLight = new THREE.DirectionalLight( 0xffffff, 1.6);//0.8 );
-        dirLight.color.setHSL( 0.1, 1, 0.95 );
-        dirLight.position.set( - 1, 1.75, 1 );
-        dirLight.position.multiplyScalar( 30 );
-        this.sceneWrapper.getScene().add( dirLight );
-
-/*
-        let groundGeo = new THREE.PlaneBufferGeometry( 10000, 10000 );
-        let groundMat = new THREE.MeshLambertMaterial( { color: 0xffffff } );
-        groundMat.color.setHSL( 0.095, 1, 0.75 );
-
-        let ground = new THREE.Mesh( groundGeo, groundMat );
-        ground.position.y = - 33;
-        ground.rotation.x = - Math.PI / 2;
-        ground.receiveShadow = true;
-        this.sceneWrapper.getScene().add( ground );
-*/
-
-        /*
-        this.sceneWrapper.addLight(new THREE.PointLight(0xffffff, 1.7, 50), {x: 4, y: 20, z: 5});
-        */
 
         (async () => {
             await this.map.generate(this.sceneWrapper);

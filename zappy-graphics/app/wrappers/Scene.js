@@ -11,13 +11,14 @@ export class Scene {
         this.lights = [];
         this.mixers = [];
 
-        this.renderer.localClippingEnabled = true;
-
-        this.camera.position.set(0, 10, 0);
-        this.controls.update();
-
         this.scene.background = new THREE.Color(color);
 
+        this.hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 2.5);
+        this.scene.add( this.hemiLight );
+
+        this.renderer.localClippingEnabled = true;
+        this.renderer.toneMapping = THREE.ReinhardToneMapping;
+        this.renderer.toneMappingExposure = 2.2;
         this.renderer.setSize(width, height);
         document.body.appendChild(this.renderer.domElement);
 
@@ -39,6 +40,7 @@ export class Scene {
 
             if (this.controls.enabled)
                 this.controls.update();
+
             let mixerUpdateDelta = this.clock.getDelta();
 
             // Update the animation mixer, the stats panel, and render this frame
