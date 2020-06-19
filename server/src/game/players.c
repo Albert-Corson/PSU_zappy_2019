@@ -62,13 +62,16 @@ static bool process_food(player_t *player, struct timeval *now)
     double elapsed = getelapsedms(&player->timer, now);
     const double foodtime = (FOODTIME / GAME.freq) * 1000;
     struct timeval newbirth = { 0, foodtime * 1000 };
+    bool eaten = false;
 
     while (player->inventory[E_FOOD].amount != 0 && elapsed >= foodtime) {
         timeradd(&player->timer, &newbirth, &player->timer);
         player->inventory[E_FOOD].amount -= 1;
         elapsed -= foodtime;
+        eaten = true;
     }
-    spectators_send_inventory(player);
+    if (eaten)
+        spectators_send_inventory(player);
     if (player->inventory[E_FOOD].amount == 0) {
         game_kill_player(player);
         free(player);
