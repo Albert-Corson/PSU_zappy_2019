@@ -52,27 +52,41 @@ def init_communication(sockfd, team_name):
 
 def genese(player, word_dim):
     player.set_map_dimension(word_dim[0], word_dim[1])
-    player.randomize_spawn()
+    player.randomize_spawn() # Maybe useless
     player.look()
-    player.inventory()
+    #player.inventory()
+
+def check_response(response, player):
+    length_checker = len("message")
+    if len(response) >= length_checker and response[:length_checker] == "message":
+        player.check_broadcast_msg(response)
+       
 
 def begin_ai(ac, av):
     response = ""
     port, name , host = arg_gestion(ac - 1, av[1:])
     host = socket.gethostbyname(host)
     # begin socket stuff here
-    client = ReceiverHandler(host, port)
-    sockfd = client.sockfd
-    remaining_client, word_dim = init_communication(sockfd, name)
-    if remaining_client < 1:
-        print("No slot availiable, can't connect")
+    try: 
+        client = ReceiverHandler(host, port)
+        sockfd = client.sockfd
+        remaining_client, word_dim = init_communication(sockfd, name)
+        if remaining_client < 1:
+            print("No slot availiable, can't connect")
+            sockfd.close()
+        player = Trantorian(name, sockfd)
+        genese(player, word_dim)
+        print(player.vision_field)
+        while player.level != 8 or response == "dead":
+            # AI stuff here
+            # TODO: test dead reponse with our server
+            player.work()
+            response = sockfd.recv(1280).decode("Utf8")
+            check_response(response, player)
+    except KeyboardInterrupt: # ctrl-c or delete
+        print("Player is dying off..")
+        # TODO: check with server side if this event is catch on their side
         sockfd.close()
-        exit(0)
 
-    player = Trantorian(name, sockfd)
-    genese(player, word_dim)
-    while player.level != 8 or response == "dead":
-        # AI stuff here
-        # TODO: test dead reponse with our server
-        response = sockfd.recv(1280).decode("Utf8")
     sockfd.close()
+

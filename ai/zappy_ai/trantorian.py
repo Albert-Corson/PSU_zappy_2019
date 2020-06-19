@@ -4,7 +4,7 @@ from random import randrange
 import socket
 
 @unique
-class Direction(Enum):
+class Direction(Enum): # this Enum is now maybe useless
     NORTH = 0
     EST = 1
     SOUTH = 2
@@ -12,9 +12,10 @@ class Direction(Enum):
 
 class Trantorian:
     # Space stuff 
-    direction = Direction.NORTH
+    direction = Direction.NORTH #useless
     x, y = 0, 0
     map_dimension = {'x': 0, 'y': 0}
+    pyramid_nbr = []
 
     # Time stuff
     life_unit = 10
@@ -24,9 +25,10 @@ class Trantorian:
     food = 0
     player_gathered = 0
     level = 1
-    stones = {}
     #stones = { "linemate": 0, "deraumere": 0, "sibur": 0,
     #            "mendiane": 0, "phiras": 0, "thystame": 0 }
+    stone_ref = ["linemate", "deraumere", "sibur", "mendiane", "phiras", "thystame"]
+    stones = {}
     unused_player_slot = 0
     elev_table = [
         [1, 1, 0, 0, 0, 0, 0],
@@ -37,7 +39,7 @@ class Trantorian:
         [6, 1, 2, 3, 0, 1, 0],
         [6, 2, 2, 2, 2, 2, 1],
     ]
-    vision_field = {1: "empty", 2: "empty", 3: "empty", 4: "empty"} # This is suppose to be the vision of a 1 level trantorian
+    vision_field = {0: "empty", 1: "empty", 2: "empty", 3: "empty"} # This is suppose to be the vision of a 1 level trantorian
 
     def __init__(self, name, sockfd):
         print("A Trantorian has been invoked")
@@ -86,9 +88,9 @@ class Trantorian:
 
     def send_cmd(self, msg):
         self.sockfd.send(msg.encode("Utf8"))
-        response = self.sockfd.recv(1280).decode("Utf8")
+        response = self.sockfd.recv(3000).decode("Utf8")
         print(response)
-        return response # TODO: maybe usefull later
+        return response
 
     def incantation(self):
         response = self.send_cmd("Incantation\n")
@@ -147,15 +149,16 @@ class Trantorian:
         command = response[1:-2]
 
         cases = command.split(",")
-        for index in range(1, vision_field_limit + 1):
+        print(response)
+        for index in range(vision_field_limit):
             # TODO: check les incidences sur le bag
-            self.vision_field[index] = cases[index - 1]
+            self.vision_field[index] = cases[index]
 
     def dump_vision_field(self):
         tmp_level = len(self.vision_field) - 1
         x = 0
         limit = 1
-        index = 1
+        index = 0
         pad = self.level + 1
 
         while tmp_level > 0:
@@ -197,14 +200,108 @@ class Trantorian:
         for elem in buffer:
             tmp = elem.lstrip().split(' ')
             current_inventory.update({tmp[0]: int(tmp[1])})
-        current_inventory.update({ "deraumere": 7 })
         self.stones = current_inventory.copy()
         self.food = self.stones.pop("food", None)
         print(self.stones)
         print(self.food)
 
+    def check_broadcast_msg(self, broadcasted):
+        # "message K, txt"
+        tmp = broadcasted.split(",")
+        tmp_bis = tmp.split(" ")
+        coord_from_me = int(tmp_bis[1])
+        message = tmp[1]
+        print("someone said : << %s >> at %d" %(message, coord_from_me))
+        #TODO: calculate la distance la plus courte avec la methode de Manhatan
+
+    # TODO: finish it
+    def shortest_path_k(self, k): # k is supposed to be a number 
+        print("foo")
+        # TODO: find the coordinate of the point K
+        # k=|Xk−X0|+|Yk−Y0|=|Xk|+|Yk|
+
     def connect_number(self):
         response = self.send_cmd("Connect_nbr\n")
         self.unused_player_slot = int(response)
+
+    # algo
+
+    # renvoie l'index d'ou le ressouces a ete trouver ou -1 sinon
+    def check_in_vision_field(self, obj):
+        tmp = []
+
+        for x in range(len(self.vision_field)):
+            tmp = self.vision_field[x].split(' ')
+            for _ in tmp:
+                if _ == obj:
+                    print("@@@@@ obj find at index %d" %(x))
+                    return x
+        return -1
+        
+    def find_col_from_tile(self, tile_nbr):
+        tmp_level = len(self.vision_field) - 1
+        x = 0
+        limit = 1
+        index = 0
+        count = 0
+
+        while tmp_level > 0:
+            if index > tmp_level:
+                break
+            while x < limit:
+                if index == tile_nbr:
+                    print("###### %d" %(count))
+                    return count
+                index += 1
+                x += 1
+            limit += 2
+            x = 0
+            tmp_level -= 1
+            count += 1
+        print("######~ %d" %(count))
+        return count
+
+    # ici on se deplace vers l'item en prenant d'autres item requis si on passe dessus
+    def go_take_it(self, tile_nbr):
+        col_nbr = self.find_col_from_tile(tile_nbr)
+        calc_middle = lambda x : x * x - x
+        alpha = calc_middle(col_nbr)
+        delta = tile_nbr - alpha
+
+        # TODO: check during travel if other ressources are found
+        for x in range(col_nbr):
+            self.forward()
+        if delta > 0:
+            self.right()
+        elif delta < 0:
+            self.left()
+        for y in range(abs(delta)):
+            self.forward()
+        self.take_object()
+
+    def work(self):
+        index_vision = -1
+        # regarder les ressources actuelles
+        index_level = self.level - 1
+        required_stones = self.elev_table[index_level][1:]
+        print(required_stones)
+        corresp_stone = list(self.stones.values())
+        ref_table = required_stones
+        print(corresp_stone)
+        # trouve la ressouce la plus nécessaire
+        most_wanted = ref_table.index(max(ref_table))
+        print(self.stone_ref[most_wanted])
+        # si on a tout bah on commence l'incantation
+        if self.check_ressources() == True:
+            self.broadcast("Avengers Rassemblement!")
+            return
+        # regarde dans sas vision_field and move forward if most wanted
+        self.look()
+        index_vision = self.check_in_vision_field(self.stone_ref[most_wanted])
+        if index_vision != -1:
+            self.go_take_it(index_vision)
+        else:
+            [self.forward() for x in range(3)]
+        print("Working")
 
     # TODO: noise function, dead, ?set_object, ?take_object
