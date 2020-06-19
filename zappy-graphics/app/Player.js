@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Model } from '@/app/wrappers/Model';
+import { Egg } from '@/app/Egg';
 import { DIR } from '@/app/constants';
 import { Manager } from '@/app/sound/SoundManager';
 
@@ -14,6 +15,7 @@ export class Player extends Model {
         this.level = 1;
         this.map = map;
         this.gems = {};
+        this.eggs = [];
         this.food = 0;
         this.isFPV = false;
 
@@ -94,9 +96,6 @@ export class Player extends Model {
             case 90:
                 this.moveForward();
                 break;
-            case 69:
-                this.forkAnimation();
-                break;
             case 67:
                 this.ejectAnimation();
                 break;
@@ -108,9 +107,12 @@ export class Player extends Model {
             document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
     }
 
-    forkAnimation() {
+    dropEgg(eggID, scene) {
+        let coordinates = { x: this.coordinates.x, z: this.coordinates.y };
         this.playAnimationOnce(9);
 
+        //this.map.addItem(coordinates, 'EGG', scene);
+        //this.eggs.push({ eggID, coordinates: this.coordinates });
         // TODO: Animation on fork, like "chie un oeuf'
     }
 

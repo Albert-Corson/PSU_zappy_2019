@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { Player } from '@/app/Player';
 
-class TeamManager {
+class PlayerManager {
     constructor() {
         this.teams = [];
     }
@@ -59,4 +59,4 @@ class TeamManager {
     }
 }
 
-export { TeamManager };
+export { PlayerManager };
