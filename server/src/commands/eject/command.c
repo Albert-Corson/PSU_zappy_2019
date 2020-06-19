@@ -49,12 +49,19 @@ bool exec_eject(player_t *player, char *data)
 {
     player_t *it = NULL;
 
+    spectators_send_eject(player);
     SLIST_FOREACH(it, &GAME.players, next) {
         if (player->pos.x != it->pos.x || player->pos.y != it->pos.y)
             continue;
         else if (player == it)
             continue;
+        if (it->incantation) {
+            game_break_incatation(it->incantation);
+            player_pop_callback(it);
+            player_prepare_next_callback(it);
+        }
         eject(it, player->dir);
+        spectators_send_move(it);
     }
     send_str(player->sockd, "ok\n");
     return (true);

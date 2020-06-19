@@ -30,7 +30,7 @@ typedef struct player_container {
 } player_container_t;
 
 typedef struct tile {
-    object_t inventory[7];
+    inventory_t inventory;
 } tile_t;
 
 typedef SLIST_HEAD(team_list, team) team_list_t;

@@ -69,19 +69,20 @@ bool exec_broadcast(player_t *player, char *data)
 {
     player_t *it = NULL;
     size_t tile = 0;
-    char *message = malloc(sizeof(char) * (strlen(data) + 14));
+    char *response = malloc(sizeof(char) * (strlen(data) + 14));
 
-    if (!message || sprintf(message, "message K, %s\n", data) < 0) {
-        free(message);
+    if (!response || sprintf(response, "message K, %s\n", data) < 0) {
+        free(response);
         exit(84);
     }
     SLIST_FOREACH(it, &GAME.players, next) {
         if (it == player)
             continue;
         tile = get_sound_tile_dir(player, it);
-        message[8] = tile + 48;
-        send_str(it->sockd, message);
+        response[8] = tile + 48;
+        send_str(it->sockd, response);
     }
-    free(message);
+    spectators_send_broadcast(player, data);
+    free(response);
     return (true);
 }

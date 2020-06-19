@@ -16,11 +16,12 @@
 typedef struct egg {
     SLIST_ENTRY(egg) next;
     struct timeval laying;
-    team_t *parent;
+    size_t id;
+    player_t *parent;
     vector_t pos;
 } egg_t;
 
 /**
 * @brief constructs an egg and assigns its parent team and position
 */
-void egg_construct(egg_t *egg, team_t *parent, vector_t *pos);
+void egg_construct(egg_t *egg, player_t *parent, vector_t *pos);

@@ -52,5 +52,105 @@ void game_run(void);
 */
 void game_break_incatation(incantation_t *inc);
 
+/**
+* @brief send a "new_item" notification to all spectators
+*/
+void spectators_send_new_item(const object_t *item, const vector_t *pos);
+
+/**
+* @brief send a "new_team" notification to all spectators
+*/
+void spectators_send_new_team(const team_t *team);
+
+/**
+* @brief send a "new_player" notification to all spectators
+*/
+void spectators_send_new_player(const player_t *player);
+
+/**
+* @brief send a "inventory" notification to all spectators
+*/
+void spectators_send_inventory(const player_t *player);
+
+/**
+* @brief send a "new_egg" notification to all spectators
+*/
+void spectators_send_new_egg(const egg_t *egg);
+
+/**
+* @brief send a "hatched" notification to all spectators
+*/
+void spectators_send_hatched(const egg_t *egg);
+
+/**
+* @brief send a "eat" notification to all spectators
+*/
+void spectators_send_eat(const player_t *player);
+
+/**
+* @brief send a "died" notification to all spectators
+*/
+void spectators_send_died(const player_t *player);
+
+/**
+* @brief send a "win" notification to all spectators
+*/
+void spectators_send_win(const team_t *team);
+
+/**
+* @brief send a "elevation_start" notification to all spectators
+*/
+void spectators_send_elevation_start(const incantation_t *incantation);
+
+/**
+* @brief send a "elevation_failed" notification to all spectators
+*/
+void spectators_send_elevation_failed(const incantation_t *incantation);
+
+/**
+* @brief send a "elevation_end" notification to all spectators
+*/
+void spectators_send_elevation_end(const incantation_t *incantation);
+
+/**
+* @brief send a "drop" notification to all spectators
+*/
+void spectators_send_drop(const player_t *player, element_e elem);
+
+/**
+* @brief send a "take" notification to all spectators
+*/
+void spectators_send_take(const player_t *player, element_e elem);
+
+/**
+* @brief send a "broadcast" notification to all spectators
+*/
+void spectators_send_broadcast(const player_t *player, const char *message);
+
+/**
+* @brief send a "elevation_eject" notification to all spectators
+*/
+void spectators_send_eject(const player_t *player);
+
+/**
+* @brief send a "move" notification to all spectators
+*/
+void spectators_send_move(const player_t *player);
+
+/**
+* @brief send a "forward" notification to all spectators
+*/
+void spectators_send_forward(const player_t *player);
+
+/**
+* @brief send a "left" notification to all spectators
+*/
+void spectators_send_left(const player_t *player);
+
+/**
+* @brief send a "right" notification to all spectators
+*/
+void spectators_send_right(const player_t *player);
+
 int send_str(sockd_t sockd, const char *str);
 int respond_str(request_t *req, response_t *res, const char *str);
