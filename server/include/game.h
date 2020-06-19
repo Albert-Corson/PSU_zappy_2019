@@ -48,6 +48,11 @@ bool game_init(int argc, const char **argv, int *port);
 void game_run(void);
 
 /**
+* @brief kill a player and send the necessary messages
+*/
+void game_kill_player(player_t *player);
+
+/**
 * @brief stop an ongoing incatation and destroy it by calling free
 */
 void game_break_incatation(incantation_t *inc);

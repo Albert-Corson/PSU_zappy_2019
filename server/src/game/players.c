@@ -45,7 +45,7 @@ static void process_callback(player_t *player, struct timeval *now)
     player_prepare_next_callback(player);
 }
 
-static void die(player_t *player)
+void game_kill_player(player_t *player)
 {
     if (player->incantation) {
         game_break_incatation(player->incantation);
@@ -55,7 +55,6 @@ static void die(player_t *player)
     spectators_send_died(player);
     SLIST_REMOVE(&GAME.players, player, player, next);
     send_str(player->sockd, "dead\n");
-    free(player);
 }
 
 static bool process_food(player_t *player, struct timeval *now)
@@ -71,7 +70,8 @@ static bool process_food(player_t *player, struct timeval *now)
     }
     spectators_send_inventory(player);
     if (player->inventory[E_FOOD].amount == 0) {
-        die(player);
+        game_kill_player(player);
+        free(player);
         return (false);
     }
     return (true);

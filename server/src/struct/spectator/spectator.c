@@ -23,7 +23,7 @@ void spectator_send_inventory(const spectator_t *spec, const player_t *player)
         good = sbuffer_printf(&buf, " %s %lu", player->inventory[idx].name, \
         player->inventory[idx].amount);
     }
-    good = good && sbuffer_write(&buf, "]");
+    good = good && sbuffer_write(&buf, "\n");
     if (!good)
         exit(84);
     send_str(spec->sockd, buf.buffer);

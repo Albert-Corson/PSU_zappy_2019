@@ -79,7 +79,7 @@ void on_disconnect(va_list ap)
     for (; it && !found; it = SLIST_NEXT((player_t *)it, next)) {
         found = ((player_t *)it)->sockd == peer;
         if (found)
-            SLIST_REMOVE(&GAME.players, it, player, next);
+            game_kill_player(it);
     }
     if (!found)
         it = SLIST_FIRST(&GAME.spectators);
