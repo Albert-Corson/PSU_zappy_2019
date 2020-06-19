@@ -19,7 +19,7 @@ export class Server {
 
     /**
      * Socket connected to a remote Zappy server
-     * @type {Boolean}
+     * @type {Socket}
      * @private
      */
     static _socket = null
@@ -55,6 +55,7 @@ export class Server {
             keepAlive: false,
             initialDelay: 0
         });
+
         this._net.onclose = ()=>{console.log('close')}
         this._socket.on('connect', () => {
             this._isOpen = true
@@ -70,6 +71,7 @@ export class Server {
                 this._emitter.emit('message', message)
             }
         })
+
     }
 
     /**
@@ -113,7 +115,7 @@ export class Server {
         if (this._socket === null) {
             throw new Error('Connection with the server is not established. Cannot send message.')
         }
-        this._socket.write(payload)
+        this._socket.write(`${payload}\n`)
     }
 }
 
