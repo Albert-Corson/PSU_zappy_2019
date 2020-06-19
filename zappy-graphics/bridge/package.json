@@ -1,0 +1,15 @@
+{
+  "name": "bridge",
+  "version": "1.0.0",
+  "description": "This application establishes a bridge connection between a browser client and a TCP server. Browser is connected through the use of websockets (via webtcp library). The use of a bridge is necessary because of browser sandboxes: a browser application is not allowed to establish socket connections other than websockets (communicating with the http protocol). To communicate with a non-http server, http requests must be intercepted by the bridge and their raw data transmitted to the target server.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "sockjs": "^0.3.20"
+  }
+}
