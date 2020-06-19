@@ -13,6 +13,7 @@ const ITEM_TYPE = {
     'PHIRAS': {name: 'phiras', mesh: null},
     'THYSTAME': {name: 'thystame', mesh: null},
     'FOOD': {name: 'food', mesh: null},
+   // 'EGG': {name: 'egg', mesh: null},
 };
 
 const PLAYER_TYPE = {
