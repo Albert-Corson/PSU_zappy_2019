@@ -85,6 +85,7 @@ export class Model extends THREE.EventDispatcher {
             this.mixer.removeEventListener('finished', callback);
             action.stop();
             this.action.play();
+            this.dispatchEvent({ type: 'animation-end' });
         };
 
         this.mixer.addEventListener('finished', callback);

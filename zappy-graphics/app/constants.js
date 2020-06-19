@@ -1,8 +1,8 @@
 const DIR = {
     N: 0,
-    E: 1,
+    W: 1,
     S: 2,
-    W: 3
+    E: 3
 };
 
 const ITEM_TYPE = {

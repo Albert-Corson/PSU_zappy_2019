@@ -8,19 +8,56 @@ import { PlayerManager } from '@/app/PlayerManager';
 import { Queue } from '@/app/wrappers/Queue'
 import { Server } from '@/app/server/index'
 import { Sky } from 'three/examples/jsm/objects/Sky';
+import {EventDispatcher} from "three";
 
-export class Core {
+export class Core extends EventDispatcher {
     constructor(opt = {}) {
+        super();
         this.sceneWrapper = new Scene('white');
-        this.map = new Map(opt.mapSize || {x: 20, z: 20});
         this.playerManager = new PlayerManager;
         this.messageQueue = new Queue;
 
+        this.mapCommand = {
+            'map_size': (list) => {
+                this.map = new Map({x: parseInt(list[0]), z: parseInt(list[1])});
+                return this.map.generate(this.sceneWrapper);
+            },
+            'new_item': (list) => this.map.addItem({x: parseInt(list[2]), z: parseInt(list[1])}, list[0].toUpperCase(), this.sceneWrapper),
+            'new_team': (list) => this.playerManager.addTeam(list[1], parseInt(list[0])),
+            'new_player': (list) => {
+                let playerOpt = {
+                    coordinates: { x: parseInt(list[3]), y: parseInt(list[2]) },
+                    id: parseInt(list[0]),
+                    dir: parseInt(list[1]),
+                };
+                return this.playerManager.addPlayerInTeam(playerOpt, list[4], this.sceneWrapper, this.map);
+            },
+            'new_egg': null,
+            'inventory': (list) => this.playerManager.getPlayerById(parseInt(list[0])).updateInventory(list.slice(1)),
+            'hatched': null,
+            'died': (list) => this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper),
+            'win': null, //to do paillette de fou furieux
+            'elevation_start': (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationStart(),
+            'elevation_end': (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationFinish(),
+            'drop': (list) => this.playerManager.getPlayerById(parseInt(list[0])).dropItem(list[1].toUpperCase(), this.sceneWrapper), //do the function
+            'take': (list) => this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper),
+            'broadcast': (list) => this.playerManager.getPlayerById(parseInt(list[0])).speak(), //add text
+            'eject': (list) => this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation(),
+            'move': (list) => this.playerManager.getPlayerById(parseInt(list[0])).move({x: parseInt(list[3]), y: parseInt(list[2])}, parseInt(list[1])),
+            'forward': (list) => this.playerManager.getPlayerById(parseInt(list[0])).moveForward(),
+            'left': (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateLeft(),
+            'right': (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateRight(),
+        }
+
         document.getElementById('info').innerText = 'No item selected';
 
-        Server.on('message', (message) => this.messageQueue.enqueue(message));
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
+
+        Server.on('message', (message) => {
+            this.messageQueue.enqueue(message);
+            this.dispatchEvent( { type: 'new-command' } );
+        });
 
         document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
@@ -40,47 +77,39 @@ export class Core {
         );
 
         (async () => {
-            await this.map.generate(this.sceneWrapper);
+
 
             await Item.init(this.sceneWrapper);
 
-            await this.playerManager.addPlayerInTeam({coordinates: { x: 0, y: 0 }, id: 1}, 'ah', this.sceneWrapper, this.map);
-            let player2 = await this.playerManager.addPlayerInTeam({coordinates: { x: 1, y: 0 }, id: 2}, 'ah', this.sceneWrapper, this.map);
-
-            let player1 = this.playerManager.getPlayerById(1);
-
-            //console.log(this.playerManager.getPlayerById(1))
+            this.addEventListener('new-command', this.manageCommand);
+            await this.manageCommand();
 
 
-            this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'SIBUR', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'PHIRAS', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'LINEMATE', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'THYSTAME', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'DERAUMERE', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
-            this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
-            this.map.addItem({x: 3, z: 3}, 'FOOD', this.sceneWrapper);
-
-            player1.pickItem('LINEMATE', this.sceneWrapper);
-            player1.pickItem('SIBUR', this.sceneWrapper);
-            player1.pickItem('MENDIANE', this.sceneWrapper);
-            player1.pickItem('MENDIANE', this.sceneWrapper);
-            player1.pickItem('MENDIANE', this.sceneWrapper);
-            player1.pickItem('DERAUMERE', this.sceneWrapper);
-            player1.pickItem('PHIRAS', this.sceneWrapper);
-
-            player1.dropEgg(this.sceneWrapper);
         })();
 
         this.initSky();
         this.sceneWrapper.launch();
+    }
+
+    async manageCommand() {
+        if (!this.messageQueue.isEmpty()) {
+            let i = this.messageQueue.queue.length;
+            for (let x = 0; x < i; x++)
+                await this.processCommand(this.messageQueue.dequeue());
+        }
+    }
+
+    async processCommand(message) {
+        console.log(message);
+        if (!message || message.length === 0)
+            return;
+        let list = message.split(" ");
+        let ret;
+
+        if (this.mapCommand[list[0]])
+            ret = this.mapCommand[list[0]](list.slice(1));
+        if (ret instanceof  Promise)
+            await ret;
     }
 
     toggleSound(e) {

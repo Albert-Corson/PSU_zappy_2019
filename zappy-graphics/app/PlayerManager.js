@@ -8,6 +8,7 @@ class PlayerManager {
 
     addTeam(teamName, size) {
         this.teams.push({ teamName, size, players: [] });
+        this.updateTeamPanel();
     }
 
     getTeamsCount() {
@@ -28,6 +29,21 @@ class PlayerManager {
         return player;
     }
 
+    deletePlayerInTeam(playerId, scene) {
+        for (let team of this.teams) {
+            let index = team.players.map(player => player.playerId).indexOf(playerId);
+
+            if (index !== -1) {
+                team.players[index].addEventListener('animation-end', _ => {
+                    scene.getScene().remove(team.players[index].getMesh());
+                    team.players.splice(index, 1);
+                })
+                team.players[index].died();
+                return;
+            }
+        }
+    }
+
     getPlayerById(playerId) {
         for (let team of this.teams) {
             let index = team.players.map(player => player.playerId).indexOf(playerId);
@@ -36,7 +52,6 @@ class PlayerManager {
                 return team.players[index];
             }
         }
-
         return null;
     }
 

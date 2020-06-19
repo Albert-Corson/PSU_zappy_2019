@@ -33,10 +33,46 @@ export class Player extends Model {
         return this;
     }
 
+    updateInventory(list) {
+        let words = list.split(' ');
+
+        let keys = [];
+        let properties = [];
+
+        words.map((word, i) => {
+            if ((i % 2) === 0)
+                keys.push(word);
+            else
+                properties.push(word);
+        })
+        keys.map((key, i) => {
+            let nb = parseInt(properties[i]);
+            if (key.toUpperCase() === 'FOOD')
+                this.food = nb;
+            else
+                this.gems[key.toUpperCase()] = nb;
+        })
+    }
+
     updatePosition() {
         let pos = this.map.getPlayerPositionFromCord(this.coordinates);
 
         this.getMesh().position.set(pos.x, pos.y, pos.z);
+    }
+
+    move(coordinates, direction) {
+        let pos =  this.map.getPlayerPositionFromCord(coordinates);
+
+        this.direction = direction;
+        this.getMesh().rotation.y = (direction - DIR.S) * Math.PI / 2;
+        this.playAnimationOnce(3);
+        createjs.Tween
+            .get(this.getMesh().position, {override : true})
+            .to({
+                x: pos.x,
+                y: pos.y,
+                z: pos.z
+            }, 150)
     }
 
     rotateLeft() {
@@ -55,13 +91,13 @@ export class Player extends Model {
             case DIR.N:
                 this.coordinates.y -= 1;
                 break;
-            case DIR.E:
+            case DIR.W:
                 this.coordinates.x -= 1;
                 break;
             case DIR.S:
                 this.coordinates.y += 1;
                 break;
-            case DIR.W:
+            case DIR.E:
                 this.coordinates.x += 1;
                 break;
         }
@@ -101,7 +137,6 @@ export class Player extends Model {
                 this.ejectAnimation();
                 break;
             case 89:
-                this.levelUp();
                 this.speak();
                 break;
         }
@@ -123,6 +158,17 @@ export class Player extends Model {
         // TODO: Animation ejecting another player, like "dégage sale cake"
     }
 
+    dropItem(type, scene) {
+        //this.playAnimationOnce(1);
+
+        if (this.map.addItem({ x: this.coordinates.x, z: this.coordinates.y }, type, scene)) {
+            if (type !== 'FOOD')
+                this.gems[type] = this.gems[type] === undefined ? 0 : this.gems[type] - 1
+            else
+                this.food -= 1
+        }
+    }
+
     pickItem(type, scene) {
         //this.playAnimationOnce(1);
 
@@ -134,10 +180,17 @@ export class Player extends Model {
         }
     }
 
-    levelUp() {
-        this.playAnimationOnce(3);
+    elevationStart() {
+        this.setAnimationIndex(0);
+    }
+
+    elevationFinish() {
+        this.setAnimationIndex(2);
         this.level++;
-        // TODO: Animation on level up
+    }
+
+    died() {
+        this.playAnimationOnce(1);
     }
 
     speak() {

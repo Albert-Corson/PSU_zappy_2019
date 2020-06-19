@@ -13,7 +13,7 @@ export class Scene {
 
         this.scene.background = new THREE.Color(color);
 
-        this.hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 2.5);
+        this.hemiLight = new THREE.HemisphereLight(0xffeeb1, 0x080820, 2);
         this.scene.add( this.hemiLight );
 
         this.renderer.localClippingEnabled = true;
