@@ -13,7 +13,7 @@ export class Scene {
 
         this.renderer.localClippingEnabled = true;
 
-        this.camera.position.set(8, 10, 20);
+        this.camera.position.set(0, 10, 0);
         this.controls.update();
 
         this.scene.background = new THREE.Color(color);

@@ -12,7 +12,7 @@ import { Sky } from 'three/examples/jsm/objects/Sky';
 export class Core {
     constructor(opt = {}) {
         this.sceneWrapper = new Scene('white');
-        this.map = new Map({ x: 10, y: 10});
+        this.map = new Map(opt.mapSize || {x: 20, z: 20});
         this.playerManager = new PlayerManager;
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);

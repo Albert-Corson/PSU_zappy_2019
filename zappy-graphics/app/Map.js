@@ -46,6 +46,14 @@ export class Map {
                 first = false;
             }
         }
+
+        sceneWrapper.camera.position.set(
+            this.size_x * this.modelSize.x / 2,
+            sceneWrapper.camera.position.y,
+            this.size_z * this.modelSize.z / 2,
+        );
+        //sceneWrapper.camera.updateProjectionMatrix();
+        sceneWrapper.controls.update()
     }
 
     getPositionFromCoord(coordinates, modifySource = true) {
