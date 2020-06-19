@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Zappy</title>
+        <link rel="stylesheet" href="static/css/main.css">
+        <link rel="stylesheet" href="vendor/bootstrap/bootstrap.min.css">
+        <link rel="stylesheet" href="https://use.typekit.net/mvz1daw.css">
+    </head>
+    <body>
+
+        <div id="control-panel" class="left-panel">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a id="info-tab" class="nav-link" data-toggle="tab" role="tab" aria-controls="info" aria-selected="false" href="#infos">
+                        <i class="fas fa-info-circle"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a id="team-tab" class="nav-link" data-toggle="tab" role="tab" aria-controls="team" aria-selected="false" href="#team">
+                        <i class="fas fa-users"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a id="network-tab" class="nav-link active" data-toggle="tab" role="tab" aria-controls="network" aria-selected="true" href="#network">
+                        <i class="fas fa-network-wired"></i>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a id="settings-tab" class="nav-link" data-toggle="tab" role="tab" aria-controls="settings" aria-selected="false" href="#settings">
+                        <i class="fas fa-cog"></i>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content" id="tabContent">
+                <div class="tab-pane fade" id="infos">
+                    <div class="mt-4 ask-for-connection">
+                        <p class="text-center">Server connection required</p>
+                    </div>
+                    <div id="info"></div>
+                    <ul id="items"></ul>
+                    <button type="button" class="btn btn-primary btn-block" id="first-person">Toggle First Person View</button>
+                </div>
+                <div class="tab-pane fade" id="team">
+                    <div class="mt-4 ask-for-connection">
+                        <p class="text-center">Server connection required</p>
+                    </div>
+                    <p id="teams-header"></p>
+                    <ul id="teams"></ul>
+                </div>
+                <div class="tab-pane fade show active" id="network">
+                    <div id="connection">
+                        <div class="form-group">
+                            <label for="ip">Server IP</label>
+                            <input type="url" id="ip" class="form-control" value="127.0.0.1">
+                        </div>
+                        <div class="form-group">
+                            <label for="port">Server Port</label>
+                            <input type="number" id="port" class="form-control" value="4242">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" id="submit">Connect</button>
+                    </div>
+                    <div id="disconnect" class="mt-3">
+                        <button class="btn btn-primary btn-block">Disconnect</button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="settings">
+                    <div class="mt-4 ask-for-connection">
+                        <p class="text-center">Server connection required</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <i class="fas fa-volume-up" id="mute"></i>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+        <script src="vendor/bootstrap/bootstrap.min.js"></script>
+        <script src="https://kit.fontawesome.com/5f75b6bf72.js" crossorigin="anonymous"></script>
+        <script src="vendor/perlin/perlin.js"></script>
+        <script src="vendor/createjs/soundjs.min.js"></script>
+        <script src="vendor/createjs/tweenjs.min.js"></script>
+        <script src="vendor/webtcp/webtcp-0.0.1.min.js"></script>
+    </body>
+</html>

@@ -1,17 +1,4 @@
-include var.mk sources.mk
-
-override CPPFLAGS	+=	-I./share/include		\
-						-I./server/include		\
-
-override CFLAGS		+=	-Wall \
-						-Wextra \
-						-ffreestanding \
-						-Wshadow \
-						-Wsign-compare \
-						-Wno-unused-parameter \
-						-Wno-unused-variable \
-
-$(NAME_SRV):	$(OBJ_SRV)
+$(NAME_SRV): $(OBJ_SRV)
 	$(LD) $^ $(LDFLAGS) $(LDLIBS) -o $@
 
 .SECONDEXPANSION:

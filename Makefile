@@ -5,8 +5,20 @@
 ## Makefile
 ##
 
+include sources.mk var.mk
 
-all: ai_z server_z ## Build the binary and relinks if needed
+all:   ai_z server_z  libs ## Build the binary and relinks if needed
+
+include server.mk
+
+libs:
+	$(MAKE) -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
+
+libs_debug:
+	$(MAKE) -C server/libs/socker debug INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
+
+debug: CFLAGS+=-g
+debug: libs_debug $(NAME_SRV)
 
 include server.mk ai.mk
 
@@ -21,10 +33,11 @@ tests_run: all ## build and execute unit tests
 
 clean: ## Delete the relocatable files
 	$(RM) $(BUILD_SRV) *.gcda *.gcno
+	$(MAKE) clean -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
 
 fclean: clean ## Delete the binary file and execute the above rule
-	$(RM) $(NAME_SRV) $(NAME_TEST)
-	$(RM) $(NAME_AI) ai/build
+	$(RM) $(NAME_SRV) $(NAME_AI) $(NAME_TEST) ai/build
+	$(MAKE) fclean -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
 
 re: fclean all ## Executes an fclean and rebuild
 
@@ -33,4 +46,3 @@ help: ## Display this help
 	@grep -E "^[a-zA-Z\\_]+:.*##.*" Makefile | awk -F ":.*##" '{printf "$(BLUE)%-25s$(WHITE)%s\n", $$1, $$2}'
 
 .PHONY: all clean fclean re
-

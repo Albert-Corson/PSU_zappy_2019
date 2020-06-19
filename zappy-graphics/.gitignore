@@ -1,0 +1,7 @@
+.DS_Store
+.idea
+.idea/dictionaries
+.idea/jsLibraryMappings.xml
+.idea/test.iml
+node_modules/
+dist/
