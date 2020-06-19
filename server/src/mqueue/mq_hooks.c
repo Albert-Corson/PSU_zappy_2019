@@ -27,18 +27,22 @@ void mq_on_readable(va_list ap)
     size_t size = va_arg(ap, size_t);
     request_t req = {
         .sender = peer,
-        .message = G_MQ->reader(peer, size)
+        .message = NULL
     };
     response_t res = {
         .send = &mq_respond
     };
 
-    if (req.message == NULL) {
-        LOG_ERROR("%s", "Couldn't read message: message reader returned NULL");
-        return;
+    while (size > 0) {
+        req.message = G_MQ->reader(peer, size);
+        if (req.message == NULL) {
+            LOG_ERROR("%s", "Couldn't read: message reader returned NULL");
+            return;
+        }
+        socker_emit("message", &req, &res);
+        message_destroy(req.message);
+        size -= req.message->len;
     }
-    socker_emit("message", &req, &res);
-    message_destroy(req.message);
 }
 
 void mq_on_writable(va_list ap)

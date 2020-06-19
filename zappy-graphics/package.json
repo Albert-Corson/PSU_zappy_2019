@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "npm run clean && webpack --watch --mode development --progress --config build/webpack.config.js",
     "build": "node build/build.js",
-    "clean": "node build/clean.js"
+    "clean": "node build/clean.js",
+    "bridge": "cd bridge && npm start",
+    "postinstall": "cd bridge && npm install"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +22,10 @@
     "chalk": "^4.1.0",
     "copy-webpack-plugin": "^6.0.2",
     "css-loader": "^3.6.0",
+    "events": "^3.1.0",
+    "faye-websocket": "^0.11.3",
     "html-webpack-plugin": "^4.3.0",
+    "node-uuid": "^1.4.8",
     "rimraf": "^3.0.2",
     "three": "^0.117.1",
     "uglifyjs-webpack-plugin": "^2.2.0",
