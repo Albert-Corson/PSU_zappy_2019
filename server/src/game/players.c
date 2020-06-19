@@ -56,7 +56,6 @@ static bool process_food(player_t *player, struct timeval *now)
         player->inventory[E_FOOD].amount -= 1;
         elapsed -= foodtime;
     }
-    printf("next\n");
     if (player->inventory[E_FOOD].amount == 0) {
         if (player->incantation)
             game_break_incatation(player->incantation);
