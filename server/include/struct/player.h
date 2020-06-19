@@ -15,7 +15,7 @@
 #include <struct/team.h>
 #include <struct/callback.h>
 #include <struct/vector.h>
-#include <elements.h>
+#include <struct/inventory.h>
 
 typedef enum {
     NORTH,
@@ -23,12 +23,6 @@ typedef enum {
     SOUTH,
     EAST
 } direction_e;
-
-typedef struct {
-    element_e type;
-    const char *name;
-    size_t amount;
-} object_t;
 
 typedef struct recipe recipe_t;
 
@@ -41,6 +35,7 @@ typedef struct {
 typedef struct player {
     SLIST_ENTRY(player) next;
     sockd_t sockd;
+    size_t id;
     team_t *team;
     callback_t callbacks[10];
     struct timeval timer;
@@ -48,7 +43,7 @@ typedef struct player {
     incantation_t *incantation;
     direction_e dir;
     vector_t pos;
-    object_t inventory[7];
+    inventory_t inventory;
 } player_t;
 
 /**

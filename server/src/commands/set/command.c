@@ -24,5 +24,6 @@ bool exec_set(player_t *player, char *data)
     --player->inventory[elem].amount;
     ++GAME.map[player->pos.y][player->pos.x].inventory[elem].amount;
     send_str(player->sockd, "ok\n");
+    spectators_send_drop(player, elem);
     return (true);
 }

@@ -41,22 +41,22 @@ new_item <item_name> <y> <x>
 ```xml
 new_team <max_players> <name>
 ```
-> A new team was created. Be aware that the team's `name` can be composed of multiple words
+> A new team was created. **Be aware that the team's `name` can be composed of multiple words**
 
 ```xml
-new_player <player_id> <team_name> <dir> <y> <x>
+new_player <player_id> <dir> <y> <x> <team_name>
 ```
-> A new player has spawned
+> A new player has spawned, the `inventory` notification will be sent right after this one
+
+```xml
+new_egg <egg_id> <y> <x> <player_id>
+```
+> An egg has been layed by `player_id` at [`y`, `x`]
 
 ```xml
 inventory <player_uui> [<item_name> <amount>]...
 ```
 > An update of a player's inventory
-
-```xml
-new_egg <egg_id> <player_id> <y> <x>
-```
-> An egg has been layed by `player_id` at [`y`, `x`]
 
 ```xml
 hatched <egg_id>
@@ -91,7 +91,7 @@ elevation_failed [<player_id>]...
 ```xml
 elevation_end [<player_id>]...
 ```
-> An elevation has ended successfully. Players involved in it
+> An elevation has ended successfully. An `inventory` update for each participants will be sent right after.
 
 ```xml
 drop <player_id> <object_name>
@@ -111,7 +111,7 @@ broadcast <player_id> <message>
 ```xml
 eject <player_id>
 ```
-> A player has pushed the other players from his tile to the next one in the direction he is facing
+> A player has pushed the other players from his tile to the next one in the direction he is facing, this notification with be followed by multiple `move`s to update the positions of pushed players
 
 ```xml
 move <player_id> <dir> <y> <x>

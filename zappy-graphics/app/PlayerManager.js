@@ -49,7 +49,16 @@ class PlayerManager {
 
     updateTeamPanel() {
         let teams = document.getElementById('teams');
+        let teamsHdr = document.getElementById('teams-header');
         let tmp = '';
+
+        if (this.teams.length === 0) {
+            teamsHdr.innerHTML = 'No team registered';
+            teams.innerHTML = '';
+            return;
+        }
+
+        teamsHdr.innerHTML = 'Teams:';
 
         this.teams.map(team => {
             tmp += `<li>${team.teamName}: ${team.players.length}/${team.size}</li>`

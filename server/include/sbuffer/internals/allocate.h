@@ -12,7 +12,7 @@
 /**
 * @brief size of allocated memory blocks
 */
-#define BUFFER_BLOCK 2048
+#define BUFFER_BLOCK 512
 
 /**
 * @brief allocates memory if necessary for at least `needed` bytes

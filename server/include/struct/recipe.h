@@ -11,7 +11,7 @@
 
 typedef struct recipe {
     size_t nb_players;
-    object_t recipe[7];
+    inventory_t recipe;
 } recipe_t;
 
 /**

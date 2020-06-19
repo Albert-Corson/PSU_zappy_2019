@@ -14,6 +14,7 @@ bool exec_left(player_t *player, char *data)
     } else {
         player->dir += 1;
     }
+    spectators_send_left(player);
     send_str(player->sockd, "ok\n");
     return (true);
 }

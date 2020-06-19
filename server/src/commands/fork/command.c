@@ -14,8 +14,9 @@ bool exec_fork(player_t *player, char *data)
 
     if (!egg)
         exit(84);
-    egg_construct(egg, player->team, &player->pos);
+    egg_construct(egg, player, &player->pos);
     SLIST_INSERT_HEAD(&GAME.eggs, egg, next);
     send_str(player->sockd, "ok\n");
+    spectators_send_new_egg(egg);
     return (true);
 }

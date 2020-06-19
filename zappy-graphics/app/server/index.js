@@ -71,7 +71,6 @@ export class Server {
                 this._emitter.emit('message', message)
             }
         })
-
     }
 
     /**
