@@ -48,7 +48,6 @@ export class Model extends THREE.EventDispatcher {
 
                 if (addToScene)
                     sceneWrapper.getScene().add(this.mesh);
-                this.dispatchEvent({ type: 'modelLoaded' });
                 resolve();
             }, undefined, reject)
         });
