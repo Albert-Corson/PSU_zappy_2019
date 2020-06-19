@@ -5,6 +5,7 @@
 ** main server file
 */
 
+#include <time.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <stdbool.h>
@@ -50,6 +51,7 @@ int main(int argc, const char **argv)
 {
     int port = 0;
 
+    srand(time(NULL));
     atexit(server_atexit);
     socker_init();
     mq_init();
