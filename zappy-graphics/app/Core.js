@@ -5,13 +5,13 @@ import { Player } from '@/app/Player';
 import { Map } from '@/app/Map';
 import { DIR } from '@/app/constants';
 import { Manager, SoundRef } from '@/app/sound/SoundManager';
-import { TeamManager, Team } from '@/app/Team';
+import { PlayerManager, Team } from '@/app/PlayerManager';
 
 export class Core {
     constructor(opt = {}) {
         this.sceneWrapper = new Scene('white');
         this.map = new Map({ x: 10, y: 10});
-        this.teamManager = new TeamManager;
+        this.playerManager = new PlayerManager;
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
 
@@ -19,8 +19,8 @@ export class Core {
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
-        this.teamManager.addTeam('la cité en i', 5);
-        this.teamManager.addTeam('ah', 5);
+        this.playerManager.addTeam('la cité en i', 5);
+        this.playerManager.addTeam('ah', 5);
         // Manager.register(
         //     'ambient',
         //     new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
@@ -42,12 +42,12 @@ export class Core {
 
             await Item.init(this.sceneWrapper);
 
-             await this.teamManager.addPlayerInTeam({coordinates: { x: 0, y: 0 }, id: 1}, 'ah', this.sceneWrapper, this.map);
-            let player2 = await this.teamManager.addPlayerInTeam({coordinates: { x: 1, y: 0 }, id: 1}, 'ah', this.sceneWrapper, this.map);
+            await this.playerManager.addPlayerInTeam({coordinates: { x: 0, y: 0 }, id: 1}, 'ah', this.sceneWrapper, this.map);
+            let player2 = await this.playerManager.addPlayerInTeam({coordinates: { x: 1, y: 0 }, id: 2}, 'ah', this.sceneWrapper, this.map);
 
-            let player1 = this.teamManager.getPlayerById(1);
+            let player1 = this.playerManager.getPlayerById(1);
 
-            //console.log(this.teamManager.getPlayerById(1))
+            //console.log(this.playerManager.getPlayerById(1))
 
 
             this.map.addItem({x: 0, z: 0}, 'MENDIANE', this.sceneWrapper);
@@ -63,7 +63,7 @@ export class Core {
             this.map.addItem({x: 0, z: 0}, 'DERAUMERE', this.sceneWrapper);
             this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
             this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
-
+            this.map.addItem({x: 0, z: 0}, 'FOOD', this.sceneWrapper);
             this.map.addItem({x: 3, z: 3}, 'FOOD', this.sceneWrapper);
 
             player1.pickItem('LINEMATE', this.sceneWrapper);
@@ -74,7 +74,7 @@ export class Core {
             player1.pickItem('DERAUMERE', this.sceneWrapper);
             player1.pickItem('PHIRAS', this.sceneWrapper);
 
-            player1.pickItem('FOOD', this.sceneWrapper);
+            player1.dropEgg(this.sceneWrapper);
         })();
 
 
@@ -98,8 +98,9 @@ export class Core {
     }
 
     setFirstPersonView(e) {
-        let player = this.getPlayerById(e.target.getAttribute('name'));
+        let player = this.playerManager.getPlayerById(parseInt(e.target.getAttribute('name')));
 
+        console.log(player)
         if (!player)
             return;
 
@@ -128,7 +129,6 @@ export class Core {
 
         player.isFPV = true;
         this.sceneWrapper.controls.enabled = false;
-
 
 
         let pos = player.getMesh().position;
@@ -161,7 +161,7 @@ export class Core {
             ...this.sceneWrapper.getScene().children
         ]);
 
-        let isFPV = this.teamManager.getAllPlayers().filter(player => player.isFPV).length > 0;
+        let isFPV = this.playerManager.getAllPlayers().filter(player => player.isFPV).length > 0;
 
         if (intersects.length > 0 && !isFPV) {
             if (typeof intersects[0].object.name === "function")

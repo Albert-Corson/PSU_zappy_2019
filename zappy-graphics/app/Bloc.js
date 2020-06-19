@@ -13,6 +13,7 @@ export class Bloc extends Model {
             'PHIRAS': 0,
             'THYSTAME': 0,
             'FOOD': 0,
+            'EGG': 0,
         };
     }
 

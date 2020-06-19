@@ -11,7 +11,6 @@ export class Item extends Model {
 
     static init(sceneWrapper) {
         return new Promise((async (resolve, reject) => {
-
             let promises = Object.keys(ITEM_TYPE).map(async key => {
                 let model = new Model();
 
