@@ -20,7 +20,7 @@ class PlayerManager {
 
         if (team === -1)
             return;
-        let player = new Player(map, { ...playerOpt, teamName });
+        let player = new Player(map, scene, { ...playerOpt, teamName });
 
         await player.initInstance(scene);
         team.players.push(player);

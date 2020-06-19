@@ -11,6 +11,8 @@ export class Scene {
         this.lights = [];
         this.mixers = [];
 
+        this.renderer.localClippingEnabled = true;
+
         this.camera.position.set(8, 10, 20);
         this.controls.update();
 
