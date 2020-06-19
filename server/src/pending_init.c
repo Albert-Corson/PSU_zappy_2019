@@ -29,6 +29,7 @@ size_t nb_teammates)
     if (sprintf(response, "%d %d\n", player->pos.x, player->pos.y) < 0)
         exit(84);
     respond_str(req, res, response);
+    spectators_send_new_player(player);
 }
 
 static void new_spectator(request_t *req, response_t *res)

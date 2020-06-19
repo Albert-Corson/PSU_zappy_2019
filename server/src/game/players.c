@@ -15,10 +15,10 @@ void game_break_incatation(incantation_t *inc)
 {
     player_t *it = NULL;
 
+    spectators_send_elevation_failed(inc);
     SLIST_FOREACH(it, &GAME.players, next) {
-        if (it->incantation != inc)
-            continue;
-        it->incantation = NULL;
+        if (it->incantation == inc)
+            it->incantation = NULL;
     }
     send_str(inc->initiator->sockd, "ko\n");
     free(inc);
@@ -45,6 +45,19 @@ static void process_callback(player_t *player, struct timeval *now)
     player_prepare_next_callback(player);
 }
 
+static void die(player_t *player)
+{
+    if (player->incantation) {
+        game_break_incatation(player->incantation);
+        player_pop_callback(player->incantation->initiator);
+        player_prepare_next_callback(player->incantation->initiator);
+    }
+    spectators_send_died(player);
+    SLIST_REMOVE(&GAME.players, player, player, next);
+    send_str(player->sockd, "dead\n");
+    free(player);
+}
+
 static bool process_food(player_t *player, struct timeval *now)
 {
     double elapsed = getelapsedms(&player->timer, now);
@@ -52,16 +65,13 @@ static bool process_food(player_t *player, struct timeval *now)
     struct timeval newbirth = { 0, foodtime * 1000 };
 
     while (player->inventory[E_FOOD].amount != 0 && elapsed >= foodtime) {
+        spectators_send_eat(player);
         timeradd(&player->timer, &newbirth, &player->timer);
         player->inventory[E_FOOD].amount -= 1;
         elapsed -= foodtime;
     }
     if (player->inventory[E_FOOD].amount == 0) {
-        if (player->incantation)
-            game_break_incatation(player->incantation);
-        SLIST_REMOVE(&GAME.players, player, player, next);
-        send_str(player->sockd, "dead\n");
-        free(player);
+        die(player);
         return (false);
     }
     return (true);

@@ -14,7 +14,8 @@ static void process_egg(egg_t *egg, struct timeval *now)
 
     if (elapsed < (HATCHTIME / GAME.freq) * 1000)
         return;
-    egg->parent->max_clients += 1;
+    spectators_send_hatched(egg);
+    egg->parent->team->max_clients += 1;
     SLIST_REMOVE(&GAME.eggs, egg, egg, next);
     free(egg);
 }

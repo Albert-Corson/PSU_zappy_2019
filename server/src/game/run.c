@@ -27,6 +27,7 @@ static void game_process_map(struct timeval *now)
     pos.y = randbetween(0, GAME.height - 1);
     elem = randbetween(E_FOOD, E_THYSTAME);
     GAME.map[pos.y][pos.x].inventory[elem].amount += 1;
+    spectators_send_new_item(&GAME.map[pos.y][pos.x].inventory[elem], &pos);
 }
 
 static bool game_process_team_win(team_t *team)
@@ -56,6 +57,8 @@ void game_run(void)
             break;
         }
     }
-    if (!GAME.running && it)
+    if (!GAME.running && it) {
+        spectators_send_win(it);
         printf("Team '%s' won!\n", it->name);
+    }
 }

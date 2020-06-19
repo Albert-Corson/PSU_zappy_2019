@@ -14,6 +14,7 @@
 static const player_t template = {
     .next = { 0 },
     .sockd = -1,
+    .id = 0,
     .team = NULL,
     .callbacks = { { 0 } },
     .timer = { 0 },
@@ -39,6 +40,8 @@ void player_construct(player_t *player, sockd_t sockd, team_t *team)
     memcpy(player, &template, sizeof(template));
     player->sockd = sockd;
     gettimeofday(&player->timer, NULL);
+    player->id = GAME.player_next_id;
+    GAME.player_next_id += 1;
     player->team = team;
     player->dir = randbetween(0, 3);
     player->pos.x = randbetween(0, GAME.width - 1);

@@ -58,5 +58,6 @@ bool pre_exec_incantation(player_t *player, char *data)
     if (player->incantation || !recp || !elevation_is_possible(recp, player))
         return (false);
     start_elevation(recp, player);
+    spectators_send_elevation_start(player->incantation);
     return (true);
 }

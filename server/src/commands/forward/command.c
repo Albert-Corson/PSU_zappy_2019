@@ -18,6 +18,7 @@ bool exec_forward(player_t *player, char *data)
         player->pos.x -= GAME.width;
     if (player->pos.y >= GAME.height)
         player->pos.y -= GAME.width;
+    spectators_send_forward(player);
     send_str(player->sockd, "ok\n");
     return (true);
 }
