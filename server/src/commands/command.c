@@ -24,7 +24,7 @@ static const command_t cmds[] = {
     { "right", 7, NULL, exec_right },
     { "set", 7, pre_exec_set, exec_set },
     { "take", 7, NULL, exec_take },
-    { "", 0, NULL, exec_not_found }
+    { NULL, 0, NULL, exec_not_found }
 };
 
 bool exec_not_found(player_t *player, char *data)
@@ -36,7 +36,7 @@ static const command_t *command_find(const char *cmdname)
 {
     size_t idx = 0;
 
-    while (idx < sizeof(cmds) / sizeof(*cmds)) {
+    while (cmds[idx].name) {
         if (!strcasecmp(cmds[idx].name, cmdname))
             break;
         ++idx;
@@ -54,8 +54,12 @@ static void parse_cmdline(char *buffer, char **data)
         tmp += 1;
     }
     tmp += strspn(tmp, " \t\n");
-    if (*tmp)
+    if (*tmp) {
         *data = strdup(tmp);
+        tmp = strchr(*data, '\n');
+        if (tmp)
+            *tmp = 0;
+    }
 }
 
 void command_handle_request(request_t *req, response_t *res, player_t *player)

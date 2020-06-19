@@ -18,7 +18,7 @@ void spectator_send_inventory(const spectator_t *spec, const player_t *player)
     bool good = true;
 
     sbuffer_init(&buf);
-    good = sbuffer_write(&buf, "inventory");
+    good = sbuffer_printf(&buf, "inventory %lu", player->id);
     for (size_t idx = 0; good && idx < size; ++idx) {
         good = sbuffer_printf(&buf, " %s %lu", player->inventory[idx].name, \
         player->inventory[idx].amount);
