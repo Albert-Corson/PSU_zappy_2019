@@ -16,13 +16,11 @@ BUILD_CLI	=	build_ai
 
 NAME_SRV	=	zappy_server
 
-NAME_CLI	=	zappy_ai
+NAME_AI		=	zappy_ai
 
 NAME_TEST	=	unit_tests
 
-OBJ_SRV		=	$(SRC_SRV:%.c=$(BUILD_SRV)/%.o) 
-
-OBJ_AI		=	$(SRC_AI:%.c=$(BUILD_AI)/%.o)
+OBJ_SRV		=	$(SRC_SRV:%.c=$(BUILD_SRV)/%.o)
 
 PROJECT_ROOT	:=	$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 

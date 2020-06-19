@@ -59,7 +59,7 @@ SRC_SRV		=	server/src/commands/broadcast/command.c				\
 				server/src/utils/randbetween.c						\
 				server/src/utils/strtoelement.c
 
-SRC_AI		=	client/src/main.c
+#SRC_SRV_AI		=	$(filter-out ai/src/main.cpp, $(SRC_AI))	\
 
 SRC_TEST	=	$(filter-out server/src/main.c, $(SRC_SRV))	\
 				$(filter-out client/src/main.c, $(SRC_AI))	\
