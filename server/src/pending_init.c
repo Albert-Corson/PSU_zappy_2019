@@ -26,7 +26,7 @@ size_t nb_teammates)
     if (sprintf(response, "%d\n", team->max_clients - (int)nb_teammates) < 0)
         exit(84);
     respond_str(req, res, response);
-    if (sprintf(response, "%d %d\n", player->pos.x, player->pos.y) < 0)
+    if (sprintf(response, "%d %d\n", GAME.width, GAME.height) < 0)
         exit(84);
     respond_str(req, res, response);
     spectators_send_new_player(player);
