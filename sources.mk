@@ -31,6 +31,7 @@ SRC_SRV		=	server/src/commands/broadcast/command.c				\
 				server/src/mqueue/mq_output.c						\
 				server/src/mqueue/mq_reader.c						\
 				server/src/mqueue/mq_writer.c						\
+				server/src/mqueue/mq_pending.c						\
 				server/src/pending_init.c							\
 				server/src/sbuffer/allocate.c						\
 				server/src/sbuffer/sbuffer.c						\

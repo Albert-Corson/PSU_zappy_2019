@@ -74,4 +74,30 @@ size_t len);
 */
 void mq_set_message_writer(message_writer_t writer);
 
+/**
+* @brief Count pending messages destined to given fd
+* @param fd target fd
+* @return pending messages count (for given fd)
+*/
+int mq_count_fd_pending(int fd);
+
+/**
+* @brief Tells if there is at least 1 pending message destined to given fd
+* @param fd target fd
+* @return 1 if there is at least 1 message pending, 0 otherwise
+*/
+int mq_fd_has_pending(int fd);
+
+/**
+* @brief Counts all pending messages
+* @return pending message count
+*/
+int mq_count_pending(void);
+
+/**
+* @brief Tells if there is at least 1 pending message
+* @return 1 if there is at least 1 message pending, 0 otherwise
+*/
+int mq_has_pending(void);
+
 #endif /* !MQ_H_ */
