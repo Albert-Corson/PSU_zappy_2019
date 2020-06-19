@@ -7,7 +7,7 @@
 
 include sources.mk var.mk
 
-all:   ai_z server_z  libs ## Build the binary and relinks if needed
+all: libs ai_z server_z ## Build the binary and relinks if needed
 
 include server.mk
 
