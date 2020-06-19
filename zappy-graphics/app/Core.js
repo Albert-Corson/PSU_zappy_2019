@@ -16,6 +16,7 @@ export class Core {
         this.playerManager = new PlayerManager;
         this.messageQueue = new Queue;
 
+        document.getElementById('info').innerText = 'No item selected';
 
         Server.on('message', (message) => this.messageQueue.enqueue(message));
 
@@ -200,7 +201,6 @@ export class Core {
                 intersects[0].object.root.callback();
         } else {
             //document.getElementById('items').innerHTML = '';
-            //document.getElementById('info').innerHTML = '';
             //document.getElementById('fpv').style.display = 'none';
         }
     }
