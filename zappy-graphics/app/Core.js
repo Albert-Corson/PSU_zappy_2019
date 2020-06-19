@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { Scene } from '@/app/wrappers/Scene';
 import { Item } from '@/app/Item';
-import { Player } from '@/app/Player';
 import { Map } from '@/app/Map';
 import { DIR } from '@/app/constants';
 import { Manager, SoundRef } from '@/app/sound/SoundManager';
-import { PlayerManager, Team } from '@/app/PlayerManager';
-
+import { PlayerManager } from '@/app/PlayerManager';
+import { Queue } from '@/app/wrappers/Queue'
+import { Server } from '@/app/server/index'
 import { Sky } from 'three/examples/jsm/objects/Sky';
 
 export class Core {
@@ -14,6 +14,10 @@ export class Core {
         this.sceneWrapper = new Scene('white');
         this.map = new Map(opt.mapSize || {x: 20, z: 20});
         this.playerManager = new PlayerManager;
+        this.messageQueue = new Queue;
+
+
+        Server.on('message', (message) => this.messageQueue.enqueue(message));
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
 

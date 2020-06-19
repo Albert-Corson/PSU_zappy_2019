@@ -1,4 +1,3 @@
-import { Queue } from '@/app/wrappers/Queue'
 import { Server } from '@/app/server/index'
 import { Core } from '@/app/Core'
 
@@ -17,6 +16,7 @@ export class ConnectionManager {
             Server.connect(this.ip, parseInt(this.port));
             Server.send("-spectator");
             Server.on('connect', () => {
+                console.info('waiting for initialization...');
                 let core = new Core;
                 document.getElementById('connection').style.display = 'none';
             });
