@@ -28,7 +28,8 @@ void event_v_emit(event_list_t *list, const char *type, va_list ap)
     while (walker != NULL) {
         if (strcmp(walker->type, type) == 0) {
             va_copy(cpy, ap);
-            walker->listener(ap);
+            walker->listener(cpy);
+            va_end(cpy);
         }
         walker = STAILQ_NEXT(walker, entries);
     }

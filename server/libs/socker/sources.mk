@@ -21,6 +21,7 @@ SRC_LIB		=	src/socket/converts.c		\
 				src/socker/run.c			\
 				src/socker/select.c			\
 				src/socker/socket.c
+
 OBJ_LIB		=	$(SRC_LIB:.c=.o)
 
 DIR_HEADERS	=	include

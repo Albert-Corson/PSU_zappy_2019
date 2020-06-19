@@ -54,34 +54,39 @@ void on_connect(va_list ap)
     SLIST_INSERT_HEAD(&GAME.pendings, client, next);
 }
 
+static bool disconnect_pending(sockd_t peer)
+{
+    pending_client_t *it = NULL;
+
+    SLIST_FOREACH(it, &GAME.pendings, next) {
+        if (it->sockd == peer) {
+            SLIST_REMOVE(&GAME.pendings, it, pending_client, next);
+            free(it);
+            return (true);
+        }
+    }
+    return (false);
+}
+
 void on_disconnect(va_list ap)
 {
     bool found = false;
-    void *it = NULL;
     sockd_t peer = va_arg(ap, sockd_t);
+    void *it = SLIST_FIRST(&GAME.players);
 
-    it = SLIST_FIRST(&GAME.players);
+    if (disconnect_pending(peer))
+        return;
     for (; it && !found; it = SLIST_NEXT((player_t *)it, next)) {
         found = ((player_t *)it)->sockd == peer;
         if (found)
             SLIST_REMOVE(&GAME.players, it, player, next);
     }
-    it = SLIST_FIRST(&GAME.spectators);
+    if (!found)
+        it = SLIST_FIRST(&GAME.spectators);
     for (; it && !found; it = SLIST_NEXT((spectator_t *)it, next)) {
         found = ((spectator_t *)it)->sockd == peer;
         if (found)
             SLIST_REMOVE(&GAME.spectators, it, spectator, next);
     }
-    if (!it)
-        return;
     free(it);
-}
-
-message_t *message_reader(sockd_t peer, size_t size)
-{
-    size_t len = 0;
-    char *data = NULL;
-
-    len = socket_getline(peer, &data, &len);
-    return (new_message(data, len));
 }

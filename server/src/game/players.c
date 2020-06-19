@@ -65,11 +65,11 @@ static bool process_food(player_t *player, struct timeval *now)
     struct timeval newbirth = { 0, foodtime * 1000 };
 
     while (player->inventory[E_FOOD].amount != 0 && elapsed >= foodtime) {
-        spectators_send_eat(player);
         timeradd(&player->timer, &newbirth, &player->timer);
         player->inventory[E_FOOD].amount -= 1;
         elapsed -= foodtime;
     }
+    spectators_send_inventory(player);
     if (player->inventory[E_FOOD].amount == 0) {
         die(player);
         return (false);

@@ -19,15 +19,6 @@ void spectator_send_died(const spectator_t *spec, const player_t *player)
     send_str(spec->sockd, buffer);
 }
 
-void spectator_send_eat(const spectator_t *spec, const player_t *player)
-{
-    char buffer[16] = { 0 };
-
-    if (sprintf(buffer, "eat %lu\n", player->id) < 0)
-        exit(84);
-    send_str(spec->sockd, buffer);
-}
-
 void spectator_send_drop(const spectator_t *spec, const player_t *player, \
 element_e elem)
 {

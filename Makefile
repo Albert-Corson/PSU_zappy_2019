@@ -14,8 +14,11 @@ include server.mk
 libs:
 	$(MAKE) -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
 
+libs_debug:
+	$(MAKE) -C server/libs/socker debug INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
+
 debug: CFLAGS+=-g
-debug: all
+debug: libs_debug $(NAME_SRV)
 
 tests_run: override LDLIBS              +=      -lcriterion --coverage
 tests_run: all ## build and execute unit tests
@@ -37,4 +40,3 @@ help: ## Display this help
 	@grep -E "^[a-zA-Z\\_]+:.*##.*" Makefile | awk -F ":.*##" '{printf "$(BLUE)%-25s$(WHITE)%s\n", $$1, $$2}'
 
 .PHONY: all clean fclean re
-

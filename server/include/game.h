@@ -83,11 +83,6 @@ void spectators_send_new_egg(const egg_t *egg);
 void spectators_send_hatched(const egg_t *egg);
 
 /**
-* @brief send a "eat" notification to all spectators
-*/
-void spectators_send_eat(const player_t *player);
-
-/**
 * @brief send a "died" notification to all spectators
 */
 void spectators_send_died(const player_t *player);

@@ -20,7 +20,7 @@ After receiving the `WELCOME` message, the UI-client need to respond by `-specta
 
     --> WELCOME
     <-- -spectator
-    --> height width
+    --> map_size height width
 
 > **\/!\\** After the connection's initialization, the server will send a first batch of [notifications](###-Game-updates) so that the UI-client can catch up on the ongoing game.
 
@@ -62,11 +62,6 @@ inventory <player_uui> [<item_name> <amount>]...
 hatched <egg_id>
 ```
 > An egg has hatched, creating a new slot in it's team for a player to join
-
-```xml
-eat <player_id>
-```
-> A player has eaten one unit of the "food" item
 
 ```xml
 died <player_id>

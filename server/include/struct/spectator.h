@@ -61,11 +61,6 @@ void spectator_send_new_egg(const spectator_t *spec, const egg_t *egg);
 void spectator_send_hatched(const spectator_t *spec, const egg_t *egg);
 
 /**
-* @brief send a "eat" notification
-*/
-void spectator_send_eat(const spectator_t *spec, const player_t *player);
-
-/**
 * @brief send a "died" notification
 */
 void spectator_send_died(const spectator_t *spec, const player_t *player);

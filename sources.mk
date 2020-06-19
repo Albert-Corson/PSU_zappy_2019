@@ -19,6 +19,7 @@ SRC_SRV		=	server/src/commands/broadcast/command.c				\
 				server/src/game/players.c							\
 				server/src/game/run.c								\
 				server/src/recipes.c								\
+				server/src/reader.c									\
 				server/src/listeners.c								\
 				server/src/main.c									\
 				server/src/mqueue/mq_api.c							\
