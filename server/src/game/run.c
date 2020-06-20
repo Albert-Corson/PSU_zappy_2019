@@ -16,7 +16,7 @@ static void game_process_map(struct timeval *now)
     struct timeval new = { 0 };
     vector_t pos = { 0 };
     element_e elem = E_UNKNOWN;
-    const double lim = (RESPAWN / GAME.freq) * 1000;
+    const double lim = (RESPAWNTIME / GAME.freq) * 1000;
     double elapsed = getelapsedms(&GAME.respawn, now);
 
     while (elapsed >= lim) {

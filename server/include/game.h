@@ -12,7 +12,7 @@
 
 #define FOODTIME 126.0
 #define HATCHTIME 600
-#define RESPAWN 1
+#define RESPAWNTIME 7
 
 int flag_client_nb(int, const char **);
 int flag_name(int, const char **);
