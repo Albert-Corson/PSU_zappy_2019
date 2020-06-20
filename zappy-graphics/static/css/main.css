@@ -44,6 +44,10 @@ body {
     display: none;
 }
 
+#follow {
+    display: none;
+}
+
 #mute {
     font-size: 20px;
 }
