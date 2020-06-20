@@ -9,8 +9,6 @@ include sources.mk var.mk
 
 all: libs ai_z server_z ## Build the binary and relinks if needed
 
-include server.mk
-
 libs:
 	$(MAKE) -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
 

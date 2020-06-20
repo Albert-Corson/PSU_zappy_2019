@@ -79,8 +79,10 @@ class Trantorian:
             self.stones[_] = 0
 
     def check_ressources(self): # pareil 
-        actual_state = [self.player_gathered] + list(self.stones.values())
-        require_state = self.elev_table[self.level - 1]
+        actual_state = list(self.stones.values())
+        require_state = self.elev_table[self.level - 1][1:]
+        print("required ###### =>")
+        print(require_state)
         if collections.Counter(actual_state) == collections.Counter(require_state):
             print("All ressources are reunited")
             return True
@@ -103,6 +105,7 @@ class Trantorian:
         print("Now elevating to %d" %(self.level))
 
     def forward(self):
+        print("Forward")
         self.send_cmd("Forward\n")
         if self.direction == Direction.NORTH:
             if self.y + 1 > self.map_dimension['y']:
@@ -126,12 +129,14 @@ class Trantorian:
                 self.x -= 1
 
     def right(self):
+        print("Turn Right")
         self.send_cmd("Right\n")
         self.direction += 1
         if self.direction > 3:
             self.direction = 0
 
     def left(self):
+        print("Turn Left")
         self.send_cmd("Left\n")
         self.direction -= 1
         if self.direction < 0:
@@ -175,13 +180,13 @@ class Trantorian:
             tmp_level -= 1
             pad -= 1
 
-    def take_object(self): # WIP
-        print("Take object")
-        self.send_cmd("Take object\n")
+    def take_object(self, obj): # WIP
+        print("Take object => " + obj)
+        self.send_cmd("Take "+ obj +"\n")
 
-    def set_object(self): # WIP
-        print("Set object down")
-        self.send_cmd("Set object\n")
+    def set_object(self, obj): # WIP
+        print("Set object down => " + obj)
+        self.send_cmd("Set "+ obj +"\n")
 
     def fork(self):
         print("Set object down")
@@ -192,6 +197,7 @@ class Trantorian:
         self.send_cmd("Eject\n")
 
     def broadcast(self, text):
+        print("Broadcasting..")
         self.send_cmd("Broadcast " + text + "\n")
 
     def inventory(self):
@@ -261,25 +267,40 @@ class Trantorian:
         print("######~ %d" %(count))
         return count
 
+    def check_other_needed_resources(self):
+        self.look()
+        current_tile = self.vision_field[0].split(' ')
+        print(current_tile)
+    
     # ici on se deplace vers l'item en prenant d'autres item requis si on passe dessus
-    def go_take_it(self, tile_nbr):
+    def go_take_it(self, tile_nbr, obj):
         col_nbr = self.find_col_from_tile(tile_nbr)
-        calc_middle = lambda x : x * x - x
-        alpha = calc_middle(col_nbr)
-        delta = tile_nbr - alpha
+        calc_middle = lambda x : (x * x) - x
+        alpha = calc_middle(col_nbr + 1)
+        delta = alpha - tile_nbr
 
         # TODO: check during travel if other ressources are found
+        print("alpha => %d" %(alpha ))
+        print("col_nbr => %d" %(col_nbr))
         for x in range(col_nbr):
             self.forward()
-        if delta > 0:
+        if delta < 0:
             self.right()
-        elif delta < 0:
+        elif delta > 0:
             self.left()
+        print("delta => %d" %(delta ))
         for y in range(abs(delta)):
             self.forward()
-        self.take_object()
+        self.take_object(obj)
+        self.look()
+        print(self.vision_field.get(0).split(" "))
+        # if there is same object multiple time in the same tile
+        other_obj = self.vision_field.get(0).split(" ").count(obj)
+        [self.take_object(obj) for _ in range(other_obj)]
+        self.inventory()
 
     def work(self):
+        print("Up")
         index_vision = -1
         # regarder les ressources actuelles
         index_level = self.level - 1
@@ -294,12 +315,11 @@ class Trantorian:
         # si on a tout bah on commence l'incantation
         if self.check_ressources() == True:
             self.broadcast("Avengers Rassemblement!")
-            return
-        # regarde dans sas vision_field and move forward if most wanted
+        # regarde dans sa vision_field and move forward if most wanted
         self.look()
         index_vision = self.check_in_vision_field(self.stone_ref[most_wanted])
         if index_vision != -1:
-            self.go_take_it(index_vision)
+            self.go_take_it(index_vision, self.stone_ref[most_wanted])
         else:
             [self.forward() for x in range(3)]
         print("Working")
