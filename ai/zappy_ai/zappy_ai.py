@@ -1,4 +1,5 @@
 from zappy_ai.trantorian import Trantorian
+import sys
 import asyncore, socket
 
 class Error(Exception):
@@ -10,9 +11,24 @@ class CmdLineErrors(Error):
         self.message = message
 
 class ReceiverHandler(asyncore.dispatcher):
+    player = None
     def __init__(self, host, port):
         asyncore.dispatcher.__init__(self)
         self.sockfd = socket.create_connection((host, port))
+
+    def handle_close(self):
+        self.close()
+        sys.exit(0)
+
+    def handle_read(self):
+        print(self.recv(3000))
+        length_checker = len("message")
+        response = self.recv(3000)
+        
+        if response == "dead":
+            self.handle_close()
+        elif len(response) >= length_checker and response[:length_checker] == "message":
+            self.player.check_broadcast_msg(response)
 
 #TODO: Vision handling and ressources managements
 
@@ -46,6 +62,7 @@ def init_communication(sockfd, team_name):
     print("receive => " + msg)
     sockfd.send((team_name + "\n").encode("Utf8"))
     buffer = sockfd.recv(1280).decode("Utf8").split('\n')
+    print(buffer)
     remaining_client = int(buffer[0])
     word_dimensions = list(map(int, buffer[1].split(' ')))
     return remaining_client, word_dimensions
@@ -54,13 +71,7 @@ def genese(player, word_dim):
     player.set_map_dimension(word_dim[0], word_dim[1])
     player.randomize_spawn() # Maybe useless
     player.look()
-    #player.inventory()
-
-def check_response(response, player):
-    length_checker = len("message")
-    if len(response) >= length_checker and response[:length_checker] == "message":
-        player.check_broadcast_msg(response)
-       
+    player.inventory()
 
 def begin_ai(ac, av):
     response = ""
@@ -75,18 +86,17 @@ def begin_ai(ac, av):
             print("No slot availiable, can't connect")
             sockfd.close()
         player = Trantorian(name, sockfd)
+        client.player = player
         genese(player, word_dim)
-        print(player.vision_field)
-        while player.level != 8 or response == "dead":
+        while player.level != 8:
             # AI stuff here
             # TODO: test dead reponse with our server
             player.work()
-            response = sockfd.recv(1280).decode("Utf8")
-            check_response(response, player)
+            asyncore.loop()
     except KeyboardInterrupt: # ctrl-c or delete
         print("Player is dying off..")
         # TODO: check with server side if this event is catch on their side
         sockfd.close()
-
+        sys.exit(84)
     sockfd.close()
 
