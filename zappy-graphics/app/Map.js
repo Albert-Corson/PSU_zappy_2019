@@ -105,6 +105,8 @@ export class Map {
 
             block.items[type] = {nb: 1, index, model: new Item(type, sceneWrapper)};
 
+            block.items[type].model.getMesh().rotation.y = Math.PI / 180 * ~~(Math.random() * 360);
+
             let pos = this.getPositionFromCoord({x, y: z}, false);
             pos.x = pos.x - this.modelSize.x / 2 + (index % 4 * this.modelSize.x / 4) + this.modelSize.x / 8;
             pos.z = pos.z - this.modelSize.z / 2 + (Math.floor(index / 4) * this.modelSize.z / 4)  + this.modelSize.x / 8;

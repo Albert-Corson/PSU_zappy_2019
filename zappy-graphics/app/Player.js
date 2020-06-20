@@ -18,6 +18,7 @@ export class Player extends Model {
         this.eggs = [];
         this.food = 0;
         this.teamIdentificator = null;
+        this.teamColor = 'white';
         this.isFPV = false;
         this.isFollow = false;
 
@@ -27,13 +28,16 @@ export class Player extends Model {
     async initInstance(sceneWrapper, color) {
         await this.load('static/assets/models/players/robot.glb', sceneWrapper, true);
 
-        let material = new THREE.MeshBasicMaterial({ color });
+        let material = new THREE.MeshBasicMaterial();
         let geometry = new THREE.OctahedronGeometry(.05, 0);
         let mesh = new THREE.Mesh(geometry, material);
+
+        material.color = new THREE.Color(color);
 
         sceneWrapper.getScene().add(mesh);
 
         this.teamIdentificator = mesh;
+        this.teamColor = color;
 
         new createjs.Tween.get(this.teamIdentificator.rotation, { loop: -1 }).to({
             y: Math.PI
@@ -281,11 +285,11 @@ export class Player extends Model {
             return;
         }
 
-        let tmp = `<p>ID: <i>${ this.playerId }</i></p>`;
-        tmp += `<p>Team: <i>${ this.teamName }</i></p>`;
-        tmp += `<p>Level: <i>${ this.level }</i></p>`;
-        tmp += `<p>Food: <i>${ this.food }</i></p>`;
-        tmp += `<p>Inventory:</p>`;
+        let tmp = `<p class="font-weight-bold m-0">ID: <i class="font-weight-normal">${ this.playerId }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Team: <i class="font-weight-normal">${ this.teamName }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Level: <i class="font-weight-normal">${ this.level }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Food: <i class="font-weight-normal">${ this.food }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Inventory:</p>`;
 
         info.innerHTML = tmp;
 

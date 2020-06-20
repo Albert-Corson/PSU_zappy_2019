@@ -7,6 +7,7 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <libs/socker/socker.h>
 #include <game.h>
@@ -28,6 +29,7 @@ void on_connect(va_list ap)
     pending_client_t *client = NULL;
 
     if (!GAME.running) {
+        printf("[?] Connection refused (game has ended): %d\n", peer);
         socker_disconnect(peer);
         return;
     }
@@ -38,4 +40,5 @@ void on_connect(va_list ap)
     client->sockd = peer;
     SLIST_INSERT_HEAD(&GAME.pendings, client, next);
     send_str(peer, "WELCOME\n");
+    printf("[?] New connection: %d\n", peer);
 }

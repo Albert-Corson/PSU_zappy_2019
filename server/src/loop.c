@@ -41,8 +41,9 @@ static void client_buffer_exec_next(client_buffer_t *client)
         return;
     if (!init_pending(client->sockd, line.buffer)) {
         player = game_get_player(client->sockd);
-        if (player)
+        if (player) {
             command_handle_request(player, line.buffer);
+        }
     }
     sbuffer_destroy(&line);
 }

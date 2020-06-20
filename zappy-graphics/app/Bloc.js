@@ -26,14 +26,14 @@ export class Bloc extends Model {
         fpv.style.display = 'none';
         follow.style.display = 'none';
 
-        let tmp = `<p>Tile: bloc <i>${this.idx}</i></p>`;
-        tmp += `<p>Items on this tile:</i></p>`;
+        let tmp = `<p class="font-weight-bold m-0">Tile: <i class="font-weight-normal">bloc ${this.idx}</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Items on this tile:</p>`;
 
         info.innerHTML = tmp;
 
         list.innerHTML = '';
         Object.keys(this.items).map(e => {
-            list.innerHTML += `<li class="list-group-item">${e.toLowerCase()}: ${this.items[e] ? this.items[e].toString() : 0}</>`
+            list.innerHTML += `<li class="list-group-item">${e.toLowerCase()}: ${this.items[e] ? this.items[e].toString() : 0}</li>`
         });
     }
 
