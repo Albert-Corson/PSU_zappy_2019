@@ -53,20 +53,29 @@ export class Map {
             }
         }
 
+        this.initCamera(sceneWrapper, 35);
+        return Promise.resolve();
+    }
+
+    initCamera(sceneWrapper, angle) {
         sceneWrapper.controls.target.set(
             this.size_x * this.modelSize.x / 2,
             0,
             this.size_z * this.modelSize.z / 2,
         );
-        sceneWrapper.camera.position.set(
-            this.size_x * this.modelSize.x / 2,
-            (this.size_x * this.modelSize.x * this.size_z * this.modelSize.z) / 20,
-            this.size_z * this.modelSize.z / 2,
-        );
-        //sceneWrapper.camera.updateProjectionMatrix();
-        sceneWrapper.controls.update();
+        let distance_x = this.size_x * this.modelSize.x
+        let distance_z = this.size_z * this.modelSize.z
 
-        return Promise.resolve();
+        let cam_x = distance_x + distance_x / 4
+        let cam_z = distance_z + distance_z / 4
+        let cam_y = Math.tan(angle) * Math.sqrt(Math.pow(distance_x / 4, 2) + Math.pow(distance_z / 4, 2))
+
+        sceneWrapper.camera.position.set(
+            cam_x,
+            cam_y,
+            cam_z,
+        );
+        sceneWrapper.controls.update();
     }
 
     getPositionFromCoord(coordinates, modifySource = true) {
