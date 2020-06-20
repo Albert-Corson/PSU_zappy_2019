@@ -6,8 +6,8 @@
 */
 
 #include <string.h>
+#include <stdlib.h>
 
-#include <mqueue/request.h>
 #include <commands.h>
 #include <game.h>
 
@@ -54,27 +54,23 @@ static void parse_cmdline(char *buffer, char **data)
         tmp += 1;
     }
     tmp += strspn(tmp, " \t\n");
-    if (*tmp) {
+    if (*tmp)
         *data = strdup(tmp);
-        tmp = strchr(*data, '\n');
-        if (tmp)
-            *tmp = 0;
-    }
 }
 
-void command_handle_request(request_t *req, response_t *res, player_t *player)
+void command_handle_request(player_t *player, char *data)
 {
-    char *cmdname = req->message->data;
-    char *data = NULL;
+    char *cmdname = data;
+    char *arg = NULL;
     const command_t *cmd = NULL;
     callback_t *cb = NULL;
     bool prepare = player->callbacks->exec == NULL;
 
-    parse_cmdline(req->message->data, &data);
+    parse_cmdline(data, &arg);
     cmd = command_find(cmdname);
-    cb = player_queue_callback(player, cmd->exec, cmd->timeout, data);
+    cb = player_queue_callback(player, cmd->exec, cmd->timeout, arg);
     if (!cb) {
-        free(data);
+        free(arg);
         return;
     }
     cb->pre_exec = cmd->pre_exec;

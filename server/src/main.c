@@ -17,6 +17,8 @@
 #include <game.h>
 #include <listeners.h>
 
+void server_loop(void);
+
 static void sighandler(int sig)
 {
     GAME.running = false;
@@ -41,8 +43,7 @@ static void server_atexit(void)
 
 static void init_listeners(void)
 {
-    mq_set_message_reader(&message_reader);
-    socker_on("message", &on_message);
+    socker_on("readable", &on_readable);
     socker_on("connect", &on_connect);
     socker_on("disconnect", &on_disconnect);
 }
@@ -61,9 +62,6 @@ int main(int argc, const char **argv)
         return (84);
     init_listeners();
     socker_set_timeout(1);
-    while (GAME.running) {
-        socker_run();
-        game_run();
-    }
+    server_loop();
     return (0);
 }

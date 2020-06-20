@@ -12,6 +12,7 @@
 #include <struct/player.h>
 #include <struct/egg.h>
 #include <struct/spectator.h>
+#include <struct/client_buffer.h>
 #include <elements.h>
 
 typedef struct pending_client {
@@ -38,6 +39,7 @@ typedef SLIST_HEAD(player_list, player) player_list_t;
 typedef SLIST_HEAD(egg_list, egg) egg_list_t;
 typedef SLIST_HEAD(spectator_list, spectator) spectator_list_t;
 typedef SLIST_HEAD(pending_client_list, pending_client) pending_client_list_t;
+typedef SLIST_HEAD(client_buffer_list, client_buffer) client_buffer_list_t;
 
 typedef struct {
     bool running;
@@ -50,6 +52,7 @@ typedef struct {
     egg_list_t eggs;
     spectator_list_t spectators;
     pending_client_list_t pendings;
+    client_buffer_list_t client_buffers;
     size_t player_next_id;
     size_t egg_next_id;
     struct timeval respawn;

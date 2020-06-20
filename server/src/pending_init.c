@@ -9,11 +9,10 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <mqueue/request.h>
 #include <libs/socker/socker.h>
 #include <game.h>
 
-static void new_player(request_t *req, response_t *res, team_t *team, \
+static void new_player(sockd_t sockd, team_t *team, \
 size_t nb_teammates)
 {
     player_t *player = malloc(sizeof(*player));
@@ -21,36 +20,36 @@ size_t nb_teammates)
 
     if (!player)
         exit(84);
-    player_construct(player, req->sender, team);
+    player_construct(player, sockd, team);
     SLIST_INSERT_HEAD(&GAME.players, player, next);
     if (sprintf(response, "%d\n", team->max_clients - (int)nb_teammates) < 0)
         exit(84);
-    respond_str(req, res, response);
+    send_str(sockd, response);
     if (sprintf(response, "%d %d\n", GAME.width, GAME.height) < 0)
         exit(84);
-    respond_str(req, res, response);
+    send_str(sockd, response);
     spectators_send_new_player(player);
 }
 
-static void new_spectator(request_t *req, response_t *res)
+static void new_spectator(sockd_t sockd)
 {
     spectator_t *spec = malloc(sizeof(*spec));
 
     if (!spec)
         exit(84);
-    spectator_construct(spec, req->sender);
+    spectator_construct(spec, sockd);
     SLIST_INSERT_HEAD(&GAME.spectators, spec, next);
     spectator_send_init(spec);
 }
 
-static bool pending_client_init_player(request_t *req, response_t *res)
+static bool pending_client_init_player(sockd_t sockd, char *data)
 {
     team_t *team = NULL;
     player_t *player = NULL;
     size_t n = 0;
 
     SLIST_FOREACH(team, &GAME.teams, next) {
-        if (!strcmp(team->name, req->message->data))
+        if (!strcmp(team->name, data))
             break;
     }
     SLIST_FOREACH(player, &GAME.players, next) {
@@ -58,24 +57,24 @@ static bool pending_client_init_player(request_t *req, response_t *res)
             ++n;
     }
     if (!team || (size_t)team->max_clients <= n) {
-        socker_disconnect(req->sender);
+        socker_disconnect(sockd);
         return (false);
     }
-    new_player(req, res, team, n);
+    new_player(sockd, team, n);
     return (true);
 }
 
-void pending_client_init(pending_client_t *clt, request_t *req, response_t *res)
+void pending_client_init(pending_client_t *clt, char *data)
 {
     size_t len = 0;
     team_t *it = NULL;
-    char *newline = strchr(req->message->data, '\n');
+    char *newline = strchr(data, '\n');
 
     if (newline)
         *newline = 0;
-    if (!strcmp("-spectator", req->message->data))
-        new_spectator(req, res);
-    else if (!pending_client_init_player(req, res))
+    if (!strcmp("-spectator", data))
+        new_spectator(clt->sockd);
+    else if (!pending_client_init_player(clt->sockd, data))
         return;
     SLIST_REMOVE(&GAME.pendings, clt, pending_client, next);
     free(clt);

@@ -61,25 +61,7 @@ void mq_push_entry(mq_head_t *head, mq_entry_t *entry);
 */
 typedef struct mq {
     mq_head_t *write_head;
-    message_reader_t reader;
-    message_writer_t writer;
 } mq_t;
-
-/**
-* @brief Default message reader function (does nothing but print warnings)
-* @param peer readable peer socket
-* @param peer number of readable bytes on socket
-*/
-message_t *default_message_reader(sockd_t peer, size_t size);
-
-/**
-* @brief Default message writer function (writes given data as is)
-* @param request request to which the message is responding (can be NULL)
-* @param data message data
-* @param len message data length
-* @return allocated buffer containing the entire message to write
-*/
-message_t *default_message_writer(request_t *req, const void *data, size_t len);
 
 /**
 * @brief Message queue static storage location

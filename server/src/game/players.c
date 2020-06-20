@@ -6,6 +6,7 @@
 */
 
 #include <memory.h>
+#include <stdlib.h>
 
 #include <libs/socker/socker.h>
 #include <utils/getelapsedms.h>
@@ -26,12 +27,9 @@ void game_break_incatation(incantation_t *inc)
 
 static void process_callback(player_t *player, struct timeval *now)
 {
-    const size_t off = sizeof(player->callbacks) - sizeof(*player->callbacks);
     callback_t *cb = player->callbacks;
     double elapsed_ms = 0;
 
-    if (!cb->exec)
-        return;
     if (player->incantation) {
         memcpy(&player->callbacks->start, now, sizeof(*now));
         return;
@@ -39,7 +37,7 @@ static void process_callback(player_t *player, struct timeval *now)
     elapsed_ms = getelapsedms(&cb->start, now);
     if (elapsed_ms < (cb->timeout * 1000 / GAME.freq))
         return;
-    if (!cb->exec(player, cb->data))
+    if (cb->exec && !cb->exec(player, cb->data))
         send_str(player->sockd, "ko\n");
     player_pop_callback(player);
     player_prepare_next_callback(player);
@@ -47,14 +45,12 @@ static void process_callback(player_t *player, struct timeval *now)
 
 void game_kill_player(player_t *player)
 {
-    if (player->incantation) {
+    if (player->incantation)
         game_break_incatation(player->incantation);
-        player_pop_callback(player->incantation->initiator);
-        player_prepare_next_callback(player->incantation->initiator);
-    }
+    while (player->callbacks->exec)
+        player_pop_callback(player);
     spectators_send_died(player);
     SLIST_REMOVE(&GAME.players, player, player, next);
-    send_str(player->sockd, "dead\n");
 }
 
 static bool process_food(player_t *player, struct timeval *now)
@@ -73,6 +69,7 @@ static bool process_food(player_t *player, struct timeval *now)
     if (eaten)
         spectators_send_inventory(player);
     if (player->inventory[E_FOOD].amount == 0) {
+        send_str(player->sockd, "dead\n");
         game_kill_player(player);
         free(player);
         return (false);

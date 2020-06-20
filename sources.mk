@@ -19,21 +19,20 @@ SRC_SRV		=	server/src/commands/broadcast/command.c				\
 				server/src/game/players.c							\
 				server/src/game/run.c								\
 				server/src/recipes.c								\
-				server/src/reader.c									\
 				server/src/listeners.c								\
+				server/src/send_str.c								\
+				server/src/loop.c									\
 				server/src/main.c									\
 				server/src/mqueue/mq_api.c							\
 				server/src/mqueue/mq.c								\
 				server/src/mqueue/mq_clear.c						\
 				server/src/mqueue/mq_hooks.c						\
 				server/src/mqueue/mq_init.c							\
-				server/src/mqueue/mq_message.c						\
 				server/src/mqueue/mq_output.c						\
-				server/src/mqueue/mq_reader.c						\
-				server/src/mqueue/mq_writer.c						\
 				server/src/mqueue/mq_pending.c						\
 				server/src/pending_init.c							\
 				server/src/sbuffer/allocate.c						\
+				server/src/sbuffer/extract.c						\
 				server/src/sbuffer/sbuffer.c						\
 				server/src/sbuffer/writers.c						\
 				server/src/spectators/send_elevation.c				\
@@ -54,7 +53,6 @@ SRC_SRV		=	server/src/commands/broadcast/command.c				\
 				server/src/struct/spectator/spectator.c				\
 				server/src/struct/team.c							\
 				server/src/struct/vector.c							\
-				server/src/utils/write_str.c						\
 				server/src/utils/getelapsedms.c						\
 				server/src/utils/randbetween.c						\
 				server/src/utils/strtoelement.c

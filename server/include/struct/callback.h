@@ -9,8 +9,6 @@
 
 #include <sys/time.h>
 
-#include <mqueue/request.h>
-
 typedef struct player player_t;
 
 typedef struct callback callback_t;

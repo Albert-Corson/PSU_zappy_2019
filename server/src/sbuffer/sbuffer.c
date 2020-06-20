@@ -9,7 +9,7 @@
 #include <memory.h>
 #include <stdbool.h>
 
-#include <sbuffer/internals/allocate.h>
+#include <sbuffer/sbuffer.h>
 
 void sbuffer_init(sbuffer_t *buf)
 {

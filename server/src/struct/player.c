@@ -5,6 +5,7 @@
 ** player
 */
 
+#include <stdlib.h>
 #include <memory.h>
 #include <unistd.h>
 

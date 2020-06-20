@@ -5,6 +5,8 @@
 ** callback
 */
 
+#include <stdlib.h>
+
 #include <game.h>
 
 static void get_tile_pos(player_t *player, const vector_t *off, vector_t *pos)

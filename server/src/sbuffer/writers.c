@@ -10,7 +10,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include <sbuffer/internals/allocate.h>
+#include <sbuffer/sbuffer.h>
 
 bool sbuffer_write(sbuffer_t *buf, const char *src)
 {
@@ -24,7 +24,7 @@ bool sbuffer_write(sbuffer_t *buf, const char *src)
     if (buf->size > 0)
         buf->size -= 1;
     srclen += 1;
-    if (!buffer_alloc(buf, srclen))
+    if (!sbuffer_allocate(buf, srclen))
         return (false);
     strcpy(buf->buffer + buf->size, src);
     buf->size += srclen;
@@ -40,7 +40,7 @@ static int sbuffer_printf_alloc(sbuffer_t *buf, const char *format, va_list ap)
     if (str_len == 0)
         return (0);
     str_len += (buf->size == 0);
-    if (!buffer_alloc(buf, str_len))
+    if (!sbuffer_allocate(buf, str_len))
         return (-1);
     return (str_len);
 }

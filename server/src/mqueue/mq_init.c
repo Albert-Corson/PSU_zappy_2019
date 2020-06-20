@@ -5,6 +5,8 @@
 ** mq_init
 */
 
+#include <stdlib.h>
+
 #include <socker/events.h>
 #include "mqueue/internals/mq.h"
 #include "mqueue/internals/hooks.h"
@@ -21,7 +23,6 @@ int mq_init(void)
     G_MQ = mq_open();
     if (G_MQ == NULL)
         return (-1);
-    socker_on("readable", &mq_on_readable);
     socker_on("writable", &mq_on_writable);
     socker_on("disconnect", &mq_on_disconnect);
     return (0);
@@ -44,8 +45,6 @@ mq_t *mq_open(void)
         free(mq);
         return (NULL);
     }
-    mq->reader = &default_message_reader;
-    mq->writer = &default_message_writer;
     return (mq);
 }
 

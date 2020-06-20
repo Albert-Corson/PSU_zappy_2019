@@ -8,9 +8,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#include <sbuffer/internals/allocate.h>
+#include <sbuffer/sbuffer.h>
 
-bool buffer_alloc(sbuffer_t *buf, size_t size)
+bool sbuffer_allocate(sbuffer_t *buf, size_t size)
 {
     void *tmpptr = NULL;
     size_t avail = 0;

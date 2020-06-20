@@ -153,4 +153,3 @@ void spectators_send_left(const player_t *player);
 void spectators_send_right(const player_t *player);
 
 int send_str(sockd_t sockd, const char *str);
-int respond_str(request_t *req, response_t *res, const char *str);

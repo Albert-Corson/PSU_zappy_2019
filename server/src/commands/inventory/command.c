@@ -5,6 +5,8 @@
 ** callback
 */
 
+#include <stdlib.h>
+
 #include <game.h>
 
 bool exec_inventory(player_t *player, char *data)

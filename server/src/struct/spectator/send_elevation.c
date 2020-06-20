@@ -5,6 +5,8 @@
 ** send_elevation
 */
 
+#include <stdlib.h>
+
 #include <sbuffer/sbuffer.h>
 #include <game.h>
 

@@ -5,6 +5,8 @@
 ** middleware
 */
 
+#include <stdlib.h>
+
 #include <game.h>
 #include <recipes.h>
 

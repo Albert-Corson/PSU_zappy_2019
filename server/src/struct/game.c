@@ -28,6 +28,8 @@ static void player_list_destroy(player_list_t *list)
         n1 = SLIST_FIRST(list);
         if (n1->incantation)
             game_break_incatation(n1->incantation);
+        while (n1->callbacks->exec)
+            player_pop_callback(n1);
         SLIST_REMOVE_HEAD(list, next);
         free(n1);
     }
@@ -57,6 +59,8 @@ static void spectator_list_destroy(spectator_list_t *list)
 
 void game_destroy(game_t *game)
 {
+    client_buffer_t *n1 = SLIST_FIRST(&game->client_buffers);
+
     if (game->map) {
         free(*game->map);
         free(game->map);
@@ -65,4 +69,10 @@ void game_destroy(game_t *game)
     player_list_destroy(&game->players);
     egg_list_destroy(&game->eggs);
     spectator_list_destroy(&game->spectators);
+    while (!SLIST_EMPTY(&game->client_buffers)) {
+        n1 = SLIST_FIRST(&game->client_buffers);
+        SLIST_REMOVE_HEAD(&game->client_buffers, next);
+        sbuffer_destroy(&n1->buf);
+        free(n1);
+    }
 }

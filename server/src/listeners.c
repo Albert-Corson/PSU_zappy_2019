@@ -7,52 +7,12 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #include <libs/socker/stream.h>
-#include <mqueue/request.h>
+#include <libs/socker/socker.h>
 #include <commands.h>
 #include <game.h>
-
-void pending_client_init(pending_client_t *, request_t *, response_t *);
-
-static bool init_pending(request_t *req, response_t *res)
-{
-    pending_client_t *clt = NULL;
-
-    SLIST_FOREACH(clt, &GAME.pendings, next) {
-        if (clt->sockd == req->sender)
-            break;
-    }
-    if (!clt)
-        return (false);
-    pending_client_init(clt, req, res);
-    return (true);
-}
-
-void on_message(va_list ap)
-{
-    request_t *req = va_arg(ap, request_t *);
-    response_t *res = va_arg(ap, response_t *);
-    player_t *player = NULL;
-
-    if (init_pending(req, res))
-        return;
-    player = game_get_player(req->sender);
-    if (player)
-        command_handle_request(req, res, player);
-}
-
-void on_connect(va_list ap)
-{
-    sockd_t peer = va_arg(ap, sockd_t);
-    pending_client_t *client = malloc(sizeof(*client));
-
-    if (!client)
-        exit(84);
-    send_str(peer, "WELCOME\n");
-    client->sockd = peer;
-    SLIST_INSERT_HEAD(&GAME.pendings, client, next);
-}
 
 static bool disconnect_pending(sockd_t peer)
 {
@@ -68,25 +28,91 @@ static bool disconnect_pending(sockd_t peer)
     return (false);
 }
 
+static void client_buffers_destroy(sockd_t peer)
+{
+    client_buffer_t *it = NULL;
+
+    SLIST_FOREACH(it, &GAME.client_buffers, next) {
+        if (it->sockd == peer) {
+            SLIST_REMOVE(&GAME.client_buffers, it, client_buffer, next);
+            sbuffer_destroy(&it->buf);
+            free(it);
+            return;
+        }
+    }
+}
+
 void on_disconnect(va_list ap)
 {
     bool found = false;
     sockd_t peer = va_arg(ap, sockd_t);
     void *it = SLIST_FIRST(&GAME.players);
 
+    client_buffers_destroy(peer);
     if (disconnect_pending(peer))
         return;
     for (; it && !found; it = SLIST_NEXT((player_t *)it, next)) {
-        found = ((player_t *)it)->sockd == peer;
-        if (found)
-            game_kill_player(it);
+        if (!(found = ((player_t *)it)->sockd == peer))
+            continue;
+        game_kill_player(it);
+        break;
     }
-    if (!found)
-        it = SLIST_FIRST(&GAME.spectators);
+    it = !found ? SLIST_FIRST(&GAME.spectators) : it;
     for (; it && !found; it = SLIST_NEXT((spectator_t *)it, next)) {
-        found = ((spectator_t *)it)->sockd == peer;
-        if (found)
-            SLIST_REMOVE(&GAME.spectators, it, spectator, next);
+        if (!(found = ((spectator_t *)it)->sockd == peer))
+            continue;
+        SLIST_REMOVE(&GAME.spectators, it, spectator, next);
+        break;
     }
     free(it);
+}
+
+void on_readable(va_list ap)
+{
+    sockd_t peer = va_arg(ap, sockd_t);
+    size_t size = va_arg(ap, size_t);
+    char *buffer = malloc(size + 1);
+    client_buffer_t *client_buffer = NULL;
+    ssize_t rd = 0;
+
+    if (buffer == NULL)
+        exit(84);
+    rd = read(peer, buffer, size);
+    if (rd < 0 || (size_t)rd != size) {
+        free(buffer);
+        return;
+    }
+    buffer[size] = 0;
+    SLIST_FOREACH(client_buffer, &GAME.client_buffers, next) {
+        if (client_buffer->sockd == peer) {
+            sbuffer_write(&client_buffer->buf, buffer);
+            break;
+        }
+    }
+    free(buffer);
+}
+
+void on_connect(va_list ap)
+{
+    sockd_t peer = va_arg(ap, sockd_t);
+    pending_client_t *client = NULL;
+    client_buffer_t *client_buffer = NULL;
+
+    if (!GAME.running) {
+        socker_disconnect(peer);
+        return;
+    } else if (!(client = malloc(sizeof(*client)))) {
+        exit(84);
+    }
+    client_buffer = calloc(1, sizeof(*client_buffer));
+    if (client_buffer == NULL) {
+        free(client);
+        exit(84);
+    }
+    send_str(peer, "WELCOME\n");
+    client->sockd = peer;
+    SLIST_INSERT_HEAD(&GAME.pendings, client, next);
+    sbuffer_init(&client_buffer->buf);
+    client_buffer->sockd = peer;
+    SLIST_INSERT_HEAD(&GAME.client_buffers, client_buffer, next);
 }

@@ -20,6 +20,7 @@ game_t *g_game_location(void)
         .eggs = SLIST_HEAD_INITIALIZER(game.eggs),
         .spectators = SLIST_HEAD_INITIALIZER(game.spectators),
         .pendings = SLIST_HEAD_INITIALIZER(game.pendings),
+        .client_buffers = SLIST_HEAD_INITIALIZER(game.client_buffers),
         .player_next_id = 0,
         .egg_next_id = 0,
         .respawn = { 0 }

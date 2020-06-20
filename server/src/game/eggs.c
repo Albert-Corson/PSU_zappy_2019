@@ -5,6 +5,8 @@
 ** eggs
 */
 
+#include <stdlib.h>
+
 #include <utils/getelapsedms.h>
 #include <game.h>
 

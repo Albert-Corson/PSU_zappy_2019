@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <mqueue/request.h>
 #include <struct/player.h>
 
 typedef struct {
@@ -42,4 +41,4 @@ bool exec_take(player_t *, char *);
 
 bool exec_not_found(player_t *, char *);
 
-void command_handle_request(request_t *req, response_t *res, player_t *player);
+void command_handle_request(player_t *player, char *data);
