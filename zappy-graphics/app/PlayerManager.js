@@ -30,7 +30,7 @@ class PlayerManager {
         return player;
     }
 
-    deletePlayerInTeam(playerId, scene) {
+    deletePlayerInTeam(playerId, scene, reset = null) {
         for (let team of this.teams) {
             let index = team.players.map(player => player.playerId).indexOf(playerId);
 
@@ -41,6 +41,8 @@ class PlayerManager {
                     this.updateTeamPanel();
                 });
                 team.players[index].died();
+                if (reset && team.players[index].isFPV)
+                    reset(team.players[index]);
                 return;
             }
         }

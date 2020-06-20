@@ -12,23 +12,25 @@
 static void get_tile_pos(player_t *player, const vector_t *off, vector_t *pos)
 {
     if (player->dir == SOUTH) {
-        pos->x = off->x * -1;
-        pos->y = off->y * -1;
+        pos->x += off->x * -1;
+        pos->y += off->y * -1;
     }
     if (player->dir == WEST) {
-        pos->x = off->y;
-        pos->y = off->x;
+        pos->x += off->y;
+        pos->y += off->x;
     }
     if (player->dir == EAST) {
-        pos->x = off->y * -1;
-        pos->y = off->x;
+        pos->x += off->y * -1;
+        pos->y += off->x;
     }
-    pos->x += player->pos.x;
-    pos->y += player->pos.y;
     if (pos->x >= GAME.width)
         pos->x -= GAME.width;
+    else if (pos->x < 0)
+        pos->x += GAME.width;
     if (pos->y >= GAME.height)
-        pos->y -= GAME.width;
+        pos->y -= GAME.height;
+    else if (pos->y < 0)
+        pos->y += GAME.height;
 }
 
 static bool dump_tile(sbuffer_t *buf, vector_t *pos)
@@ -60,6 +62,8 @@ static bool dump_row(sbuffer_t *buf, player_t *player, int lvl, int off_y)
     };
 
     for (off.x = lvl * -1; good && off.x <= lvl; ++off.x) {
+        pos.x = player->pos.x;
+        pos.y = player->pos.y;
         get_tile_pos(player, &off, &pos);
         good = dump_tile(buf, &pos);
         if (!good || (off.x + 1 > lvl && lvl == player->level))

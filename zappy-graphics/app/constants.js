@@ -20,4 +20,6 @@ const PLAYER_TYPE = {
     'ROBOT': {name: 'robot', mesh: null}
 };
 
-export { DIR, ITEM_TYPE, PLAYER_TYPE };
+let FOCUS_ON = {};
+
+export { DIR, ITEM_TYPE, PLAYER_TYPE, FOCUS_ON };

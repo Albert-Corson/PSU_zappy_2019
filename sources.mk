@@ -19,7 +19,9 @@ SRC_SRV		=	server/src/commands/broadcast/command.c				\
 				server/src/game/players.c							\
 				server/src/game/run.c								\
 				server/src/recipes.c								\
-				server/src/listeners.c								\
+				server/src/on_readable.c							\
+				server/src/on_connect.c								\
+				server/src/on_disconnect.c							\
 				server/src/send_str.c								\
 				server/src/loop.c									\
 				server/src/main.c									\
