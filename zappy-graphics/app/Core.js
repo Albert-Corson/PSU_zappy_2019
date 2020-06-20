@@ -16,55 +16,59 @@ export class Core extends EventDispatcher {
         this.sceneWrapper = new Scene('white');
         this.playerManager = new PlayerManager;
         this.messageQueue = new Queue;
+        this.map = new Map;
 
         this.mapCommand = {
-            'map_size': (list) => {
-                this.map = new Map({x: parseInt(list[0]), z: parseInt(list[1])});
-                return this.map.generate(this.sceneWrapper);
+            'map_size': async (list) => {
+                return this.map.generate({ x: parseInt(list[1]), z: parseInt(list[0])}, this.sceneWrapper);
             },
-            'new_item': (list) => this.map.addItem({x: parseInt(list[2]), z: parseInt(list[1])}, list[0].toUpperCase(), this.sceneWrapper),
-            'new_team': (list) => this.playerManager.addTeam(list[1], parseInt(list[0])),
-            'new_player': (list) => {
+            'new_item': async (list) => this.map.addItem({x: parseInt(list[2]), z: parseInt(list[1])}, list[0].toUpperCase(), this.sceneWrapper),
+            'new_team': async (list) => this.playerManager.addTeam(list[1], parseInt(list[0])),
+            'new_player': async (list) => {
                 let playerOpt = {
                     coordinates: { x: parseInt(list[3]), y: parseInt(list[2]) },
                     id: parseInt(list[0]),
                     dir: parseInt(list[1]),
                 };
+                console.log(playerOpt.dir);
                 return this.playerManager.addPlayerInTeam(playerOpt, list[4], this.sceneWrapper, this.map);
             },
             'new_egg': null,
-            'inventory': (list) => this.playerManager.getPlayerById(parseInt(list[0])).updateInventory(list.slice(1)),
+            'inventory': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).updateInventory(list.slice(1)),
             'hatched': null,
-            'died': (list) => this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper),
+            'died': async (list) => this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper),
             'win': null, //to do paillette de fou furieux
-            'elevation_start': (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationStart(),
-            'elevation_end': (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationFinish(),
-            'drop': (list) => this.playerManager.getPlayerById(parseInt(list[0])).dropItem(list[1].toUpperCase(), this.sceneWrapper), //do the function
-            'take': (list) => this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper),
-            'broadcast': (list) => this.playerManager.getPlayerById(parseInt(list[0])).speak(), //add text
-            'eject': (list) => this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation(),
-            'move': (list) => this.playerManager.getPlayerById(parseInt(list[0])).move({x: parseInt(list[3]), y: parseInt(list[2])}, parseInt(list[1])),
-            'forward': (list) => this.playerManager.getPlayerById(parseInt(list[0])).moveForward(),
-            'left': (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateLeft(),
-            'right': (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateRight(),
-        }
+            'elevation_start': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationStart(),
+            'elevation_end': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationFinish(),
+            'drop': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).dropItem(list[1].toUpperCase(), this.sceneWrapper), //do the function
+            'take': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper),
+            'broadcast': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).speak(), //add text
+            'eject': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation(),
+            'move': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).move({x: parseInt(list[3]), y: parseInt(list[2])}, parseInt(list[1])),
+            'forward': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).moveForward(),
+            'left': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateLeft(),
+            'right': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateRight(),
+        };
 
         document.getElementById('info').innerText = 'No item selected';
 
 
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
 
-        Server.on('message', (message) => {
-            this.messageQueue.enqueue(message);
-            this.dispatchEvent( { type: 'new-command' } );
+        this.messageQueue.enqueue({ promise: async () => this.map.loadBlock(this.sceneWrapper), args: null });
+        this.messageQueue.enqueue({ promise: async () => Item.init(this.sceneWrapper), args: null });
+
+        Server.on('message',  (message) => {
+            let cmd = message.split(' ');
+
+            if (this.mapCommand[cmd[0]])
+                this.messageQueue.enqueue({ promise: this.mapCommand[cmd[0]], args: cmd.slice(1) });
         });
 
         document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
 
-        this.playerManager.addTeam('la cité en i', 5);
-        this.playerManager.addTeam('ah', 5);
         // Manager.register(
         //     'ambient',
         //     new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
@@ -76,40 +80,8 @@ export class Core extends EventDispatcher {
             new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
         );
 
-        (async () => {
-
-
-            await Item.init(this.sceneWrapper);
-
-            this.addEventListener('new-command', this.manageCommand);
-            await this.manageCommand();
-
-
-        })();
-
         this.initSky();
         this.sceneWrapper.launch();
-    }
-
-    async manageCommand() {
-        if (!this.messageQueue.isEmpty()) {
-            let i = this.messageQueue.queue.length;
-            for (let x = 0; x < i; x++)
-                await this.processCommand(this.messageQueue.dequeue());
-        }
-    }
-
-    async processCommand(message) {
-        console.log(message);
-        if (!message || message.length === 0)
-            return;
-        let list = message.split(" ");
-        let ret;
-
-        if (this.mapCommand[list[0]])
-            ret = this.mapCommand[list[0]](list.slice(1));
-        if (ret instanceof  Promise)
-            await ret;
     }
 
     toggleSound(e) {
@@ -131,7 +103,6 @@ export class Core extends EventDispatcher {
     setFirstPersonView(e) {
         let player = this.playerManager.getPlayerById(parseInt(e.target.getAttribute('name')));
 
-        console.log(player)
         if (!player)
             return;
 

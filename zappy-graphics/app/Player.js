@@ -10,9 +10,9 @@ export class Player extends Model {
 
         this.scene = sceneWrapper;
         this.teamName = opt.teamName;
-        this.playerId = opt.id || 0;
-        this.direction = opt.dir || DIR.S;
-        this.coordinates = opt.coordinates || new THREE.Vector2(0, 0);
+        this.playerId = opt.id;
+        this.direction = opt.dir;
+        this.coordinates = opt.coordinates;
         this.level = 1;
         this.map = map;
         this.gems = {};
@@ -34,17 +34,16 @@ export class Player extends Model {
     }
 
     updateInventory(list) {
-        let words = list.split(' ');
-
         let keys = [];
         let properties = [];
 
-        words.map((word, i) => {
+        list.map((word, i) => {
             if ((i % 2) === 0)
                 keys.push(word);
             else
                 properties.push(word);
-        })
+        });
+
         keys.map((key, i) => {
             let nb = parseInt(properties[i]);
             if (key.toUpperCase() === 'FOOD')
@@ -58,6 +57,7 @@ export class Player extends Model {
         let pos = this.map.getPlayerPositionFromCord(this.coordinates);
 
         this.getMesh().position.set(pos.x, pos.y, pos.z);
+        this.getMesh().rotation.y = (this.direction - DIR.S) * Math.PI / 2;
     }
 
     move(coordinates, direction) {
@@ -77,13 +77,13 @@ export class Player extends Model {
 
     rotateLeft() {
         this.direction = (this.direction === 0 ? 3 : this.direction - 1);
-        this.getMesh().rotation.y -= Math.PI / 2;
+        this.getMesh().rotation.y += Math.PI / 2;
     }
 
     rotateRight() {
         this.direction++;
         this.direction = this.direction % 4;
-        this.getMesh().rotation.y += Math.PI / 2;
+        this.getMesh().rotation.y -= Math.PI / 2;
     }
 
     moveForward() {
@@ -91,13 +91,13 @@ export class Player extends Model {
             case DIR.N:
                 this.coordinates.y -= 1;
                 break;
-            case DIR.W:
+            case DIR.E:
                 this.coordinates.x -= 1;
                 break;
             case DIR.S:
                 this.coordinates.y += 1;
                 break;
-            case DIR.E:
+            case DIR.W:
                 this.coordinates.x += 1;
                 break;
         }
@@ -202,7 +202,7 @@ export class Player extends Model {
             color: 0xffffff,
             clippingPlanes: [ planeGeometry1, planeGeometry2, planeGeometry3, planeGeometry4 ],
         } );
-        let objectGeometry = new THREE.TorusBufferGeometry( 1, 0.01, 6, 28 );
+        let objectGeometry = new THREE.TorusBufferGeometry( .5, 0.01, 6, 28 );
         objectGeometry.rotateX(Math.PI / 2);
         let mesh = new THREE.Mesh( objectGeometry, groundMaterial );
 

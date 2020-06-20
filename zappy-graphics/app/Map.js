@@ -2,9 +2,20 @@ import { Item } from '@/app/Item';
 import { Bloc } from '@/app/Bloc';
 
 export class Map {
-    constructor(opt = {}) {
-        this.size_x = opt.x || 10;
-        this.size_z = opt.z || 10;
+    constructor() {
+        this.blocks = [];
+        this.rootBlock = null;
+    }
+
+    loadBlock(sceneWrapper) {
+        this.rootBlock = new Bloc(0);
+        return this.rootBlock.load('static/assets/models/ground.glb', sceneWrapper, true);
+    }
+
+    generate({ x, z }, sceneWrapper) {
+        this.size_x = x;
+        this.size_z = z;
+
         this.itemSlots = new Array(this.size_x * this.size_z).fill({});
         this.itemSlots = this.itemSlots.map(_ => {
             return {
@@ -13,21 +24,16 @@ export class Map {
                 items: {}
             }
         });
-        this.blocks = [];
-    }
 
-    async generate(sceneWrapper) {
         noise.seed(Math.random());
 
         let first = true;
 
-        let block = new Bloc(0);
-        await block.load('static/assets/models/ground.glb', sceneWrapper, true);
-        block.initRaycaster();
+        this.rootBlock.initRaycaster();
 
-        this.blocks.push(block);
+        this.blocks.push(this.rootBlock);
 
-        this.modelSize = block.getSize();
+        this.modelSize = this.rootBlock.getSize();
 
         let rangeZ = Array(this.size_z).fill(0).map((a, i) => i);
         let rangeX = Array(this.size_x).fill(0).map((a, i) => i);
@@ -36,9 +42,9 @@ export class Map {
             for (let i of rangeX) {
                 let copy;
                 if (first) {
-                    block.getMesh().position.set(Number(i) * this.modelSize.x, -this.modelSize.y / 2, Number(j) * this.modelSize.z);
+                    this.rootBlock.getMesh().position.set(Number(i) * this.modelSize.x, -this.modelSize.y / 2, Number(j) * this.modelSize.z);
                 } else {
-                    copy = new Bloc(this.size_x * Number(j) + Number(i), {scene: sceneWrapper, mesh: block.getMesh()});
+                    copy = new Bloc(this.size_x * Number(j) + Number(i), {scene: sceneWrapper, mesh: this.rootBlock.getMesh()});
                     copy.getMesh().position.set(Number(i) * this.modelSize.x, -this.modelSize.y / 2, Number(j) * this.modelSize.z);
                     copy.initRaycaster();
                     this.blocks.push(copy);
@@ -58,7 +64,9 @@ export class Map {
             this.size_z * this.modelSize.z / 2,
         );
         //sceneWrapper.camera.updateProjectionMatrix();
-        sceneWrapper.controls.update()
+        sceneWrapper.controls.update();
+
+        return Promise.resolve();
     }
 
     getPositionFromCoord(coordinates, modifySource = true) {
