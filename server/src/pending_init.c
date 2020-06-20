@@ -17,12 +17,13 @@ size_t nb_teammates)
 {
     player_t *player = malloc(sizeof(*player));
     char response[64] = { 0 };
+    int nb_vacant = team->max_clients - (int)(nb_teammates + 1);
 
     if (!player)
         exit(84);
     player_construct(player, sockd, team);
     SLIST_INSERT_HEAD(&GAME.players, player, next);
-    if (sprintf(response, "%d\n", team->max_clients - (int)nb_teammates) < 0)
+    if (sprintf(response, "%d\n", nb_vacant) < 0)
         exit(84);
     send_str(sockd, response);
     if (sprintf(response, "%d %d\n", GAME.width, GAME.height) < 0)

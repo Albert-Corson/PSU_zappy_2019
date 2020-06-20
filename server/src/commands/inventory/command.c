@@ -18,5 +18,5 @@ bool exec_inventory(player_t *player, char *data)
         exit(84);
     send_str(player->sockd, buf.buffer);
     sbuffer_destroy(&buf);
-    return (false);
+    return (true);
 }
