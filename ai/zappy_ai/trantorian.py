@@ -39,6 +39,7 @@ class Trantorian:
         [6, 1, 2, 3, 0, 1, 0],
         [6, 2, 2, 2, 2, 2, 1],
     ]
+
     vision_field = {0: "empty", 1: "empty", 2: "empty", 3: "empty"} # This is suppose to be the vision of a 1 level trantorian
 
     def __init__(self, name, sockfd):
@@ -154,8 +155,9 @@ class Trantorian:
         command = response[1:-2]
 
         cases = command.split(",")
-        print(response)
         for index in range(vision_field_limit):
+            if not cases[index]:
+                cases[index] = "empty"
             # TODO: check les incidences sur le bag
             self.vision_field[index] = cases[index]
 
@@ -201,11 +203,17 @@ class Trantorian:
         self.send_cmd("Broadcast " + text + "\n")
 
     def inventory(self):
-        buffer = self.send_cmd("Inventory\n")[1:-2].split(',')
+        response = self.send_cmd("Inventory\n")
+        buffer = response[1:-2].split(',')
         current_inventory = {}
+        print(response)
+        print(buffer)
+        print("~~~~~~~~~~~~~~~~~~~~")
         for elem in buffer:
             tmp = elem.lstrip().split(' ')
+            print(tmp)
             current_inventory.update({tmp[0]: int(tmp[1])})
+        print("~~~~~~~~~~~~~~~~~~~~")
         self.stones = current_inventory.copy()
         self.food = self.stones.pop("food", None)
         print(self.stones)
@@ -267,10 +275,26 @@ class Trantorian:
         print("######~ %d" %(count))
         return count
 
+    def get_stone_book_from_level(self, level):
+        recipe = {}
+        buffer = self.elev_table[level][1:]
+
+        for i in range(len(self.stone_ref)):
+            recipe.update({ self.stone_ref[i]: buffer[i] })
+        print(recipe)
+        return recipe
+
+    # WIP: HERE
     def check_other_needed_resources(self):
+        print("#########################")
         self.look()
-        current_tile = self.vision_field[0].split(' ')
+        print("===> ")
+        recipe = self.get_stone_book_from_level(self.level - 1)
+        current_tile = self.vision_field.get(0).split(' ')
         print(current_tile)
+        #n TODO: now we need to move organise stone we need from current_tile and take each of them
+    
+        print("#########################")
     
     # ici on se deplace vers l'item en prenant d'autres item requis si on passe dessus
     def go_take_it(self, tile_nbr, obj):
@@ -283,6 +307,7 @@ class Trantorian:
         print("alpha => %d" %(alpha ))
         print("col_nbr => %d" %(col_nbr))
         for x in range(col_nbr):
+            self.check_other_needed_resources()
             self.forward()
         if delta < 0:
             self.right()
@@ -290,6 +315,7 @@ class Trantorian:
             self.left()
         print("delta => %d" %(delta ))
         for y in range(abs(delta)):
+            # self.check_other_needed_resources() 
             self.forward()
         self.take_object(obj)
         self.look()

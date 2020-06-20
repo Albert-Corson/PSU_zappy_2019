@@ -62,7 +62,8 @@ def init_communication(sockfd, team_name):
     print("receive => " + msg)
     sockfd.send((team_name + "\n").encode("Utf8"))
     buffer = sockfd.recv(1280).decode("Utf8").split('\n')
-    print(buffer)
+    if not buffer[0] or buffer[0] == 'ko':
+        raise CmdLineErrors("The team specify may not exist, please verify command line argument", "")
     remaining_client = int(buffer[0])
     word_dimensions = list(map(int, buffer[1].split(' ')))
     return remaining_client, word_dimensions
