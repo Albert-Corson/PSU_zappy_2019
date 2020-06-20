@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { Model } from '@/app/wrappers/Model';
-import { Egg } from '@/app/Egg';
-import { DIR } from '@/app/constants';
+import { DIR, FOCUS_ON } from '@/app/constants';
 import { Manager } from '@/app/sound/SoundManager';
 
 export class Player extends Model {
@@ -29,7 +28,10 @@ export class Player extends Model {
         this.updatePosition();
         this.setAnimationIndex(2);
         this.getMesh().scale.set(.08, .08, .08);
-        this.getMesh().callback = this.getControlPanelInfo.bind(this);
+        this.getMesh().name = `player${this.playerId}`;
+        this.getMesh().callback = () => {
+            this.getControlPanelInfo();
+        };
         return this;
     }
 
@@ -78,14 +80,18 @@ export class Player extends Model {
     }
 
     rotateLeft() {
-        this.direction = (this.direction === 0 ? 3 : this.direction - 1);
+        this.direction++;
+        this.direction = this.direction % 4;
         this.getMesh().rotation.y += Math.PI / 2;
+        if (this.isFPV)
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
     }
 
     rotateRight() {
-        this.direction++;
-        this.direction = this.direction % 4;
+        this.direction = (this.direction === 0 ? 3 : this.direction - 1);
         this.getMesh().rotation.y -= Math.PI / 2;
+        if (this.isFPV)
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
     }
 
     moveForward() {
@@ -93,21 +99,29 @@ export class Player extends Model {
             case DIR.N:
                 this.coordinates.y -= 1;
                 break;
-            case DIR.E:
+            case DIR.W:
                 this.coordinates.x -= 1;
                 break;
             case DIR.S:
                 this.coordinates.y += 1;
                 break;
-            case DIR.W:
+            case DIR.E:
                 this.coordinates.x += 1;
                 break;
         }
 
+        let newCoordinates = {...this.coordinates};
+
         Manager.play('click');
+
         let vec = this.map.getPlayerPositionFromCord(this.coordinates);
 
-        if (this.isFPV) {
+        let tp = newCoordinates.x !== this.coordinates.x || newCoordinates.y !== this.coordinates.y;
+
+        if (this.isFPV ) {
+            this.getMesh().position.set(vec.x, vec.y, vec.z)
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
+        } else if (tp) {
             this.getMesh().position.set(vec.x, vec.y, vec.z)
         } else {
             this.setAnimationIndex(10);
@@ -141,8 +155,6 @@ export class Player extends Model {
             case 89:
                 break;
         }
-        if (this.isFPV)
-            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
     }
 
     ejectAnimation() {
@@ -185,6 +197,7 @@ export class Player extends Model {
     died() {
         this.playAnimationOnce(1);
         this.getControlPanelInfo(true);
+        this.isFPV = false;
     }
 
     speak() {
@@ -221,6 +234,9 @@ export class Player extends Model {
         let list = document.getElementById('items');
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
+
+        if (FOCUS_ON.id !== `player${this.playerId}`)
+            return;
 
         if (clear) {
             info.innerText = 'No item selected';

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { Scene } from '@/app/wrappers/Scene';
 import { Item } from '@/app/Item';
 import { Map } from '@/app/Map';
-import { DIR } from '@/app/constants';
+import { DIR, FOCUS_ON } from '@/app/constants';
 import { Manager, SoundRef } from '@/app/sound/SoundManager';
 import { PlayerManager } from '@/app/PlayerManager';
 import { Queue } from '@/app/wrappers/Queue'
@@ -95,6 +95,20 @@ export class Core extends EventDispatcher {
             slider.removeAttribute('disabled')
     }
 
+    resetFPVMode(player) {
+        let cam = this.sceneWrapper.camera;
+        let old = this.oldCameraSettings;
+
+        player.isFPV = false;
+
+        cam.rotation.set(old.rotation.x, old.rotation.y, old.rotation.z);
+        cam.position.set(old.position.x, old.position.y, old.position.z);
+        cam.updateProjectionMatrix();
+
+        this.sceneWrapper.controls.enabled = true;
+        this.sceneWrapper.launch();
+    }
+
     setFirstPersonView(e) {
         let player = this.playerManager.getPlayerById(parseInt(e.target.getAttribute('name')));
 
@@ -104,16 +118,7 @@ export class Core extends EventDispatcher {
         let cam = this.sceneWrapper.camera;
 
         if (player.isFPV && e.type === 'click') {
-            let old = this.oldCameraSettings;
-
-            player.isFPV = false;
-
-            cam.rotation.set(old.rotation.x, old.rotation.y, old.rotation.z);
-            cam.position.set(old.position.x, old.position.y, old.position.z);
-            cam.updateProjectionMatrix();
-
-            this.sceneWrapper.controls.enabled = true;
-            this.sceneWrapper.launch();
+            this.resetFPVMode(player);
             return;
         }
 
@@ -135,9 +140,9 @@ export class Core extends EventDispatcher {
 
 
         if (player.direction === DIR.N || player.direction === DIR.S)
-            cam.position.z =  cam.position.z + (player.direction === DIR.N ? -.30 : .30);
+            cam.position.z = cam.position.z + (player.direction !== DIR.N ? +.05 : -.05);
         else
-            cam.position.x =  cam.position.x + (player.direction === DIR.E ? -.30 : .30);
+            cam.position.x = cam.position.x + (player.direction !== DIR.W ? +.05 : -.05);
 
         cam.rotation.set(rotation.x, rotation.y - Math.PI, rotation.z);
 
@@ -161,10 +166,13 @@ export class Core extends EventDispatcher {
         let isFPV = this.playerManager.getAllPlayers().filter(player => player.isFPV).length > 0;
 
         if (intersects.length > 0 && !isFPV) {
-            if (typeof intersects[0].object.name === "function")
+            if (typeof intersects[0].object.name === "function") {
+                FOCUS_ON.id = 'block';
                 intersects[0].object.name();
-            else if (intersects[0].object.root && intersects[0].object.root.callback)
+            } else if (intersects[0].object.root && intersects[0].object.root.callback) {
+                FOCUS_ON.id = intersects[0].object.root.name;
                 intersects[0].object.root.callback();
+            }
         }
     }
 
@@ -209,6 +217,7 @@ export class Core extends EventDispatcher {
                     return this.playerManager.addTeam(list[1], parseInt(list[0]))
             },
             'new_player': async (list) => {
+                console.log('new player');
                 if (list.length !== 5)
                     return;
                 let playerOpt = {
@@ -216,6 +225,8 @@ export class Core extends EventDispatcher {
                     id: parseInt(list[0]),
                     dir: parseInt(list[1]),
                 };
+
+                console.log(playerOpt.dir);
 
                 return this.playerManager.addPlayerInTeam(playerOpt, list[4], this.sceneWrapper, this.map);
             },
@@ -239,7 +250,7 @@ export class Core extends EventDispatcher {
             },
             'died': async (list) => {
                 if (list.length === 1)
-                    return this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper)
+                    return this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper, this.resetFPVMode.bind(this))
             },
             'win': null, //to do paillette de fou furieux
             'elevation_start': async (list) => {
