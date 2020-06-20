@@ -273,11 +273,11 @@ export class Player extends Model {
             return;
         }
 
-        let tmp = `<p>ID: <i>${ this.playerId }</i></p>`;
-        tmp += `<p>Team: <i>${ this.teamName }</i></p>`;
-        tmp += `<p>Level: <i>${ this.level }</i></p>`;
-        tmp += `<p>Food: <i>${ this.food }</i></p>`;
-        tmp += `<p>Inventory:</p>`;
+        let tmp = `<p class="font-weight-bold m-0">ID: <i class="font-weight-normal">${ this.playerId }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Team: <i class="font-weight-normal">${ this.teamName }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Level: <i class="font-weight-normal">${ this.level }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Food: <i class="font-weight-normal">${ this.food }</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Inventory:</p>`;
 
         info.innerHTML = tmp;
 

@@ -24,8 +24,8 @@ export class Bloc extends Model {
 
         fpv.style.display = 'none';
 
-        let tmp = `<p>Tile: bloc <i>${this.idx}</i></p>`;
-        tmp += `<p>Items on this tile:</i></p>`;
+        let tmp = `<p class="font-weight-bold m-0">Tile: <i class="font-weight-normal">bloc ${this.idx}</i></p>`;
+        tmp += `<p class="font-weight-bold m-0">Items on this tile:</p>`;
 
         info.innerHTML = tmp;
 
