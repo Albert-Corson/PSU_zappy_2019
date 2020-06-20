@@ -31,7 +31,7 @@ export class Bloc extends Model {
 
         list.innerHTML = '';
         Object.keys(this.items).map(e => {
-            list.innerHTML += `<li>${e.toLowerCase()}: ${this.items[e] ? this.items[e].toString() : 0}</li>`
+            list.innerHTML += `<li class="list-group-item">${e.toLowerCase()}: ${this.items[e] ? this.items[e].toString() : 0}</>`
         });
     }
 

@@ -123,7 +123,7 @@ class PlayerManager {
         teamsHdr.innerHTML = 'Teams:';
 
         this.teams.map(team => {
-            tmp += `<li>${team.teamName}: ${team.players.length}/${team.size}</li>`
+            tmp += `<li class="list-group-item">${team.teamName}: ${team.players.length}/${team.size}</li>`
         });
 
         teams.innerHTML = tmp;

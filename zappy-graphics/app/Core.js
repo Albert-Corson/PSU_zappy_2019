@@ -15,6 +15,7 @@ export class Core extends EventDispatcher {
         super();
         this.sceneWrapper = new Scene('white');
         this.playerManager = new PlayerManager;
+        this.broadcastMessages = [];
         this.map = new Map;
 
         this.initCommandQueue();
@@ -149,6 +150,17 @@ export class Core extends EventDispatcher {
         cam.updateProjectionMatrix();
     }
 
+    displayUserMessage() {
+        let list = document.getElementById('messages-list');
+
+        let tmp = '';
+
+        [...this.broadcastMessages].reverse().map(elem => {
+            tmp += `<li class="list-group-item">Player ${elem.playerID} said: ${elem.message}</li>`
+        });
+        list.innerHTML = tmp;
+    }
+
     onDocumentMouseDown(event) {
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
@@ -270,8 +282,15 @@ export class Core extends EventDispatcher {
                     return this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper)
             },
             'broadcast': async (list) => {
-                if (list.length === 1)
+                if (list.length === 2) {
+                    this.broadcastMessages.push({ message: list[1], playerID: parseInt(list[0]) });
+
+                    if (this.broadcastMessages.length > 5)
+                        this.broadcastMessages.splice(0, 1);
+
+                    this.displayUserMessage();
                     return this.playerManager.getPlayerById(parseInt(list[0])).speak()
+                }
             }, //add text
             'eject': async (list) => {
                 if (list.length === 2)

@@ -253,10 +253,14 @@ export class Player extends Model {
 
         info.innerHTML = tmp;
 
-        list.innerHTML = '';
+        let tmpList = '';
+
         Object.keys(this.gems).map(e => {
-            list.innerHTML += `<li>${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
+            console.log('PUTE');
+            tmpList += `<li class="list-group-item">${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
         });
+
+        list.innerHTML = tmpList;
 
         fpv.style.display = 'block';
         fpv.setAttribute('name', this.playerId);

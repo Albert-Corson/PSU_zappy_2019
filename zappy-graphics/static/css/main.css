@@ -16,7 +16,7 @@ body {
 }
 
 #control-panel {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: white;
 
     border-radius: 10px;
     box-shadow: 10px 10px 35px #636061;
