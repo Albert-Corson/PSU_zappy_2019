@@ -236,14 +236,20 @@ export class Player extends Model {
         objectGeometry.rotateX(Math.PI / 2);
         let mesh = new THREE.Mesh( objectGeometry, groundMaterial );
 
+        let distance_x = this.map.size_x * this.map.modelSize.x
+        let distance_z = this.map.size_z * this.map.modelSize.z
+        let distance_max = distance_x > distance_z ? distance_x : distance_z;
+
+        console.log(distance_max);
+
         mesh.position.set( this.getMesh().position.x, this.getMesh().position.y, this.getMesh().position.z);
         createjs.Tween
             .get(mesh.scale, {override : true})
             .to({
-                x: this.map.size_x * this.map.size_z * .15,
+                x: distance_max * 2,
                 y: 5,
-                z: this.map.size_x * this.map.size_z * .15,
-            }, this.map.size_x * this.map.size_z * 13)
+                z: distance_max * 2,
+            }, distance_max * 130)
             .call(() => {
                 mesh.geometry.dispose();
                 mesh.material.dispose();
