@@ -39,3 +39,15 @@ player_t *game_get_player(sockd_t sockd)
     }
     return (NULL);
 }
+
+void game_readjust_pos(vector_t *pos)
+{
+    if (pos->x >= GAME.width)
+        pos->x -= GAME.width;
+    else if (pos->x < 0)
+        pos->x += GAME.width;
+    if (pos->y >= GAME.height)
+        pos->y -= GAME.height;
+    else if (pos->y < 0)
+        pos->y += GAME.height;
+}
