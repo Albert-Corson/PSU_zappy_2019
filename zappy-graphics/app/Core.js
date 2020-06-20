@@ -155,7 +155,7 @@ export class Core extends EventDispatcher {
 
         let tmp = '';
 
-        [...this.broadcastMessages].reverse().map(elem => {
+        this.broadcastMessages.map(elem => {
             tmp += `<li class="list-group-item">Player ${elem.playerID} said: ${elem.message}</li>`
         });
         list.innerHTML = tmp;
