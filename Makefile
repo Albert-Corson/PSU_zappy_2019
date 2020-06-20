@@ -16,7 +16,7 @@ libs_debug:
 	$(MAKE) -C server/libs/socker debug INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
 
 debug: CFLAGS+=-g
-debug: libs_debug $(NAME_SRV)
+debug: libs_debug $(NAME_SRV) ai_z
 
 include server.mk ai.mk
 

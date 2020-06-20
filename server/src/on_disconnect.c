@@ -7,6 +7,7 @@
 
 #include <stdarg.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include <game.h>
 
@@ -74,6 +75,7 @@ void on_disconnect(va_list ap)
 {
     sockd_t peer = va_arg(ap, sockd_t);
 
+    printf("[?] Disconnecting: %d\n", peer);
     client_buffers_destroy(peer);
     if (disconnect_pending(peer))
         return;

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <ctype.h>
+#include <stdio.h>
 
 #include <libs/socker/socker.h>
 #include <commands.h>
@@ -42,17 +43,20 @@ void on_readable(va_list ap)
     char *buffer = malloc(size + 1);
     ssize_t rd = 0;
 
+    printf("[?] Data received from: %d\n", peer);
     if (buffer == NULL)
         exit(84);
     rd = read(peer, buffer, size);
     if (rd < 0 || (size_t)rd != size) {
+        dprintf(2, "[!] Error while reading data from: %d\n", peer);
         free(buffer);
         return;
     }
     buffer[size] = 0;
-    if (!is_printable(buffer, size))
+    if (!is_printable(buffer, size)) {
         socker_disconnect(peer);
-    else
+        dprintf(2, "[!] Invalid data received, kicking: %d\n", peer);
+    } else
         append_to_client_buffer(peer, buffer);
     free(buffer);
 }

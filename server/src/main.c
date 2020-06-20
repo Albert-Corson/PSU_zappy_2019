@@ -10,6 +10,7 @@
 #include <signal.h>
 #include <stdbool.h>
 #include <arpa/inet.h>
+#include <math.h>
 
 #include <libs/socker/socker.h>
 #include <libs/socker/events.h>
@@ -51,6 +52,7 @@ static void init_listeners(void)
 int main(int argc, const char **argv)
 {
     int port = 0;
+    long timeout = 0;
 
     srand(time(NULL));
     atexit(server_atexit);
@@ -61,7 +63,8 @@ int main(int argc, const char **argv)
     if (socker_listen(htons(port), INADDR_ANY, SOMAXCONN) < 0)
         return (84);
     init_listeners();
-    socker_set_timeout(1);
+    timeout = ceil(1000.0 / GAME.freq);
+    socker_set_timeout(timeout);
     server_loop();
     return (0);
 }
