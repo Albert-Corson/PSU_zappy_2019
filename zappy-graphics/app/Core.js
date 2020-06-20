@@ -66,8 +66,10 @@ export class Core extends EventDispatcher {
         window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
         document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
         document.getElementById('volume').addEventListener('change', this.changeVolume.bind(this));
+        document.getElementById('follow').addEventListener('click', this.setFollowView.bind(this));
+        document.getElementById('follow').addEventListener('update-follow', this.setFollowView.bind(this));
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
-        document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
+        document.getElementById('first-person').addEventListener('update-first-person', this.setFirstPersonView.bind(this));
     }
 
     changeVolume(e) {
@@ -96,11 +98,10 @@ export class Core extends EventDispatcher {
             slider.removeAttribute('disabled')
     }
 
-    resetFPVMode(player) {
+    resetCameraMode() {
         let cam = this.sceneWrapper.camera;
         let old = this.oldCameraSettings;
 
-        player.isFPV = false;
 
         cam.rotation.set(old.rotation.x, old.rotation.y, old.rotation.z);
         cam.position.set(old.position.x, old.position.y, old.position.z);
@@ -108,6 +109,51 @@ export class Core extends EventDispatcher {
 
         this.sceneWrapper.controls.enabled = true;
         this.sceneWrapper.launch();
+    }
+
+    setFollowView(e) {
+        let player = this.playerManager.getPlayerById(parseInt(e.target.getAttribute('name')));
+
+        if (!player)
+            return;
+
+        let cam = this.sceneWrapper.camera;
+
+        if (player.isFollow && e.type === 'click') {
+            player.isFollow = false;
+            this.resetCameraMode();
+            return;
+        }
+
+        if (!player.isFollow) {
+            this.oldCameraSettings = {
+                rotation: {...this.sceneWrapper.camera.rotation},
+                position: {...this.sceneWrapper.camera.position}
+            };
+        }
+
+        player.isFollow = true;
+        this.sceneWrapper.controls.enabled = false;
+
+        let pos = player.getMesh().position;
+
+        let rotation = {x: Math.PI / 3, y: 0, z: 0};
+
+        cam.rotation.set(rotation.x, rotation.y - Math.PI, rotation.z);
+        if (e.detail && e.detail.vec) {
+            console.warn(e.detail.vec);
+            createjs.Tween
+                .get(cam.position, {override : true})
+                .to({
+                    x: e.detail.vec.x,
+                    y: e.detail.vec.y + 3,
+                    z: e.detail.vec.z - 2
+                }, 150)
+                .call(() => cam.updateProjectionMatrix())
+        } else {
+            cam.position.set(pos.x, pos.y + 3, pos.z - 2);
+            cam.updateProjectionMatrix();
+        }
     }
 
     setFirstPersonView(e) {
@@ -119,7 +165,8 @@ export class Core extends EventDispatcher {
         let cam = this.sceneWrapper.camera;
 
         if (player.isFPV && e.type === 'click') {
-            this.resetFPVMode(player);
+            player.isFPV = false;
+            this.resetCameraMode();
             return;
         }
 
@@ -262,7 +309,7 @@ export class Core extends EventDispatcher {
             },
             'died': async (list) => {
                 if (list.length === 1)
-                    return this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper, this.resetFPVMode.bind(this))
+                    return this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper, this.resetCameraMode.bind(this))
             },
             'win': null, //to do paillette de fou furieux
             'elevation_start': async (list) => {

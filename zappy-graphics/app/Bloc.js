@@ -21,8 +21,10 @@ export class Bloc extends Model {
         let list = document.getElementById('items');
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
+        let follow = document.getElementById('follow');
 
         fpv.style.display = 'none';
+        follow.style.display = 'none';
 
         let tmp = `<p>Tile: bloc <i>${this.idx}</i></p>`;
         tmp += `<p>Items on this tile:</i></p>`;

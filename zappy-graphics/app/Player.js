@@ -19,6 +19,7 @@ export class Player extends Model {
         this.food = 0;
         this.teamIdentificator = null;
         this.isFPV = false;
+        this.isFollow = false;
 
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
     }
@@ -98,14 +99,14 @@ export class Player extends Model {
         this.direction = this.direction % 4;
         this.getMesh().rotation.y += Math.PI / 2;
         if (this.isFPV)
-            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update-first-person'));
     }
 
     rotateRight() {
         this.direction = (this.direction === 0 ? 3 : this.direction - 1);
         this.getMesh().rotation.y -= Math.PI / 2;
         if (this.isFPV)
-            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update-first-person'));
     }
 
     moveForward() {
@@ -135,9 +136,13 @@ export class Player extends Model {
         if (this.isFPV ) {
             this.getMesh().position.set(vec.x, vec.y, vec.z);
             this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
-            document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update-first-person'));
         } else if (tp) {
+            this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
             this.getMesh().position.set(vec.x, vec.y, vec.z)
+            if (this.isFollow) {
+                document.getElementById('follow').dispatchEvent(new CustomEvent('update-follow'));
+            }
         } else {
             this.setAnimationIndex(10);
             createjs.Tween
@@ -155,6 +160,8 @@ export class Player extends Model {
                     z: vec.z
                 }, 150)
                 .call(() => this.setAnimationIndex(2));
+            if (this.isFollow)
+                document.getElementById('follow').dispatchEvent(new CustomEvent('update-follow', {detail: {vec}}));
         }
     }
 
@@ -240,8 +247,6 @@ export class Player extends Model {
         let distance_z = this.map.size_z * this.map.modelSize.z
         let distance_max = distance_x > distance_z ? distance_x : distance_z;
 
-        console.log(distance_max);
-
         mesh.position.set( this.getMesh().position.x, this.getMesh().position.y, this.getMesh().position.z);
         createjs.Tween
             .get(mesh.scale, {override : true})
@@ -272,6 +277,7 @@ export class Player extends Model {
             info.innerText = 'No item selected';
             list.innerHTML = '';
             fpv.style.display = 'none';
+            follow.style.display = 'none';
             return;
         }
 
@@ -286,7 +292,6 @@ export class Player extends Model {
         let tmpList = '';
 
         Object.keys(this.gems).map(e => {
-            console.log('PUTE');
             tmpList += `<li class="list-group-item">${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
         });
 
