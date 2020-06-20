@@ -9,8 +9,26 @@
 
 #include <game.h>
 
+static void readjust_pos(vector_t *pos)
+{
+    if (pos->x >= GAME.width)
+        pos->x -= GAME.width;
+    else if (pos->x < 0)
+        pos->x += GAME.width;
+    if (pos->y >= GAME.height)
+        pos->y -= GAME.height;
+    else if (pos->y < 0)
+        pos->y += GAME.height;
+}
+
 static void get_tile_pos(player_t *player, const vector_t *off, vector_t *pos)
 {
+    pos->x = player->pos.x;
+    pos->y = player->pos.y;
+    if (player->dir == NORTH) {
+        pos->x += off->x;
+        pos->y += off->y;
+    }
     if (player->dir == SOUTH) {
         pos->x += off->x * -1;
         pos->y += off->y * -1;
@@ -23,14 +41,7 @@ static void get_tile_pos(player_t *player, const vector_t *off, vector_t *pos)
         pos->x += off->y * -1;
         pos->y += off->x;
     }
-    if (pos->x >= GAME.width)
-        pos->x -= GAME.width;
-    else if (pos->x < 0)
-        pos->x += GAME.width;
-    if (pos->y >= GAME.height)
-        pos->y -= GAME.height;
-    else if (pos->y < 0)
-        pos->y += GAME.height;
+    readjust_pos(pos);
 }
 
 static bool dump_tile(sbuffer_t *buf, vector_t *pos)
@@ -62,13 +73,10 @@ static bool dump_row(sbuffer_t *buf, player_t *player, int lvl, int off_y)
     };
 
     for (off.x = lvl * -1; good && off.x <= lvl; ++off.x) {
-        pos.x = player->pos.x;
-        pos.y = player->pos.y;
         get_tile_pos(player, &off, &pos);
         good = dump_tile(buf, &pos);
-        if (!good || (off.x + 1 > lvl && lvl == player->level))
-            continue;
-        good = sbuffer_write(buf, ", ");
+        if (good && (off.x + 1 <= lvl || lvl != player->level))
+            good = sbuffer_write(buf, ", ");
     }
     return (good);
 }
@@ -85,8 +93,7 @@ bool exec_look(player_t *player, char *data)
         good = dump_row(&buf, player, lvl, off_y);
         --off_y;
     }
-    good = good && sbuffer_write(&buf, "]\n");
-    if (!good)
+    if (!good || !sbuffer_write(&buf, "]\n"))
         exit(84);
     send_str(player->sockd, buf.buffer);
     sbuffer_destroy(&buf);
