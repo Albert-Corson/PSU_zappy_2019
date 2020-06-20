@@ -49,6 +49,7 @@ static void eject(player_t *player, direction_e from)
 bool exec_eject(player_t *player, char *data)
 {
     player_t *it = NULL;
+    bool ejected = false;
 
     spectators_send_eject(player);
     SLIST_FOREACH(it, &GAME.players, next) {
@@ -63,7 +64,9 @@ bool exec_eject(player_t *player, char *data)
         }
         eject(it, player->dir);
         spectators_send_move(it);
+        ejected = true;
     }
-    send_str(player->sockd, "ok\n");
-    return (true);
+    if (ejected)
+        send_str(player->sockd, "ok\n");
+    return (ejected);
 }
