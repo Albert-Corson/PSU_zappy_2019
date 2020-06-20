@@ -14,10 +14,7 @@ bool exec_forward(player_t *player, char *data)
     } else {
         player->pos.x += (int)player->dir - 2;
     }
-    if (player->pos.x >= GAME.width)
-        player->pos.x -= GAME.width;
-    if (player->pos.y >= GAME.height)
-        player->pos.y -= GAME.width;
+    game_readjust_pos(&player->pos);
     spectators_send_forward(player);
     send_str(player->sockd, "ok\n");
     return (true);

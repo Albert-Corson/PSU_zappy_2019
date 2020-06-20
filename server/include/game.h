@@ -31,6 +31,11 @@ game_t *g_game_location(void);
 #define GAME (*g_game_location())
 
 /**
+* @brief readjust a given vector into the boundaries of the map
+*/
+void game_readjust_pos(vector_t *pos);
+
+/**
 * @brief returns the first player corresponding to a given `sockd`
 */
 player_t *game_get_player(sockd_t sockd);

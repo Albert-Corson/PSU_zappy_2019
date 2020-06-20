@@ -263,6 +263,7 @@ export class Player extends Model {
         let list = document.getElementById('items');
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
+        let follow = document.getElementById('follow');
 
         if (FOCUS_ON.id !== `player${this.playerId}`)
             return;
@@ -292,6 +293,8 @@ export class Player extends Model {
         list.innerHTML = tmpList;
 
         fpv.style.display = 'block';
+        follow.style.display = 'block';
         fpv.setAttribute('name', this.playerId);
+        follow.setAttribute('name', this.playerId);
     }
 }

@@ -56,4 +56,3 @@ void on_readable(va_list ap)
         append_to_client_buffer(peer, buffer);
     free(buffer);
 }
-

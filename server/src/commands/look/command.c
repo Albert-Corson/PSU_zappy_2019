@@ -9,18 +9,6 @@
 
 #include <game.h>
 
-static void readjust_pos(vector_t *pos)
-{
-    if (pos->x >= GAME.width)
-        pos->x -= GAME.width;
-    else if (pos->x < 0)
-        pos->x += GAME.width;
-    if (pos->y >= GAME.height)
-        pos->y -= GAME.height;
-    else if (pos->y < 0)
-        pos->y += GAME.height;
-}
-
 static void get_tile_pos(player_t *player, const vector_t *off, vector_t *pos)
 {
     pos->x = player->pos.x;
@@ -41,7 +29,7 @@ static void get_tile_pos(player_t *player, const vector_t *off, vector_t *pos)
         pos->x += off->y * -1;
         pos->y += off->x;
     }
-    readjust_pos(pos);
+    game_readjust_pos(pos);
 }
 
 static bool dump_tile(sbuffer_t *buf, vector_t *pos)

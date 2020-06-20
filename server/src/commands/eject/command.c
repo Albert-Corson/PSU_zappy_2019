@@ -39,10 +39,7 @@ static void eject(player_t *player, direction_e from)
         exit(84);
     player->pos.x += move_to[from].x;
     player->pos.y += move_to[from].y;
-    if (player->pos.x >= GAME.width)
-        player->pos.x -= GAME.width;
-    if (player->pos.y >= GAME.height)
-        player->pos.y -= GAME.width;
+    game_readjust_pos(&player->pos);
     send_str(player->sockd, message);
 }
 

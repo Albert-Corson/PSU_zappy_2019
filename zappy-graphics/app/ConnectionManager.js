@@ -25,6 +25,16 @@ export class ConnectionManager {
                     it.innerText = '';
                 }
 
+                document.getElementById('infos').classList.add('active');
+                document.getElementById('infos').classList.add('show');
+                document.getElementById('info-tab').classList.add('active');
+                document.getElementById('info-tab').setAttribute('aria-selected', 'true');
+
+                document.getElementById('network').classList.remove('active');
+                document.getElementById('network').classList.remove('show');
+                document.getElementById('network-tab').classList.remove('active');
+                document.getElementById('network-tab').setAttribute('aria-selected', 'false');
+
                 document.getElementById('connection').style.display = 'none';
                 document.getElementById('disconnect').style.display = 'block';
             });
