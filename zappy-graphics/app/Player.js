@@ -17,13 +17,26 @@ export class Player extends Model {
         this.gems = {};
         this.eggs = [];
         this.food = 0;
+        this.teamIdentificator = null;
         this.isFPV = false;
 
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
     }
 
-    async initInstance(sceneWrapper) {
+    async initInstance(sceneWrapper, color) {
         await this.load('static/assets/models/players/robot.glb', sceneWrapper, true);
+
+        let material = new THREE.MeshBasicMaterial({ color });
+        let geometry = new THREE.OctahedronGeometry(.05, 0);
+        let mesh = new THREE.Mesh(geometry, material);
+
+        sceneWrapper.getScene().add(mesh);
+
+        this.teamIdentificator = mesh;
+
+        new createjs.Tween.get(this.teamIdentificator.rotation, { loop: -1 }).to({
+            y: Math.PI
+        }, 5000);
 
         this.updatePosition();
         this.setAnimationIndex(2);
@@ -60,6 +73,7 @@ export class Player extends Model {
     updatePosition() {
         let pos = this.map.getPlayerPositionFromCord(this.coordinates);
 
+        this.teamIdentificator.position.set(pos.x, pos.y + 0.45, pos.z)
         this.getMesh().position.set(pos.x, pos.y, pos.z);
         this.getMesh().rotation.y = (this.direction - DIR.S) * Math.PI / 2;
     }
@@ -119,12 +133,20 @@ export class Player extends Model {
         let tp = newCoordinates.x !== this.coordinates.x || newCoordinates.y !== this.coordinates.y;
 
         if (this.isFPV ) {
-            this.getMesh().position.set(vec.x, vec.y, vec.z)
+            this.getMesh().position.set(vec.x, vec.y, vec.z);
+            this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
             document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
         } else if (tp) {
             this.getMesh().position.set(vec.x, vec.y, vec.z)
         } else {
             this.setAnimationIndex(10);
+            createjs.Tween
+                .get(this.teamIdentificator.position, {override : true})
+                .to({
+                    x: vec.x,
+                    y: vec.y + .45,
+                    z: vec.z
+                }, 150);
             createjs.Tween
                 .get(this.getMesh().position, {override : true})
                 .to({
@@ -194,9 +216,10 @@ export class Player extends Model {
         this.getControlPanelInfo();
     }
 
-    died() {
+    died(scene) {
         this.playAnimationOnce(1);
         this.getControlPanelInfo(true);
+        scene.getScene().remove(this.teamIdentificator);
         this.isFPV = false;
     }
 

@@ -8,7 +8,7 @@ class PlayerManager {
     }
 
     addTeam(teamName, size) {
-        this.teams.push({ teamName, size, players: [] });
+        this.teams.push({ teamName, size, players: [], color: ~~(Math.random() *0x2d2d2d) });
         this.updateTeamPanel();
     }
 
@@ -24,7 +24,7 @@ class PlayerManager {
             return;
         let player = new Player(map, scene, { ...playerOpt, teamName });
 
-        await player.initInstance(scene);
+        await player.initInstance(scene, this.teams[teamId].color);
         team.players.push(player);
         this.updateTeamPanel();
         return player;
@@ -40,7 +40,7 @@ class PlayerManager {
                     team.players.splice(index, 1);
                     this.updateTeamPanel();
                 });
-                team.players[index].died();
+                team.players[index].died(scene);
                 if (reset && team.players[index].isFPV)
                     reset(team.players[index]);
                 return;
