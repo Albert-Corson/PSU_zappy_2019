@@ -81,10 +81,13 @@ export class Map {
     }
 
     addItem({ x, z }, type, sceneWrapper) {
-        if (z == undefined || x == undefined || x > this.size_x - 1 || z > this.size_z - 1)
+        if (z == undefined || x == undefined || isNaN(z) || isNaN(x) || x > this.size_x - 1 || z > this.size_z - 1)
             return;
 
         let block = this.itemSlots[this.size_x * z + x];
+
+        if (!block)
+         console.warn( { x, z, index: this.size_x * z + x, width: this.size_x, height: this.size_z });
 
         if (!block.items[type]) {
             let index = block.freeIndexes[~~(Math.random() * block.freeIndexes.length)];
@@ -103,6 +106,13 @@ export class Map {
         }
 
         this.blocks[this.size_x * z + x].putItemOnBlock(type);
+    }
+
+    getItemModel({ x, z }, type) {
+        if (z == undefined || x == undefined || x > this.size_x - 1 || z > this.size_z - 1)
+            return null;
+
+        return this.itemSlots[this.size_x * z + x].items[type].model.getMesh();
     }
 
     getPlayerPositionFromCord(coordinates) {

@@ -15,45 +15,40 @@ export class Core extends EventDispatcher {
         super();
         this.sceneWrapper = new Scene('white');
         this.playerManager = new PlayerManager;
-        this.messageQueue = new Queue;
         this.map = new Map;
 
-        this.mapCommand = {
-            'map_size': async (list) => {
-                return this.map.generate({ x: parseInt(list[1]), z: parseInt(list[0])}, this.sceneWrapper);
-            },
-            'new_item': async (list) => this.map.addItem({x: parseInt(list[2]), z: parseInt(list[1])}, list[0].toUpperCase(), this.sceneWrapper),
-            'new_team': async (list) => this.playerManager.addTeam(list[1], parseInt(list[0])),
-            'new_player': async (list) => {
-                let playerOpt = {
-                    coordinates: { x: parseInt(list[3]), y: parseInt(list[2]) },
-                    id: parseInt(list[0]),
-                    dir: parseInt(list[1]),
-                };
-                console.log(playerOpt.dir);
-                return this.playerManager.addPlayerInTeam(playerOpt, list[4], this.sceneWrapper, this.map);
-            },
-            'new_egg': null,
-            'inventory': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).updateInventory(list.slice(1)),
-            'hatched': null,
-            'died': async (list) => this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper),
-            'win': null, //to do paillette de fou furieux
-            'elevation_start': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationStart(),
-            'elevation_end': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).elevationFinish(),
-            'drop': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).dropItem(list[1].toUpperCase(), this.sceneWrapper), //do the function
-            'take': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper),
-            'broadcast': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).speak(), //add text
-            'eject': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation(),
-            'move': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).move({x: parseInt(list[3]), y: parseInt(list[2])}, parseInt(list[1])),
-            'forward': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).moveForward(),
-            'left': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateLeft(),
-            'right': async (list) => this.playerManager.getPlayerById(parseInt(list[0])).rotateRight(),
-        };
+        this.initCommandQueue();
+        this.initEventListeners();
+        this.initControlPanel();
+        this.initSoundManager();
+        this.initSky();
 
+        this.sceneWrapper.launch();
+    }
+
+    initSoundManager() {
+        /*
+        Manager.register(
+            'ambient',
+            new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
+            e => e.src === 'static/assets/audio/ambient.mp3' ? Manager.play('ambient') : null
+        );
+         */
+
+        Manager.register(
+            'click',
+            new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
+        );
+    }
+
+    initControlPanel() {
         document.getElementById('info').innerText = 'No item selected';
+        document.getElementById('settings-content').style.display = 'block';
+    }
 
-
-        window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
+    initCommandQueue() {
+        this.messageQueue = new Queue;
+        this.mapCommand = this.getMapCommand();
 
         this.messageQueue.enqueue({ promise: async () => this.map.loadBlock(this.sceneWrapper), args: null });
         this.messageQueue.enqueue({ promise: async () => Item.init(this.sceneWrapper), args: null });
@@ -61,31 +56,26 @@ export class Core extends EventDispatcher {
         Server.on('message',  (message) => {
             let cmd = message.split(' ');
 
-            if (this.mapCommand[cmd[0]])
+            if (cmd && this.mapCommand[cmd[0]])
                 this.messageQueue.enqueue({ promise: this.mapCommand[cmd[0]], args: cmd.slice(1) });
         });
+    }
 
+    initEventListeners() {
+        window.addEventListener('click', this.onDocumentMouseDown.bind(this), false);
         document.getElementById('mute').addEventListener('click', this.toggleSound.bind(this));
+        document.getElementById('volume').addEventListener('change', this.changeVolume.bind(this));
         document.getElementById('first-person').addEventListener('click', this.setFirstPersonView.bind(this));
         document.getElementById('first-person').addEventListener('update', this.setFirstPersonView.bind(this));
+    }
 
-        // Manager.register(
-        //     'ambient',
-        //     new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
-        //     e => e.src === 'static/assets/audio/ambient.mp3' ? Manager.play('ambient') : null
-        // );
-
-        Manager.register(
-            'click',
-            new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
-        );
-
-        this.initSky();
-        this.sceneWrapper.launch();
+    changeVolume(e) {
+        Manager.globalVolume = e.target.value;
     }
 
     toggleSound(e) {
         let muteToggle = e.target;
+        let slider = document.getElementById('volume');
         let icon = muteToggle.className.split(' ')[1];
 
         muteToggle.classList.remove(icon);
@@ -98,6 +88,11 @@ export class Core extends EventDispatcher {
         muteToggle.classList.add(className);
 
         Manager.muted = oldState === 'up';
+
+        if (Manager.muted)
+            slider.setAttribute('disabled', '');
+        else
+            slider.removeAttribute('disabled')
     }
 
     setFirstPersonView(e) {
@@ -170,9 +165,6 @@ export class Core extends EventDispatcher {
                 intersects[0].object.name();
             else if (intersects[0].object.root && intersects[0].object.root.callback)
                 intersects[0].object.root.callback();
-        } else {
-            //document.getElementById('items').innerHTML = '';
-            //document.getElementById('fpv').style.display = 'none';
         }
     }
 
@@ -191,7 +183,7 @@ export class Core extends EventDispatcher {
 
         let theta = Math.PI * ( 0.2256 - 0.5 );
         let phi = 2 * Math.PI * ( 0.2472 - 0.5 );
-        let position = {}
+        let position = {};
 
         position.x = 400000 * Math.cos( phi );
         position.y = 400000 * Math.sin( phi ) * Math.sin( theta );
@@ -200,6 +192,97 @@ export class Core extends EventDispatcher {
         uniforms["sunPosition"].value.copy( position );
 
         this.sceneWrapper.getScene().add(sky);
+    }
+
+    getMapCommand() {
+        return {
+            'map_size': async (list) => {
+                if (list.length === 2)
+                    return this.map.generate({ x: parseInt(list[1]), z: parseInt(list[0])}, this.sceneWrapper);
+            },
+            'new_item': async (list) => {
+                if (list.length === 3)
+                    return this.map.addItem({x: parseInt(list[2]), z: parseInt(list[1])}, list[0].toUpperCase(), this.sceneWrapper)
+            },
+            'new_team': async (list) => {
+                if (list.length === 2)
+                    return this.playerManager.addTeam(list[1], parseInt(list[0]))
+            },
+            'new_player': async (list) => {
+                if (list.length !== 5)
+                    return;
+                let playerOpt = {
+                    coordinates: { x: parseInt(list[3]), y: parseInt(list[2]) },
+                    id: parseInt(list[0]),
+                    dir: parseInt(list[1]),
+                };
+
+                return this.playerManager.addPlayerInTeam(playerOpt, list[4], this.sceneWrapper, this.map);
+            },
+            'new_egg': async (list) => {
+                if (list.length === 4)
+                    return this.playerManager.playerDropEgg(
+                        { x: parseInt(list[2]), z: parseInt(list[1])},
+                        parseInt(list[0]),
+                        this.map,
+                        this.sceneWrapper,
+                        parseInt(list[3])
+                    );
+            },
+            'inventory': async (list) => {
+                if (list.length >= 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).updateInventory(list.slice(1))
+            },
+            'hatched': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.hatchEgg(parseInt(list[0]), this.map, this.sceneWrapper)
+            },
+            'died': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper)
+            },
+            'win': null, //to do paillette de fou furieux
+            'elevation_start': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).elevationStart()
+            },
+            'elevation_end': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).elevationFinish()
+            },
+            'drop': async (list) => {
+                if (list.length === 2)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).dropItem(list[1].toUpperCase(), this.sceneWrapper)
+            }, //do the function
+            'take': async (list) => {
+                if (list.length === 2)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper)
+            },
+            'broadcast': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).speak()
+            }, //add text
+            'eject': async (list) => {
+                if (list.length === 2)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation()
+            },
+            'move': async (list) => {
+                if (list.length === 4)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).move({x: parseInt(list[3]), y: parseInt(list[2])}, parseInt(list[1]))
+            },
+            'forward': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).moveForward()
+            },
+            'left': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).rotateLeft()
+            },
+            'right': async (list) => {
+                if (list.length === 1)
+                    return this.playerManager.getPlayerById(parseInt(list[0])).rotateRight()
+            },
+        };
     }
 }
 

@@ -282,6 +282,10 @@ const Manager = class {
 		let groupNames = Object.keys(this._groups);
 		groupNames.forEach(groupName => this.unregister(groupName));
 	}
+
+	static set globalVolume(val) {
+		createjs.Sound.volume = parseFloat(val)
+	}
 };
 
 const SoundRef = class {

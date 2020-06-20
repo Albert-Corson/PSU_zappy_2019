@@ -45,15 +45,7 @@ body {
 }
 
 #mute {
-    display:block;
-    position: absolute;
-
-    bottom: 20px;
-    left: 20px;
-
-    z-index: 10000;
-
-    font-size: 50px;
+    font-size: 20px;
 }
 
 #connection {
@@ -61,6 +53,10 @@ body {
 }
 
 #disconnect {
+    display: none;
+}
+
+#settings-content {
     display: none;
 }
 

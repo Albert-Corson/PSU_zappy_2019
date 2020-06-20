@@ -4,6 +4,7 @@ import { Player } from '@/app/Player';
 class PlayerManager {
     constructor() {
         this.teams = [];
+        this.eggs = [];
     }
 
     addTeam(teamName, size) {
@@ -37,11 +38,55 @@ class PlayerManager {
                 team.players[index].addEventListener('animation-end', _ => {
                     scene.getScene().remove(team.players[index].getMesh());
                     team.players.splice(index, 1);
-                })
+                    this.updateTeamPanel();
+                });
                 team.players[index].died();
                 return;
             }
         }
+    }
+
+    playerDropEgg(coordinates, egg_id, map, scene, player_id) {
+        let player = this.getPlayerById(player_id);
+        let team = this.getTeamByPlayerId(player_id);
+
+        if (player)
+            player.playAnimationOnce(9);
+        if (team)
+            this.eggs.push({ egg_id, team, coordinates });
+        map.addItem(coordinates, 'EGG', scene);
+    }
+
+    hatchEgg(egg_id, map, scene) {
+        let index = this.eggs.map(elem => elem.egg_id).indexOf(egg_id);
+
+        if (index === -1)
+            return;
+
+        this.eggs[index].team.size++;
+
+        let model = map.getItemModel(this.eggs[index].coordinates, 'EGG');
+
+        if (!model)
+            return;
+
+        new createjs.Tween.get(model.position).to({
+            y: 2
+        }, 1000).call(() => {
+            this.updateTeamPanel();
+            map.deleteItem(this.eggs[index].coordinates, 'EGG', scene);
+        })
+    }
+
+    getTeamByPlayerId(playerId) {
+        for (let team of this.teams) {
+            let index = team.players.map(player => player.playerId).indexOf(playerId);
+
+            if (index !== -1) {
+                return team;
+            }
+        }
+        return null;
     }
 
     getPlayerById(playerId) {

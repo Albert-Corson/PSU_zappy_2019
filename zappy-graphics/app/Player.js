@@ -50,7 +50,9 @@ export class Player extends Model {
                 this.food = nb;
             else
                 this.gems[key.toUpperCase()] = nb;
-        })
+        });
+
+        this.getControlPanelInfo();
     }
 
     updatePosition() {
@@ -137,20 +139,10 @@ export class Player extends Model {
                 this.ejectAnimation();
                 break;
             case 89:
-                this.speak();
                 break;
         }
         if (this.isFPV)
             document.getElementById('first-person').dispatchEvent(new CustomEvent('update'));
-    }
-
-    dropEgg(eggID, scene) {
-        let coordinates = { x: this.coordinates.x, z: this.coordinates.y };
-        this.playAnimationOnce(9);
-
-        //this.map.addItem(coordinates, 'EGG', scene);
-        //this.eggs.push({ eggID, coordinates: this.coordinates });
-        // TODO: Animation on fork, like "chie un oeuf'
     }
 
     ejectAnimation() {
@@ -187,10 +179,12 @@ export class Player extends Model {
     elevationFinish() {
         this.setAnimationIndex(2);
         this.level++;
+        this.getControlPanelInfo();
     }
 
     died() {
         this.playAnimationOnce(1);
+        this.getControlPanelInfo(true);
     }
 
     speak() {
@@ -223,10 +217,17 @@ export class Player extends Model {
         this.scene.getScene().add( mesh );
     }
 
-    getControlPanelInfo() {
+    getControlPanelInfo(clear = false) {
         let list = document.getElementById('items');
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
+
+        if (clear) {
+            info.innerText = 'No item selected';
+            list.innerHTML = '';
+            fpv.style.display = 'none';
+            return;
+        }
 
         let tmp = `<p>ID: <i>${ this.playerId }</i></p>`;
         tmp += `<p>Team: <i>${ this.teamName }</i></p>`;
