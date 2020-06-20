@@ -18,6 +18,7 @@ export class Player extends Model {
         this.eggs = [];
         this.food = 0;
         this.teamIdentificator = null;
+        this.teamColor = 'white';
         this.isFPV = false;
 
         document.addEventListener("keydown", this.setDirection.bind(this), false, this);
@@ -26,13 +27,16 @@ export class Player extends Model {
     async initInstance(sceneWrapper, color) {
         await this.load('static/assets/models/players/robot.glb', sceneWrapper, true);
 
-        let material = new THREE.MeshBasicMaterial({ color });
+        let material = new THREE.MeshBasicMaterial();
         let geometry = new THREE.OctahedronGeometry(.05, 0);
         let mesh = new THREE.Mesh(geometry, material);
+
+        material.color = new THREE.Color(color);
 
         sceneWrapper.getScene().add(mesh);
 
         this.teamIdentificator = mesh;
+        this.teamColor = color;
 
         new createjs.Tween.get(this.teamIdentificator.rotation, { loop: -1 }).to({
             y: Math.PI
@@ -280,7 +284,6 @@ export class Player extends Model {
         let tmpList = '';
 
         Object.keys(this.gems).map(e => {
-            console.log('PUTE');
             tmpList += `<li class="list-group-item">${e.toLowerCase()}: ${this.gems[e].toString()}</li>`
         });
 

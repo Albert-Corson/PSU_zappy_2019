@@ -8,7 +8,7 @@ class PlayerManager {
     }
 
     addTeam(teamName, size) {
-        this.teams.push({ teamName, size, players: [], color: ~~(Math.random() *0x2d2d2d) });
+        this.teams.push({ teamName, size, players: [], color: `#${(~~(Math.random() * 0xffffff)).toString(16)}` });
         this.updateTeamPanel();
     }
 
@@ -123,7 +123,9 @@ class PlayerManager {
         teamsHdr.innerHTML = 'Teams:';
 
         this.teams.map(team => {
-            tmp += `<li class="list-group-item">${team.teamName}: ${team.players.length}/${team.size}</li>`
+            let color = team.color;
+
+            tmp += `<li class="list-group-item">${team.teamName}: ${team.players.length}/${team.size}<span class="badge badge-danger m-2" style="background-color: ${color}">ID</span></li>`
         });
 
         teams.innerHTML = tmp;
