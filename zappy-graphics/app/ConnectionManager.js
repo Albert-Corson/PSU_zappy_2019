@@ -11,8 +11,6 @@ export class ConnectionManager {
 
         document.getElementById('submit').addEventListener('click', () => {
 
-            Server.setBridgeAddress(this.ip)
-
             Server.connect(this.ip, parseInt(this.port));
             Server.send("-spectator");
             Server.on('connect', () => {
