@@ -1,11 +1,12 @@
 import collections
+import re
 import sys
-from enum import Enum, unique
+from enum import IntEnum, unique
 from random import randrange
 import socket
 
 @unique
-class Direction(Enum): # this Enum is now maybe useless
+class Direction(IntEnum): # this Enum is now maybe useless
     NORTH = 0
     EST = 1
     SOUTH = 2
@@ -52,6 +53,7 @@ class Trantorian:
         self.x = randrange(0, self.map_dimension['x'])
         self.y = randrange(0, self.map_dimension['y'])
         self.direction = randrange(0, 3)
+        print("Initial position x: %d -- y: %d --> direction: %d " %(self.x, self.y, self.direction))
 
     def set_map_dimension(self, x, y):
         self.map_dimension['x'] = x
@@ -94,17 +96,23 @@ class Trantorian:
         return True
 
     def send_cmd(self, msg):
+        tmp_x, tmp_y = self.x, self.y
         self.sockfd.send(msg.encode("Utf8"))
-        response = self.sockfd.recv(3000).decode("Utf8")
-
-        msg_case = "message"
         print("HERE")
-        print("[" + response[:len(msg_case)] + "]")
-
-        if len(response) > len(msg_case) and response[:len(msg_case)] == msg_case:
-            print("THERE")
-            self.check_broadcast_msg(response)
         response = self.sockfd.recv(3000).decode("Utf8")
+
+        while re.search("^message.*", response) != None:
+            if msg == 'Forward\n':
+                self.check_broadcast_msg(response, tmp_x, tmp_y)
+            else:
+                self.check_broadcast_msg(response)
+            response = self.sockfd.recv(3000).decode("Utf8")
+     #   print("[" + response[:len(msg_case)] + "]")
+
+    #    if len(response) > len(msg_case) and response[:len(msg_case)] == msg_case:
+     #       print("THERE")
+     #       self.check_broadcast_msg(response)
+     #   response = self.sockfd.recv(3000).decode("Utf8")
         print(response)
         return response
 
@@ -123,22 +131,22 @@ class Trantorian:
         self.send_cmd("Forward\n")
         if self.direction == Direction.NORTH:
             if self.y + 1 > self.map_dimension['y']:
-                self.y -= self.map_dimension['y']
+                self.y = 0
             else:
                 self.y += 1
         elif self.direction == Direction.SOUTH:
             if self.y - 1 < 0:
-                self.y += self.map_dimension['y']
+                self.y = 10
             else:
                 self.y -= 1
         elif self.direction == Direction.EST:
             if self.x + 1 > self.map_dimension['x']:
-                self.x -= self.map_dimension['x']
+                self.x = 0
             else:
                 self.x += 1
         elif self.direction == Direction.WEST:
             if self.x - 1 < 0:
-                self.x += self.map_dimension['x']
+                self.x = 10
             else:
                 self.x -= 1
 
@@ -233,10 +241,18 @@ class Trantorian:
         print(self.stones)
         print(self.food)
 
-    def check_broadcast_msg(self, broadcasted):
+    def check_broadcast_msg(self, broadcasted, *args):
         # "message K, txt"
+        past_x = None
+        past_y = None
+
+        if len(args) == 2:
+            past_x = args[0]
+            past_y = args[1]
+            # TODO: revenir en arriere  #Mathias func
+            foo = 9
         tmp = broadcasted.split(",")
-        tmp_bis = tmp.split(" ")
+        tmp_bis = tmp[0].split(" ")
         coord_from_me = int(tmp_bis[1])
         message = tmp[1]
         print("someone said : << %s >> at %d" %(message, coord_from_me))
@@ -252,8 +268,7 @@ class Trantorian:
         response = self.send_cmd("Connect_nbr\n")
         self.unused_player_slot = int(response)
 
-    # algo
-
+    ## algo
     # renvoie l'index d'ou le ressouces a ete trouver ou -1 sinon
     def check_in_vision_field(self, obj):
         tmp = []

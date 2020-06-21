@@ -21,6 +21,7 @@ class ReceiverHandler(asyncore.dispatcher):
         sys.exit(0)
 
     def handle_read(self):
+        print("ASYNC RECEIVER")
         print(self.recv(3000))
         length_checker = len("message")
         response = self.recv(3000)
@@ -78,9 +79,8 @@ def genese(player, word_dim):
     player.inventory()
 
 def begin_ai(ac, av):
-    response = ""
     port, name , host = arg_gestion(ac - 1, av[1:])
-    host = socket.gethostbyname(host)
+    host= socket.gethostbyname(host)
     # begin socket stuff here
     try: 
         client = ReceiverHandler(host, port)
@@ -92,13 +92,11 @@ def begin_ai(ac, av):
         player = Trantorian(name, sockfd)
         client.player = player
         genese(player, word_dim)
-        asyncore.loop()
+        #asyncore.loop()
         while player.level != 8:
-            print("MES GROSSE COUILLES")
-            a = 0
             # AI stuff here
             # TODO: test dead reponse with our server
-            #player.work()
+            player.work()
     except KeyboardInterrupt: # ctrl-c or delete
         print("Player is dying off..")
         # TODO: check with server side if this event is catch on their side
