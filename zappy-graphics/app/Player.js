@@ -83,19 +83,53 @@ export class Player extends Model {
         this.getMesh().rotation.y = (this.direction - DIR.S) * Math.PI / 2;
     }
 
-    move(coordinates, direction) {
-        let pos =  this.map.getPlayerPositionFromCord(coordinates);
+    applyPosition(eject = false) {
+        let newCoordinates = {...this.coordinates};
+        console.log(newCoordinates);
+        let vec = this.map.getPlayerPositionFromCord(this.coordinates);
 
+        let tp = newCoordinates.x !== this.coordinates.x || newCoordinates.y !== this.coordinates.y;
+
+        if (this.isFPV ) {
+            this.getMesh().position.set(vec.x, vec.y, vec.z);
+            this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
+            document.getElementById('first-person').dispatchEvent(new CustomEvent('update-first-person'));
+        } else if (tp || eject) {
+            this.playAnimationOnce(3);
+            setTimeout(() => {
+                this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
+                this.getMesh().position.set(vec.x, vec.y, vec.z)
+                if (this.isFollow) {
+                    document.getElementById('follow').dispatchEvent(new CustomEvent('update-follow'));
+                }
+            }, 200);
+        } else {
+            this.setAnimationIndex(10);
+            createjs.Tween
+                .get(this.teamIdentificator.position, {override : true})
+                .to({
+                    x: vec.x,
+                    y: vec.y + .45,
+                    z: vec.z
+                }, 300);
+            createjs.Tween
+                .get(this.getMesh().position, {override : true})
+                .to({
+                    x: vec.x,
+                    y: vec.y,
+                    z: vec.z
+                }, 300)
+                .call(() => this.setAnimationIndex(2));
+            if (this.isFollow)
+                document.getElementById('follow').dispatchEvent(new CustomEvent('update-follow', {detail: {vec}}));
+        }
+    }
+
+    move(coordinates, direction) {
+        this.coordinates = coordinates;
         this.direction = direction;
         this.getMesh().rotation.y = (direction - DIR.S) * Math.PI / 2;
-        this.playAnimationOnce(3);
-        createjs.Tween
-            .get(this.getMesh().position, {override : true})
-            .to({
-                x: pos.x,
-                y: pos.y,
-                z: pos.z
-            }, 150)
+        this.applyPosition(true);
     }
 
     rotateLeft() {
@@ -129,44 +163,8 @@ export class Player extends Model {
                 break;
         }
 
-        let newCoordinates = {...this.coordinates};
-
         Manager.play('click');
-
-        let vec = this.map.getPlayerPositionFromCord(this.coordinates);
-
-        let tp = newCoordinates.x !== this.coordinates.x || newCoordinates.y !== this.coordinates.y;
-
-        if (this.isFPV ) {
-            this.getMesh().position.set(vec.x, vec.y, vec.z);
-            this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
-            document.getElementById('first-person').dispatchEvent(new CustomEvent('update-first-person'));
-        } else if (tp) {
-            this.teamIdentificator.position.set(vec.x, vec.y + 0.45, vec.z)
-            this.getMesh().position.set(vec.x, vec.y, vec.z)
-            if (this.isFollow) {
-                document.getElementById('follow').dispatchEvent(new CustomEvent('update-follow'));
-            }
-        } else {
-            this.setAnimationIndex(10);
-            createjs.Tween
-                .get(this.teamIdentificator.position, {override : true})
-                .to({
-                    x: vec.x,
-                    y: vec.y + .45,
-                    z: vec.z
-                }, 150);
-            createjs.Tween
-                .get(this.getMesh().position, {override : true})
-                .to({
-                    x: vec.x,
-                    y: vec.y,
-                    z: vec.z
-                }, 150)
-                .call(() => this.setAnimationIndex(2));
-            if (this.isFollow)
-                document.getElementById('follow').dispatchEvent(new CustomEvent('update-follow', {detail: {vec}}));
-        }
+        this.applyPosition();
     }
 
     setDirection(event) {

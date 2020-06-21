@@ -340,7 +340,7 @@ export class Core extends EventDispatcher {
                 }
             }, //add text
             'eject': async (list) => {
-                if (list.length === 2)
+                if (list.length === 1)
                     return this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation()
             },
             'move': async (list) => {

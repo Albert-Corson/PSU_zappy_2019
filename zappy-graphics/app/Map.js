@@ -134,13 +134,18 @@ export class Map {
     getPlayerPositionFromCord(coordinates) {
         let pos = this.getPositionFromCoord(coordinates);
         let block = this.itemSlots[this.size_x * coordinates.y + coordinates.x];
-
+        let Place = block.playerFreeIndexes.length !== 0;
         let index = block.playerFreeIndexes[~~(Math.random() * block.playerFreeIndexes.length)];
 
         block.playerFreeIndexes.splice(block.playerFreeIndexes.indexOf(index), 1);
 
-        pos.x = pos.x - this.modelSize.x / 2 + (index % 3 * this.modelSize.x / 3) + this.modelSize.x / 6;
-        pos.z = pos.z - this.modelSize.z / 2 + (Math.floor(index / 3) * this.modelSize.z / 3)  + this.modelSize.x / 6;
+        if (Place) {
+            pos.x = pos.x - this.modelSize.x / 2 + (index % 3 * this.modelSize.x / 3) + this.modelSize.x / 6;
+            pos.z = pos.z - this.modelSize.z / 2 + (Math.floor(index / 3) * this.modelSize.z / 3)  + this.modelSize.x / 6;
+        } else {
+            pos.x = pos.x - this.modelSize.x / 3 + (Math.random() * this.modelSize.x * 0.6);
+            pos.z = pos.z - this.modelSize.z / 3 + (Math.random() * this.modelSize.z * 0.6);
+        }
 
         return { x: pos.x * this.modelSize.x, y: 0, z: this.modelSize.z * pos.z };
     }
