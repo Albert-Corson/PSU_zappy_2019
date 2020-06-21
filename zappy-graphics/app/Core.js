@@ -28,14 +28,11 @@ export class Core extends EventDispatcher {
     }
 
     initSoundManager() {
-        /*
         Manager.register(
             'ambient',
             new SoundRef('static/assets/audio/ambient.mp3', { loop: true, fadeIn: true, volume: .2 }),
             e => e.src === 'static/assets/audio/ambient.mp3' ? Manager.play('ambient') : null
         );
-         */
-
         Manager.register(
             'click',
             new SoundRef(['static/assets/audio/click.ogg', 'static/assets/audio/click2.ogg'], { random: true, streamsLimit: 2 })
@@ -276,7 +273,6 @@ export class Core extends EventDispatcher {
                     return this.playerManager.addTeam(list[1], parseInt(list[0]))
             },
             'new_player': async (list) => {
-                console.log('new player');
                 if (list.length !== 5)
                     return;
                 let playerOpt = {
@@ -284,9 +280,6 @@ export class Core extends EventDispatcher {
                     id: parseInt(list[0]),
                     dir: parseInt(list[1]),
                 };
-
-                console.log(playerOpt.dir);
-
                 return this.playerManager.addPlayerInTeam(playerOpt, list[4], this.sceneWrapper, this.map);
             },
             'new_egg': async (list) => {
@@ -311,7 +304,9 @@ export class Core extends EventDispatcher {
                 if (list.length === 1)
                     return this.playerManager.deletePlayerInTeam(parseInt(list[0]), this.sceneWrapper, this.resetCameraMode.bind(this))
             },
-            'win': null, //to do paillette de fou furieux
+            'win': () => {
+                document.location.reload(true);
+            },
             'elevation_start': async (list) => {
                 if (list.length === 1)
                     return this.playerManager.getPlayerById(parseInt(list[0])).elevationStart()
@@ -323,7 +318,7 @@ export class Core extends EventDispatcher {
             'drop': async (list) => {
                 if (list.length === 2)
                     return this.playerManager.getPlayerById(parseInt(list[0])).dropItem(list[1].toUpperCase(), this.sceneWrapper)
-            }, //do the function
+            },
             'take': async (list) => {
                 if (list.length === 2)
                     return this.playerManager.getPlayerById(parseInt(list[0])).pickItem(list[1].toUpperCase(), this.sceneWrapper)
@@ -338,7 +333,7 @@ export class Core extends EventDispatcher {
                     this.displayUserMessage();
                     return this.playerManager.getPlayerById(parseInt(list[0])).speak()
                 }
-            }, //add text
+            },
             'eject': async (list) => {
                 if (list.length === 1)
                     return this.playerManager.getPlayerById(parseInt(list[0])).ejectAnimation()

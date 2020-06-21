@@ -9,20 +9,21 @@ export class ConnectionManager {
         document.getElementById('ip').addEventListener('change', e => this.ip = e.target.value);
         document.getElementById('port').addEventListener('change', e => this.port = e.target.value);
 
-        document.getElementById('submit').addEventListener('click', () => {
-
-            Server.setBridgeAddress(this.ip)
-
+        let callback = () => {
             Server.connect(this.ip, parseInt(this.port));
             Server.send("-spectator");
             Server.on('connect', () => {
                 console.info('waiting for initialization...');
-
                 const core = new Core;
-
                 this.openInfoOnConnection();
             });
-        });
+            Server.on('disconnect', () => {
+                document.location.reload(true);
+            });
+        };
+
+        document.getElementById('submit').addEventListener('click', callback);
+        document.getElementById('submit').addEventListener('touchstart', callback);
 
         document.getElementById('disconnect').addEventListener('click', () => {
             Server.disconnect();
