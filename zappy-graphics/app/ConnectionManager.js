@@ -23,7 +23,7 @@ export class ConnectionManager {
         });
 
         document.getElementById('disconnect').addEventListener('click', () => {
-            //Server.disconnect();
+            Server.disconnect();
         });
 
         this.displayConnectionForm();

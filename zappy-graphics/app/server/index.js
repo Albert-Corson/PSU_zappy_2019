@@ -54,23 +54,26 @@ export class Server {
             noDelay: true,
             keepAlive: false,
             initialDelay: 0
-        });
+        })
 
-        this._net.onclose = ()=>{console.log('close')}
-        this._socket.on('connect', () => {
+        this._socket.onconnect = () => {
             this._isOpen = true
             this._emitter.emit('connect')
-        })
-        this._socket.on('end', () => {
+        }
+        const onclose = () => {
             this._isOpen = false
             this._emitter.emit('disconnect')
-        })
-        this._socket.on('data', data => {
+        }
+        this._net.onclose = onclose
+        this._socket.webtcp.sock.onclose = onclose
+        this._socket.onend = onclose
+        this._socket.ondata = data => {
             const messages = data.split('\n')
             for (let message of messages) {
+                console.log(message)
                 this._emitter.emit('message', message)
             }
-        })
+        }
     }
 
     /**
@@ -85,7 +88,7 @@ export class Server {
      */
     static disconnect() {
         if (this._socket !== null) {
-            this._socket.close()
+            this._socket.webtcp.sock.close()
             this._socket = null
         }
     }
@@ -118,4 +121,4 @@ export class Server {
     }
 }
 
-export default Server
+window.Server = Server
