@@ -1,4 +1,5 @@
 import collections
+import sys
 from enum import Enum, unique
 from random import randrange
 import socket
@@ -84,13 +85,25 @@ class Trantorian:
         require_state = self.elev_table[self.level - 1][1:]
         print("required ###### =>")
         print(require_state)
-        if collections.Counter(actual_state) == collections.Counter(require_state):
-            print("All ressources are reunited")
-            return True
-        return False
+
+        for _ in range(len(require_state)):
+            print(actual_state[_])
+            if require_state[_] > actual_state[_]:
+                return False
+        print("All ressources are reunited")
+        return True
 
     def send_cmd(self, msg):
         self.sockfd.send(msg.encode("Utf8"))
+        response = self.sockfd.recv(3000).decode("Utf8")
+
+        msg_case = "message"
+        print("HERE")
+        print("[" + response[:len(msg_case)] + "]")
+
+        if len(response) > len(msg_case) and response[:len(msg_case)] == msg_case:
+            print("THERE")
+            self.check_broadcast_msg(response)
         response = self.sockfd.recv(3000).decode("Utf8")
         print(response)
         return response
@@ -155,6 +168,7 @@ class Trantorian:
         command = response[1:-2]
 
         cases = command.split(",")
+        print(cases)
         for index in range(vision_field_limit):
             if not cases[index]:
                 cases[index] = "empty"
@@ -243,13 +257,29 @@ class Trantorian:
     # renvoie l'index d'ou le ressouces a ete trouver ou -1 sinon
     def check_in_vision_field(self, obj):
         tmp = []
+        calc_middle = lambda x : (x * x) - x
+
+        begs = [1, 4, 9, 16, 25, 36] # TODO: Maybe increase the array until levl 8 view
+        efficient_path = [calc_middle(x) for x in range(2, 8)]
+        print("&&&&&&&&&&&&&&&&&&&&&")
+        print(efficient_path)
+        print("&&&&&&&&&&&&&&&&&&&&&")
+        delta = 0
+        tmp = None
 
         for x in range(len(self.vision_field)):
+            if x in efficient_path:
+                continue
+            if x in begs:
+                tmp = self.vision_field[efficient_path[delta]].split(' ')
+                if obj in tmp:
+                    print("@@@@@ obj find at index %d" %(efficient_path[delta]))
+                    return efficient_path[delta]
+                delta += 1
             tmp = self.vision_field[x].split(' ')
-            for _ in tmp:
-                if _ == obj:
-                    print("@@@@@ obj find at index %d" %(x))
-                    return x
+            if obj in tmp:
+                print("@@@@@ obj find at index %d" %(x))
+                return x
         return -1
         
     def find_col_from_tile(self, tile_nbr):
@@ -291,9 +321,12 @@ class Trantorian:
         print("===> ")
         recipe = self.get_stone_book_from_level(self.level - 1)
         current_tile = self.vision_field.get(0).split(' ')
+        print(recipe)
         print(current_tile)
         #n TODO: now we need to move organise stone we need from current_tile and take each of them
-    
+        for obj in current_tile:
+            if obj in recipe and recipe.get(obj) > 0:
+                self.take_object(obj)
         print("#########################")
     
     # ici on se deplace vers l'item en prenant d'autres item requis si on passe dessus
@@ -303,7 +336,6 @@ class Trantorian:
         alpha = calc_middle(col_nbr + 1)
         delta = alpha - tile_nbr
 
-        # TODO: check during travel if other ressources are found
         print("alpha => %d" %(alpha ))
         print("col_nbr => %d" %(col_nbr))
         for x in range(col_nbr):
@@ -315,15 +347,16 @@ class Trantorian:
             self.left()
         print("delta => %d" %(delta ))
         for y in range(abs(delta)):
-            # self.check_other_needed_resources() 
+            self.check_other_needed_resources() 
             self.forward()
         self.take_object(obj)
         self.look()
         print(self.vision_field.get(0).split(" "))
-        # if there is same object multiple time in the same tile
         other_obj = self.vision_field.get(0).split(" ").count(obj)
         [self.take_object(obj) for _ in range(other_obj)]
+        print("~~~~~~~~")
         self.inventory()
+        print("~~~~~~~~")
 
     def work(self):
         print("Up")
@@ -338,9 +371,15 @@ class Trantorian:
         # trouve la ressouce la plus nécessaire
         most_wanted = ref_table.index(max(ref_table))
         print(self.stone_ref[most_wanted])
-        # si on a tout bah on commence l'incantation
+        # si on a tout bah on broadcast 
         if self.check_ressources() == True:
-            self.broadcast("Avengers Rassemblement!")
+            # si assez de joueurs reunis on incante
+            if self.level != 1:
+                self.broadcast("Avengers Rassemblement!")
+            if self.player_gathered == self.elev_table[index_level][0] - 1:
+                print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#####################")
+                self.incantation()
+                return
         # regarde dans sa vision_field and move forward if most wanted
         self.look()
         index_vision = self.check_in_vision_field(self.stone_ref[most_wanted])

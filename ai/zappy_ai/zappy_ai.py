@@ -25,6 +25,9 @@ class ReceiverHandler(asyncore.dispatcher):
         length_checker = len("message")
         response = self.recv(3000)
         
+        print("################")
+        print(response)
+        print("################")
         if response == "dead":
             self.handle_close()
         elif len(response) >= length_checker and response[:length_checker] == "message":
@@ -89,11 +92,13 @@ def begin_ai(ac, av):
         player = Trantorian(name, sockfd)
         client.player = player
         genese(player, word_dim)
+        asyncore.loop()
         while player.level != 8:
+            print("MES GROSSE COUILLES")
+            a = 0
             # AI stuff here
             # TODO: test dead reponse with our server
-            player.work()
-            asyncore.loop()
+            #player.work()
     except KeyboardInterrupt: # ctrl-c or delete
         print("Player is dying off..")
         # TODO: check with server side if this event is catch on their side
