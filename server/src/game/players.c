@@ -30,7 +30,7 @@ static void process_callback(player_t *player, struct timeval *now)
     callback_t *cb = player->callbacks;
     double elapsed_ms = 0;
 
-    if (player->incantation) {
+    if (player->incantation && player->incantation->initiator != player) {
         memcpy(&player->callbacks->start, now, sizeof(*now));
         return;
     }
@@ -69,8 +69,8 @@ static bool process_food(player_t *player, struct timeval *now)
     if (eaten)
         spectators_send_inventory(player);
     if (player->inventory[E_FOOD].amount == 0) {
-        send_str(player->sockd, "dead\n");
         game_kill_player(player);
+        send_str(player->sockd, "dead\n");
         free(player);
         return (false);
     }
@@ -84,8 +84,8 @@ void game_process_players(struct timeval *now)
 
     while (it) {
         tmp = SLIST_NEXT(it, next);
-        if (process_food(it, now))
-            process_callback(it, now);
+        process_callback(it, now);
+        process_food(it, now);
         it = tmp;
     }
 }

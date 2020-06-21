@@ -13,7 +13,7 @@
 
 static bool elevation_is_possible(const recipe_t *inc, player_t *player)
 {
-    size_t count = 1;
+    size_t count = 0;
     player_t *it = SLIST_FIRST(&GAME.players);
 
     for (; it; it = SLIST_NEXT(it, next)) {
