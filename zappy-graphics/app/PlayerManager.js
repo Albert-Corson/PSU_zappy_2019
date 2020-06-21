@@ -125,7 +125,15 @@ class PlayerManager {
         this.teams.map(team => {
             let color = team.color;
 
-            tmp += `<li class="list-group-item">${team.teamName}: ${team.players.length}/${team.size}<span class="badge badge-danger m-2" style="background-color: ${color}">ID</span></li>`
+            let playerLevels = '';
+
+            team.players.map(player => {
+                playerLevels += `<li>Player ${player.playerId}: level ${player.level}</li>`;
+            });
+
+            let playerLevelsHTML = `<div><ul>${playerLevels}</ul></div>`;
+
+            tmp += `<li class="list-group-item">${team.teamName}: ${team.players.length}/${team.size}<span class="badge badge-danger m-2" style="background-color: ${color}">ID</span><div>${playerLevelsHTML}</div></li>`
         });
 
         teams.innerHTML = tmp;
