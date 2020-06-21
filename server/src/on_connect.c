@@ -49,7 +49,7 @@ void on_connect(va_list ap)
     client_buffer = add_client_buffer(peer);
     client = add_pending_client(peer);
     if (!client_buffer || !client) {
-        dprintf("[!] Connection refused (allocation error): %d\n", peer);
+        dprintf(2, "[!] Connection refused (allocation error): %d\n", peer);
         free(client_buffer);
         free(client);
         socker_disconnect(peer);
