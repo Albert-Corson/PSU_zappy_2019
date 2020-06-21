@@ -19,3 +19,6 @@ server/include/libs/socker/logger.h
 server/include/libs/socker/events.h
 server/include/libs/socker/socker.h
 server/include/libs/socker/stream.h
+ai/build/
+lib/
+zappy_ai
