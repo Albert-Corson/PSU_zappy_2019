@@ -31,6 +31,11 @@
                         <i class="fas fa-cog"></i>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a id="messages-tab" class="nav-link" data-toggle="tab" role="tab" aria-controls="messages" aria-selected="false" href="#messages">
+                        <i class="far fa-comment-dots"></i>
+                    </a>
+                </li>
             </ul>
             <div class="tab-content" id="tabContent">
                 <div class="tab-pane fade" id="infos">
@@ -38,15 +43,24 @@
                         <p class="text-center">Server connection required</p>
                     </div>
                     <div id="info"></div>
-                    <ul id="items"></ul>
-                    <button type="button" class="btn btn-primary btn-block" id="first-person">Toggle First Person View</button>
+                    <ul id="items" class="list-group list-group-flush"></ul>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <input type="submit" class="btn btn-primary btn-block" id="first-person" value="First person">
+                            </div>
+                            <div class="col">
+                                <input type="submit" class="btn btn-primary btn-block" id="follow" value="Follow">
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div class="tab-pane fade" id="team">
                     <div class="mt-4 ask-for-connection">
                         <p class="text-center">Server connection required</p>
                     </div>
                     <p id="teams-header"></p>
-                    <ul id="teams"></ul>
+                    <ul id="teams" class="list-group list-group-flush"></ul>
                 </div>
                 <div class="tab-pane fade show active" id="network">
                     <div id="connection">
@@ -68,11 +82,23 @@
                     <div class="mt-4 ask-for-connection">
                         <p class="text-center">Server connection required</p>
                     </div>
+                    <div id="settings-content">
+                        <div>
+                            <label for="volume"><i class="fas fa-volume-off" id="mute"></i></label>
+                            <input type="range" id="volume" name="volume" min="0" max="1" step="0.1" disabled>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="messages">
+                    <div class="mt-4 ask-for-connection">
+                        <p class="text-center">Server connection required</p>
+                    </div>
+                    <ul class="list-group list-group-flush" id="messages-list">
+
+                    </ul>
                 </div>
             </div>
         </div>
-
-        <i class="fas fa-volume-up" id="mute"></i>
 
         <script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
         <script src="vendor/bootstrap/bootstrap.min.js"></script>
