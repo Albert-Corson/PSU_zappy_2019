@@ -87,9 +87,6 @@ def begin_ai(ac, av):
         client = ReceiverHandler(host, port)
         sockfd = client.sockfd
         remaining_client, word_dim = init_communication(sockfd, name)
-        if remaining_client < 1:
-            print("No slot availiable, can't connect")
-            sockfd.close()
         player = Trantorian(name, sockfd)
         client.player = player
         genese(player, word_dim)

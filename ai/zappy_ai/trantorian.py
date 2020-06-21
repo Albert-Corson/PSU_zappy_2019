@@ -6,14 +6,14 @@ from random import randrange
 import socket
 
 @unique
-class Actions(Enum):
+class Actions(IntEnum):
     NONE = 0
     FORWARD = 1
     ROTATE_LEFT = 2
     ROTATE_RIGHT = 3
 
 @unique
-class Direction(Enum): # this Enum is now maybe useless
+class Direction(IntEnum): # this Enum is now maybe useless
     NORTH = 0
     EST = 1
     SOUTH = 2
@@ -50,9 +50,9 @@ class Trantorian:
     food = 0
     player_gathered = 0
     level = 1
+    stone_ref = ["linemate", "deraumere", "sibur", "mendiane", "phiras", "thystame"]
     #stones = { "linemate": 0, "deraumere": 0, "sibur": 0,
     #            "mendiane": 0, "phiras": 0, "thystame": 0 }
-    stone_ref = ["linemate", "deraumere", "sibur", "mendiane", "phiras", "thystame"]
     stones = {}
     unused_player_slot = 0
     elev_table = [
@@ -124,7 +124,13 @@ class Trantorian:
         print("HERE")
         response = self.sockfd.recv(3000).decode("Utf8")
 
+        if response == "dead\n":
+            self.sockfd.close()
+            sys.exit(0)
         while re.search("^message.*", response) != None:
+            if response == "dead\n":
+                self.sockfd.close()
+                sys.exit(0)
             if msg == 'Forward\n':
                 self.check_broadcast_msg(response, tmp_x, tmp_y)
             else:
@@ -140,11 +146,20 @@ class Trantorian:
         return response
 
     def incantation(self):
-        response = self.send_cmd("Incantation\n")
-        if response == "ko":
-            print("ouspi doupsi")
-            return
+        self.sockfd.send("Incantation\n".encode("Utf8"))
+        response = self.sockfd.recv(3000).decode("Utf8")
         print("Ritual begins...")
+        print(response)
+        print("----------------")
+        while re.search("^Current level:.*", response) == None:
+            if response == "dead\n":
+                self.sockfd.close()
+                sys.exit(0)
+            if response == "ko":
+                print("ouspi doupsi")
+                return
+            response = self.sockfd.recv(3000).decode("Utf8")
+        print(response)
         self.level += 1
         self.upgrade_vision_field()
         print("Now elevating to %d" %(self.level))
@@ -200,7 +215,8 @@ class Trantorian:
 
         cases = command.split(",")
         print(cases)
-        for index in range(vision_field_limit):
+        print(vision_field_limit)
+        for index in range(vision_field_limit -1):
             if not cases[index]:
                 cases[index] = "empty"
             # TODO: check les incidences sur le bag
@@ -264,22 +280,45 @@ class Trantorian:
         print(self.stones)
         print(self.food)
 
+    def check_level_broadcasted(self, message):
+        tmp = message.split(' ')
+        tmp_lvl = int(tmp[-1])
+
+        if tmp_lvl == self.level:
+            print("We have the same level")
+            return True
+        print("We dont have the same level")
+        return False
+
     def check_broadcast_msg(self, broadcasted, *args):
         # "message K, txt"
         past_x = None
         past_y = None
 
-        if len(args) == 2:
-            past_x = args[0]
-            past_y = args[1]
-            # TODO: revenir en arriere  #Mathias func
-            foo = 9
         tmp = broadcasted.split(",")
         tmp_bis = tmp[0].split(" ")
         coord_from_me = int(tmp_bis[1])
         message = tmp[1]
+
+        if len(args) == 2:
+            print("Get Back...")
+            past_x = args[0]
+            past_y = args[1]
+            [self.left() for _ in range(2)]
+            self.forward()
+            print('============================')
+            print(re.search("^Avengers Rassemblement!.*", message))
+            print(self.check_level_broadcasted(message))
+            print(self.check_ressources())
+            print('============================')
+            if re.search("^Avengers Rassemblement!.*", message) != None and self.check_level_broadcasted(message) == True and self.check_ressources() == True:
+                print("<< GO JOIN MY FRIEND!! >>")
+                self.sockfd.send("j'arrive".encode("Utf8"))
+                [self.left() for _ in range(2)] # replace to his correct direction
+                self.shortest_path_k(coord_from_me)
+                return "abort"
         print("someone said : << %s >> at %d" %(message, coord_from_me))
-        #TODO: calculate la distance la plus courte avec la methode de Manhatan
+        return "continue"
 
     # TODO: finish it
     def launch_action(self, action_value):
@@ -293,14 +332,13 @@ class Trantorian:
     def shortest_path_k(self, k): # k is supposed to be a number 
         if k < 0 or k > 9:
             return
-        init_action, repeted_action = directions_broadcast[k]
+        init_action, repeted_action = self.directions_broadcast[k]
         for action in init_action :
-            launch_action(action)
+            self.launch_action(action)
         for action in repeted_action :
-            launch_action(action)
+            self.launch_action(action)
         
-
-        print("foo")
+        print("<< Arrive at destination! >>")
         # TODO: find the coordinate of the point K
         # k=|Xk−X0|+|Yk−Y0|=|Xk|+|Yk|
 
@@ -413,6 +451,8 @@ class Trantorian:
         self.inventory()
         print("~~~~~~~~")
 
+# TODO: recup de la bouf
+
     def work(self):
         print("Up")
         index_vision = -1
@@ -430,7 +470,7 @@ class Trantorian:
         if self.check_ressources() == True:
             # si assez de joueurs reunis on incante
             if self.level != 1:
-                self.broadcast("Avengers Rassemblement!")
+                self.broadcast("Avengers Rassemblement! for level %d" %(self.level))
             if self.player_gathered == self.elev_table[index_level][0] - 1:
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#####################")
                 self.incantation()
