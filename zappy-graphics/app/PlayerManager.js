@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Player } from '@/app/Player';
+import { Item } from '@/app/Item';
 
 class PlayerManager {
     constructor() {
@@ -61,21 +62,33 @@ class PlayerManager {
 
     hatchEgg(egg_id, map, scene) {
         let index = this.eggs.map(elem => elem.egg_id).indexOf(egg_id);
+        let copy;
 
         if (index === -1)
             return;
 
         this.eggs[index].team.size++;
 
-        let model = map.getItemModel(this.eggs[index].coordinates, 'EGG');
+        let item = map.getItem(this.eggs[index].coordinates, 'EGG');
 
-        if (!model)
+        if (!item && !item.model)
             return;
+        if (item.nb > 1) {
+            copy = new Item('EGG', scene);
+            let position = item.model.getMesh().position;
+            let rotation = item.model.getMesh().rotation;
 
-        new createjs.Tween.get(model.position).to({
+            copy.getMesh().position.set(position.x, position.y, position.z);
+            copy.getMesh().rotation.set(rotation.x, rotation.y, rotation.z);
+        }
+        new createjs.Tween.get(item.model.getMesh().position).to({
             y: 2
         }, 1000).call(() => {
             this.updateTeamPanel();
+            scene.getScene().remove(item.model.getMesh());
+            console.log("egg:", item.nb);
+            if (copy)
+               item.model = copy;
             map.deleteItem(this.eggs[index].coordinates, 'EGG', scene);
         })
     }

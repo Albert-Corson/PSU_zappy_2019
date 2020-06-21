@@ -1,4 +1,5 @@
 import { Model } from '@/app/wrappers/Model';
+import {FOCUS_ON} from "./constants";
 
 export class Bloc extends Model {
     constructor(idx, copy = null) {
@@ -15,6 +16,7 @@ export class Bloc extends Model {
             'FOOD': 0,
             'EGG': 0,
         };
+        this.focus = false;
     }
 
     getControlPanelInfo() {
@@ -22,6 +24,9 @@ export class Bloc extends Model {
         let info = document.getElementById('info');
         let fpv = document.getElementById('first-person');
         let follow = document.getElementById('follow');
+
+        if (FOCUS_ON.id !== `block${this.idx}`)
+            return;
 
         fpv.style.display = 'none';
         follow.style.display = 'none';
@@ -38,7 +43,10 @@ export class Bloc extends Model {
     }
 
     initRaycaster() {
-        this.getMesh().children[0].name = this.getControlPanelInfo.bind(this);
+        this.getMesh().children[0].name = () => {
+            FOCUS_ON.id = `block${this.idx}`;
+            this.getControlPanelInfo();
+        };
     }
 
     putItemOnBlock(type) {
