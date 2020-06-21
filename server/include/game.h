@@ -11,8 +11,8 @@
 #include <struct/game.h>
 
 #define FOODTIME 126.0
-#define HATCHTIME 600
-#define RESPAWNTIME 7
+#define HATCHTIME 600.0
+#define RESPAWNTIME 3.0
 
 int flag_client_nb(int, const char **);
 int flag_name(int, const char **);
