@@ -9,7 +9,10 @@
 TODO
 
 zappy_server
+zappy_ai
 unit_tests
+
+lib
 
 server/include/libs/socker/types.h
 server/include/libs/socker/logger.h

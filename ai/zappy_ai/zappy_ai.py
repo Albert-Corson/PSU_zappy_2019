@@ -37,7 +37,7 @@ class ReceiverHandler(asyncore.dispatcher):
 #TODO: Vision handling and ressources managements
 
 def arg_gestion(ac, av):
-    dicto = { "-p": "", "-name": "", "-h": "" } 
+    dicto = { "-p": "", "-n": "", "-h": "" } 
     i = 0
 
     if ac % 2 != 0:
@@ -52,20 +52,21 @@ def arg_gestion(ac, av):
 
     if dicto.get('-h') == "":
         dicto["-h"] = "localhost"
-    if dicto.get("-name") == "" or dicto.get("-p") == "":
-        raise CmdLineErrors("You need to specify both '-p' and '-name' as parameter, see -help.", "")
+    if dicto.get("-n") == "" or dicto.get("-p") == "":
+        raise CmdLineErrors("You need to specify both '-p' and '-n' as parameter, see -help.", "")
     try:
         int(dicto["-p"])
     except ValueError:
         raise CmdLineErrors("The port must be a number", "")
     #[print(x + " => " + dicto[x]) for x in dicto]
-    return dicto["-p"], dicto["-name"], dicto["-h"]
+    return dicto["-p"], dicto["-n"], dicto["-h"]
 
 def init_communication(sockfd, team_name):
     msg = sockfd.recv(1280).decode("Utf8")
     print("receive => " + msg)
     sockfd.send((team_name + "\n").encode("Utf8"))
     buffer = sockfd.recv(1280).decode("Utf8").split('\n')
+    print(buffer)
     if not buffer[0] or buffer[0] == 'ko':
         raise CmdLineErrors("The team specify may not exist, please verify command line argument", "")
     remaining_client = int(buffer[0])

@@ -6,7 +6,14 @@ from random import randrange
 import socket
 
 @unique
-class Direction(IntEnum): # this Enum is now maybe useless
+class Actions(Enum):
+    NONE = 0
+    FORWARD = 1
+    ROTATE_LEFT = 2
+    ROTATE_RIGHT = 3
+
+@unique
+class Direction(Enum): # this Enum is now maybe useless
     NORTH = 0
     EST = 1
     SOUTH = 2
@@ -18,6 +25,22 @@ class Trantorian:
     x, y = 0, 0
     map_dimension = {'x': 0, 'y': 0}
     pyramid_nbr = []
+
+    #broadcast stuff
+    DIAGONAL_LEFT = [Actions.FORWARD, Actions.ROTATE_LEFT, Actions.FORWARD, Actions.ROTATE_RIGHT]
+    DIAGONAL_RIGHT = [Actions.FORWARD, Actions.ROTATE_RIGHT, Actions.FORWARD, Actions.ROTATE_LEFT]
+
+    directions_broadcast = [
+        [[Actions.NONE], [Actions.NONE]],
+        [[Actions.NONE], [Actions.FORWARD]],
+        [[Actions.NONE], DIAGONAL_LEFT],
+        [[Actions.ROTATE_LEFT],[Actions.FORWARD]],
+        [[Actions.ROTATE_LEFT], DIAGONAL_LEFT],
+        [[Actions.ROTATE_LEFT, Actions.ROTATE_LEFT],[Actions.FORWARD]],
+        [[Actions.ROTATE_RIGHT], DIAGONAL_RIGHT],
+        [[Actions.ROTATE_RIGHT], [Actions.FORWARD]],
+        [[Actions.NONE], DIAGONAL_RIGHT]
+    ]
 
     # Time stuff
     life_unit = 10
@@ -259,7 +282,24 @@ class Trantorian:
         #TODO: calculate la distance la plus courte avec la methode de Manhatan
 
     # TODO: finish it
+    def launch_action(self, action_value):
+        if action_value == Actions.FORWARD:
+            self.forward()
+        elif action_value == Actions.ROTATE_LEFT:
+            self.left()
+        elif action_value == Actions.ROTATE_RIGHT:
+            self.right()
+
     def shortest_path_k(self, k): # k is supposed to be a number 
+        if k < 0 or k > 9:
+            return
+        init_action, repeted_action = directions_broadcast[k]
+        for action in init_action :
+            launch_action(action)
+        for action in repeted_action :
+            launch_action(action)
+        
+
         print("foo")
         # TODO: find the coordinate of the point K
         # k=|Xk−X0|+|Yk−Y0|=|Xk|+|Yk|
