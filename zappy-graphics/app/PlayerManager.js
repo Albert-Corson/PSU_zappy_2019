@@ -9,7 +9,17 @@ class PlayerManager {
     }
 
     addTeam(teamName, size) {
-        this.teams.push({ teamName, size, players: [], color: `#${(~~(Math.random() * 0xffffff)).toString(16)}` });
+        const genRandomColor = () => {
+            let str = (~~(Math.random() * 0xffffff)).toString(16);
+            let offset = 6 - str.length;
+
+            if (offset) {
+                for (let i = 0; i < offset; ++i)
+                    str += 'f'
+            }
+            return `#${str}`
+        };
+        this.teams.push({ teamName, size, players: [], color: genRandomColor() });
         this.updateTeamPanel();
     }
 
