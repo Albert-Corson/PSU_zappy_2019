@@ -74,7 +74,26 @@ export class Server {
             }
         }
     }
+ setDirection(event) {
+        let keyCode = event.which || event.keyCode || event.charCode;
 
+        switch (keyCode) {
+            case 68:
+                this.rotateLeft();
+                break;
+            case 81:
+                this.rotateRight();
+                break;
+            case 90:
+                this.moveForward();
+                break;
+            case 67:
+                this.ejectAnimation();
+                break;
+            case 89:
+                break;
+        }
+    }
     /**
      * Returns the state of the connection to a remote server (opened or closed)
      */

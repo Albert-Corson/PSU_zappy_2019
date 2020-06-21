@@ -18,11 +18,8 @@ export class Player extends Model {
         this.eggs = [];
         this.food = 0;
         this.teamIdentificator = null;
-        this.teamColor = 'white';
         this.isFPV = false;
         this.isFollow = false;
-
-        document.addEventListener("keydown", this.setDirection.bind(this), false, this);
     }
 
     async initInstance(sceneWrapper, color) {
@@ -37,7 +34,6 @@ export class Player extends Model {
         sceneWrapper.getScene().add(mesh);
 
         this.teamIdentificator = mesh;
-        this.teamColor = color;
 
         new createjs.Tween.get(this.teamIdentificator.rotation, { loop: -1 }).to({
             y: Math.PI
@@ -167,35 +163,11 @@ export class Player extends Model {
         this.applyPosition();
     }
 
-    setDirection(event) {
-        let keyCode = event.which || event.keyCode || event.charCode;
-
-        switch (keyCode) {
-            case 68:
-                this.rotateLeft();
-                break;
-            case 81:
-                this.rotateRight();
-                break;
-            case 90:
-                this.moveForward();
-                break;
-            case 67:
-                this.ejectAnimation();
-                break;
-            case 89:
-                break;
-        }
-    }
-
     ejectAnimation() {
         this.playAnimationOnce(5);
-        // TODO: Animation ejecting another player, like "dégage sale cake"
     }
 
     dropItem(type, scene) {
-        //this.playAnimationOnce(1);
-
         if (this.map.addItem({ x: this.coordinates.x, z: this.coordinates.y }, type, scene)) {
             if (type !== 'FOOD')
                 this.gems[type] = this.gems[type] === undefined ? 0 : this.gems[type] - 1
@@ -206,8 +178,6 @@ export class Player extends Model {
     }
 
     pickItem(type, scene) {
-        //this.playAnimationOnce(1);
-
         if (this.map.deleteItem({ x: this.coordinates.x, z: this.coordinates.y }, type, scene)) {
             if (type !== 'FOOD')
                 this.gems[type] = this.gems[type] === undefined ? 1 : this.gems[type] + 1
