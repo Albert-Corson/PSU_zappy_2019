@@ -25,9 +25,8 @@ void spectator_send_inventory(const spectator_t *spec, const player_t *player)
         player->inventory[idx].amount);
     }
     good = good && sbuffer_write(&buf, "\n");
-    if (!good)
-        exit(84);
-    send_str(spec->sockd, buf.buffer);
+    if (good)
+        send_str(spec->sockd, buf.buffer);
     sbuffer_destroy(&buf);
 }
 
@@ -35,9 +34,8 @@ void spectator_send_hatched(const spectator_t *spec, const egg_t *egg)
 {
     char buffer[16] = { 0 };
 
-    if (sprintf(buffer, "hatched %lu\n", egg->id) < 0)
-        exit(84);
-    send_str(spec->sockd, buffer);
+    if (sprintf(buffer, "hatched %lu\n", egg->id) > 0)
+        send_str(spec->sockd, buffer);
 }
 
 void spectator_send_win(const spectator_t *spec, const team_t *team)
@@ -45,9 +43,8 @@ void spectator_send_win(const spectator_t *spec, const team_t *team)
     sbuffer_t buf;
 
     sbuffer_init(&buf);
-    if (!sbuffer_printf(&buf, "win %s\n", team->name))
-        exit(84);
-    send_str(spec->sockd, buf.buffer);
+    if (sbuffer_printf(&buf, "win %s\n", team->name))
+        send_str(spec->sockd, buf.buffer);
     sbuffer_destroy(&buf);
 }
 

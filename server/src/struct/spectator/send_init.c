@@ -60,8 +60,7 @@ void spectator_send_init(spectator_t *spectator)
     char map_size[32] = { 0 };
     egg_t *it = NULL;
 
-    if (sprintf(map_size, "map_size %d %d\n", GAME.height, GAME.width) < 0)
-        exit(84);
+    sprintf(map_size, "map_size %d %d\n", GAME.height, GAME.width);
     send_str(spectator->sockd, map_size);
     send_map(spectator);
     send_teams(spectator);

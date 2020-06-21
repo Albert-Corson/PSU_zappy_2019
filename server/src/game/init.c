@@ -52,7 +52,7 @@ static bool init_map(void)
 
     GAME.map = calloc(GAME.height, sizeof(*GAME.map));
     if (!memory || !GAME.map)
-        exit(84);
+        return (false);
     for (int y = 0; y < GAME.height; ++y) {
         GAME.map[y] = memory;
         for (int x = 0; x < GAME.width; ++x)

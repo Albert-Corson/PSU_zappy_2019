@@ -73,7 +73,7 @@ bool exec_broadcast(player_t *player, char *data)
 
     if (!response || sprintf(response, "message K, %s\n", data) < 0) {
         free(response);
-        exit(84);
+        return (false);
     }
     SLIST_FOREACH(it, &GAME.players, next) {
         if (it == player)

@@ -35,8 +35,7 @@ static void eject(player_t *player, direction_e from)
     size_t tile = get_ejected_tile_idx(player->dir, from);
     char message[16] = { 0 };
 
-    if (sprintf(message, "eject: %lu\n", tile) < 0)
-        exit(84);
+    sprintf(message, "eject: %lu\n", tile);
     player->pos.x += move_to[from].x;
     player->pos.y += move_to[from].y;
     game_readjust_pos(&player->pos);

@@ -24,7 +24,7 @@ bool exec_connect_nbr(player_t *player, char *data)
     if (n < 0)
         n = 0;
     if (snprintf(response, 32, "%d\n", n) < 0)
-        exit(84);
+        return (false);
     send_str(player->sockd, response);
     return (true);
 }

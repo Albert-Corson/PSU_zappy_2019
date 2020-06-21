@@ -33,16 +33,20 @@ static void client_buffer_exec_next(client_buffer_t *client)
 {
     sbuffer_t line;
     player_t *player = NULL;
+    char *cmd = NULL;
 
     sbuffer_init(&line);
-    if (!sbuffer_extract_until(&client->buf, "\n", &line))
-        exit(84);
-    if (!line.buffer)
-        return;
-    if (!init_pending(client->sockd, line.buffer)) {
+    if (sbuffer_extract_until(&client->buf, "\n", &line)) {
+        if (!line.buffer)
+            return;
+        cmd = line.buffer;
+    } else {
+        cmd = "";
+    }
+    if (!init_pending(client->sockd, cmd)) {
         player = game_get_player(client->sockd);
         if (player) {
-            command_handle_request(player, line.buffer);
+            command_handle_request(player, cmd);
         }
     }
     sbuffer_destroy(&line);

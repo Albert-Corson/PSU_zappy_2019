@@ -36,8 +36,7 @@ static void elevate(incantation_t *inc)
     player_t *it = SLIST_FIRST(&GAME.players);
     char message[32] = { 0 };
 
-    if (sprintf(message, "Current level: %d\n", inc->initiator->level + 1) < 0)
-        exit(84);
+    sprintf(message, "Current level: %d\n", inc->initiator->level + 1);
     spectators_send_elevation_end(inc);
     for (; it; it = SLIST_NEXT(it, next)) {
         if (it->incantation == inc) {

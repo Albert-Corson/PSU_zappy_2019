@@ -29,14 +29,14 @@ static bool elevation_is_possible(const recipe_t *inc, player_t *player)
     return (true);
 }
 
-static void start_elevation(const recipe_t *recipe, player_t *player)
+static bool start_elevation(const recipe_t *recipe, player_t *player)
 {
     size_t count = 1;
     player_t *it = SLIST_FIRST(&GAME.players);
     incantation_t *inc = malloc(sizeof(*inc));
 
     if (!inc)
-        exit(84);
+        return (false);
     inc->initiator = player;
     inc->pos.x = player->pos.x;
     inc->pos.y = player->pos.y;
@@ -51,6 +51,7 @@ static void start_elevation(const recipe_t *recipe, player_t *player)
         }
         it = SLIST_NEXT(it, next);
     }
+    return (true);
 }
 
 bool pre_exec_incantation(player_t *player, char *data)
@@ -59,7 +60,8 @@ bool pre_exec_incantation(player_t *player, char *data)
 
     if (player->incantation || !recp || !elevation_is_possible(recp, player))
         return (false);
-    start_elevation(recp, player);
+    if (!start_elevation(recp, player))
+        return (false);
     spectators_send_elevation_start(player->incantation);
     return (true);
 }

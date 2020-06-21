@@ -81,8 +81,10 @@ bool exec_look(player_t *player, char *data)
         good = dump_row(&buf, player, lvl, off_y);
         --off_y;
     }
-    if (!good || !sbuffer_write(&buf, "]\n"))
-        exit(84);
+    if (!good || !sbuffer_write(&buf, "]\n")) {
+        sbuffer_destroy(&buf);
+        return (false);
+    }
     send_str(player->sockd, buf.buffer);
     sbuffer_destroy(&buf);
     return (true);

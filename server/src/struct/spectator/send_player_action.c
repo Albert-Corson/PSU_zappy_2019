@@ -15,9 +15,8 @@ void spectator_send_died(const spectator_t *spec, const player_t *player)
 {
     char buffer[16] = { 0 };
 
-    if (sprintf(buffer, "died %lu\n", player->id) < 0)
-        exit(84);
-    send_str(spec->sockd, buffer);
+    if (sprintf(buffer, "died %lu\n", player->id) > 0)
+        send_str(spec->sockd, buffer);
 }
 
 void spectator_send_drop(const spectator_t *spec, const player_t *player, \
@@ -28,9 +27,8 @@ element_e elem)
 
     n = sprintf(buffer, "drop %lu %s\n", player->id, \
     player->inventory[elem].name);
-    if (n < 0)
-        exit(84);
-    send_str(spec->sockd, buffer);
+    if (n > 0)
+        send_str(spec->sockd, buffer);
 }
 
 void spectator_send_take(const spectator_t *spec, const player_t *player, \
@@ -41,9 +39,8 @@ element_e elem)
 
     n = sprintf(buffer, "take %lu %s\n", player->id, \
     player->inventory[elem].name);
-    if (n < 0)
-        exit(84);
-    send_str(spec->sockd, buffer);
+    if (n > 0)
+        send_str(spec->sockd, buffer);
 }
 
 void spectator_send_broadcast(const spectator_t *spec, const player_t *player, \
@@ -52,8 +49,7 @@ const char *message)
     sbuffer_t buf;
 
     sbuffer_init(&buf);
-    if (!sbuffer_printf(&buf, "broadcast %lu %s\n", player->id, message))
-        exit(84);
-    send_str(spec->sockd, buf.buffer);
+    if (sbuffer_printf(&buf, "broadcast %lu %s\n", player->id, message))
+        send_str(spec->sockd, buf.buffer);
     sbuffer_destroy(&buf);
 }
