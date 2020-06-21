@@ -41,22 +41,21 @@ void on_readable(va_list ap)
     sockd_t peer = va_arg(ap, sockd_t);
     size_t size = va_arg(ap, size_t);
     char *buffer = malloc(size + 1);
-    ssize_t rd = 0;
 
-    printf("[?] Data received from: %d\n", peer);
     if (buffer == NULL)
         exit(84);
-    rd = read(peer, buffer, size);
-    if (rd < 0 || (size_t)rd != size) {
+    if (read(peer, buffer, size) < 0) {
         dprintf(2, "[!] Error while reading data from: %d\n", peer);
         free(buffer);
         return;
     }
     buffer[size] = 0;
     if (!is_printable(buffer, size)) {
-        socker_disconnect(peer);
         dprintf(2, "[!] Invalid data received, kicking: %d\n", peer);
-    } else
+        socker_disconnect(peer);
+    } else {
+        printf("[?] Data received from: %d\n", peer);
         append_to_client_buffer(peer, buffer);
+    }
     free(buffer);
 }
