@@ -21,7 +21,7 @@ inline socker_t *socker_location(void)
 int socker_init(void)
 {
     G_SOCKER.events = new_event_list();
-    FDI_ZERO(&G_SOCKER.fd_info);
+    FDI_ZERO();
     G_SOCKER.ms_timeout = -1;
     G_SOCKER.is_init = true;
     return (0);
@@ -30,5 +30,5 @@ int socker_init(void)
 void socker_destroy(void)
 {
     delete_event_list(G_SOCKER.events);
-    FDI_ZERO(&G_SOCKER.fd_info);
+    FDI_ZERO();
 }

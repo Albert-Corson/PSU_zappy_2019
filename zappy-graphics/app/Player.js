@@ -203,6 +203,7 @@ export class Player extends Model {
                 this.gems[type] = this.gems[type] === undefined ? 0 : this.gems[type] - 1
             else
                 this.food -= 1
+            this.getControlPanelInfo();
         }
     }
 
@@ -214,6 +215,7 @@ export class Player extends Model {
                 this.gems[type] = this.gems[type] === undefined ? 1 : this.gems[type] + 1
             else
                 this.food += 1
+            this.getControlPanelInfo();
         }
     }
 

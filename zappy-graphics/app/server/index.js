@@ -46,7 +46,7 @@ export class Server {
      */
     static connect(host, port) {
         if (this._socket !== null) {
-            this.close()
+            this.disconnect()
         }
         this._socket = this._net.createSocket(host, port, {
             encoding: "utf-8",
@@ -86,7 +86,7 @@ export class Server {
     static disconnect() {
         if (this._socket !== null) {
             this._socket.close()
-            this._socket = null;
+            this._socket = null
         }
     }
 

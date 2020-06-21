@@ -25,7 +25,6 @@ export class Map {
             }
         });
 
-        noise.seed(Math.random());
 
         let first = true;
 
@@ -53,6 +52,9 @@ export class Map {
             }
         }
 
+/*
+        this.doNoise(sceneWrapper);
+*/
         this.initCamera(sceneWrapper, 35);
         return Promise.resolve();
     }
@@ -117,13 +119,16 @@ export class Map {
         }
 
         this.blocks[this.size_x * z + x].putItemOnBlock(type);
+        this.blocks[this.size_x * z + x].getControlPanelInfo();
     }
 
-    getItemModel({ x, z }, type) {
+    getItem({ x, z }, type) {
         if (z == undefined || x == undefined || x > this.size_x - 1 || z > this.size_z - 1)
             return null;
 
-        return this.itemSlots[this.size_x * z + x].items[type].model.getMesh();
+        if (this.itemSlots[this.size_x * z + x])
+            return this.itemSlots[this.size_x * z + x].items[type];
+        return null;
     }
 
     getPlayerPositionFromCord(coordinates) {
@@ -151,6 +156,7 @@ export class Map {
 
         block.items[type].nb--;
         this.blocks[this.size_x * z + x].subItemOnBlock(type);
+        this.blocks[this.size_x * z + x].getControlPanelInfo();
 
 
         if (block.items[type].nb <= 0) {
@@ -159,5 +165,38 @@ export class Map {
             block.items[type] = undefined;
         }
         return true;
+    }
+
+    doNoise(sceneWrapper) {
+        noise.seed(Math.random());
+
+        let size_x = 100;
+        let size_z = 100;
+
+        let off_x = 0;
+        let off_z = 0;
+        let step = 0.05;
+        let maxHeight = 10;
+
+        let rangeZ = Array(size_z).fill(0).map((a, i) => i);
+        let rangeX = Array(size_x).fill(0).map((a, i) => i);
+
+        for (let j of rangeZ) {
+            for (let i of rangeX) {
+                let copy;
+                let nx = Number(i)/size_x - 0.2;
+                let ny = Number(j)/size_z - 0.2;
+                let elevation = 1 * noise.perlin2(2 * nx, 2 * ny) +  0.5 * noise.perlin2(4 * nx, 4 * ny) + 0.25 * noise.perlin2(8 * nx, 4 * ny);
+                let noise_y = /*Math.floor(*/elevation * maxHeight * this.modelSize.y;
+
+                copy = new Bloc(Number(j) + Number(i), {scene: sceneWrapper, mesh: this.rootBlock.getMesh()});
+                copy.getMesh().position.set(Number(i) * this.modelSize.x, noise_y + 10, Number(j) * this.modelSize.z);
+                copy.initRaycaster();
+                this.blocks.push(copy);
+                off_x += step;
+            }
+            off_x = 0;
+            off_z += step;
+        }
     }
 }
