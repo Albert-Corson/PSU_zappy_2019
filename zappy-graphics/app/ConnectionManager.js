@@ -8,7 +8,7 @@ export class ConnectionManager {
 
         document.getElementById('ip').addEventListener('change', e => this.ip = e.target.value);
         document.getElementById('port').addEventListener('change', e => this.port = e.target.value);
-
+        
         let callback = () => {
             Server.connect(this.ip, parseInt(this.port));
             Server.send("-spectator");

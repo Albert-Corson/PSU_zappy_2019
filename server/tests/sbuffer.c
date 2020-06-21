@@ -36,19 +36,7 @@ Test(sbuffer, sbuffer_write)
     cr_assert_eq(sbuffer_write(&buf, str1), true);
     cr_assert_eq(sbuffer_write(&buf, str2), true);
     cr_assert_str_eq(buf.buffer, "Hello world!");
-    cr_assert_eq(buf.size, 13);
-    sbuffer_destroy(&buf);
-}
-
-Test(sbuffer, sbuffer_clear)
-{
-    sbuffer_t buf;
-
-    sbuffer_clear(NULL);
-    sbuffer_init(&buf);
-    sbuffer_write(&buf, "something");
-    sbuffer_clear(&buf);
-    cr_assert_eq(buf.size, 0);
+    cr_assert_eq(buf.size, 12);
     sbuffer_destroy(&buf);
 }
 
@@ -74,9 +62,9 @@ Test(sbuffer, sbuffer_printf)
     cr_assert_eq(sbuffer_printf(NULL, NULL), false);
     cr_assert_eq(sbuffer_printf(&buf, "Hello x%d", 10), true);
     cr_assert_str_eq(buf.buffer, "Hello x10");
-    cr_assert_eq(buf.size, 10);
+    cr_assert_eq(buf.size, 9);
     cr_assert_eq(sbuffer_printf(&buf, " %s", "world!"), true);
     cr_assert_str_eq(buf.buffer, "Hello x10 world!");
-    cr_assert_eq(buf.size, 17);
+    cr_assert_eq(buf.size, 16);
     sbuffer_destroy(&buf);
 }

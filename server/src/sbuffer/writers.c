@@ -21,9 +21,6 @@ bool sbuffer_write(sbuffer_t *buf, const char *src)
     srclen = strlen(src);
     if (srclen == 0)
         return (true);
-    if (buf->size > 0)
-        buf->size -= 1;
-    srclen += 1;
     if (!sbuffer_allocate(buf, srclen))
         return (false);
     strcpy(buf->buffer + buf->size, src);
@@ -33,37 +30,36 @@ bool sbuffer_write(sbuffer_t *buf, const char *src)
 
 static int sbuffer_printf_alloc(sbuffer_t *buf, const char *format, va_list ap)
 {
-    int str_len = str_len = vsnprintf(NULL, 0, format, ap);
+    int srclen = vsnprintf(NULL, 0, format, ap);
 
-    if (str_len < 0)
+    if (srclen < 0)
         return (-1);
-    if (str_len == 0)
+    if (srclen == 0)
         return (0);
-    str_len += (buf->size == 0);
-    if (!sbuffer_allocate(buf, str_len))
+    if (!sbuffer_allocate(buf, srclen))
         return (-1);
-    return (str_len);
+    return (srclen);
 }
 
 bool sbuffer_printf(sbuffer_t *buf, const char *format, ...)
 {
     va_list ap;
-    int str_len = 0;
+    int srclen = 0;
 
     if (!buf || !format)
         return (false);
     va_start(ap, format);
-    str_len = sbuffer_printf_alloc(buf, format, ap);
+    srclen = sbuffer_printf_alloc(buf, format, ap);
     va_end(ap);
-    if (str_len <= 0)
-        return (str_len == 0);
+    if (srclen <= 0)
+        return (srclen == 0);
     va_start(ap, format);
-    if (vsprintf(buf->buffer + buf->size - (buf->size != 0), format, ap) < 0) {
-        ((char *)buf->buffer)[buf->size] = 0;
+    if (vsprintf(buf->buffer + buf->size, format, ap) < 0) {
+        buf->buffer[buf->size] = 0;
         va_end(ap);
         return (false);
     }
-    buf->size += str_len;
+    buf->size += srclen;
     va_end(ap);
     return (true);
 }
