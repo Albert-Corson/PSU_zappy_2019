@@ -22,7 +22,7 @@
 #define LOG_WARN(fmt, ...)
 #define LOG_ERROR(fmt, ...)
 
-#define SOCKER_LOG_LEVEL LOG_LEVEL_ALL
+#define SOCKER_LOG_LEVEL LOG_LEVEL_NONE
 
 #ifdef SOCKER_LOG_LEVEL
 
