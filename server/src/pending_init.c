@@ -70,8 +70,10 @@ void pending_client_init(pending_client_t *clt, char *data)
         disconnect = !new_spectator(clt->sockd);
     else
         disconnect = !pending_client_init_player(clt->sockd, data);
-    if (disconnect)
+    if (disconnect) {
         socker_disconnect(clt->sockd);
-    SLIST_REMOVE(&GAME.pendings, clt, pending_client, next);
-    free(clt);
+    } else {
+        SLIST_REMOVE(&GAME.pendings, clt, pending_client, next);
+        free(clt);
+    }
 }
