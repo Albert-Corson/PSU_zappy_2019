@@ -2,7 +2,7 @@ import collections
 import re
 import sys
 from enum import IntEnum, unique
-from random import randrange
+from random import randrange, randint
 import socket
 
 @unique
@@ -41,6 +41,9 @@ class Trantorian:
         [[Actions.ROTATE_RIGHT], [Actions.FORWARD]],
         [[Actions.NONE], DIAGONAL_RIGHT]
     ]
+
+    #player attributes
+    hunger_indices = 0
 
     # Time stuff
     life_unit = 10
@@ -101,7 +104,7 @@ class Trantorian:
         [print("# [" + x + "]" + ":\t%d  #" %(self.stones[x])) for x in self.stones]
         print("\n### end ###")
 
-    def reset_stones(self): # prendre en compte les cailloux restant si plus 
+    def reset_stones(self): # take into account the remaining pebbles if more than 
         for _ in self.stones:
             self.stones[_] = 0
 
@@ -214,10 +217,15 @@ class Trantorian:
         command = response[1:-2]
 
         cases = command.split(",")
+        if len(cases) != vision_field_limit:
+            print(len(cases)) #
+            print(vision_field_limit) #
+            print("Can't look...")
+            return
         print(cases)
         print(vision_field_limit)
         for index in range(vision_field_limit -1):
-            if not cases[index]:
+            if not cases[index] or cases[index] == "" or cases[index] == " ":
                 cases[index] = "empty"
             # TODO: check les incidences sur le bag
             self.vision_field[index] = cases[index]
@@ -252,7 +260,7 @@ class Trantorian:
         self.send_cmd("Set "+ obj +"\n")
 
     def fork(self):
-        print("Set object down")
+        print("Fork")
         self.send_cmd("Fork\n")
 
     def eject(self):
@@ -306,17 +314,17 @@ class Trantorian:
             past_y = args[1]
             [self.left() for _ in range(2)]
             self.forward()
-            print('============================')
-            print(re.search("^Avengers Rassemblement!.*", message))
-            print(self.check_level_broadcasted(message))
-            print(self.check_ressources())
-            print('============================')
-            if re.search("^Avengers Rassemblement!.*", message) != None and self.check_level_broadcasted(message) == True and self.check_ressources() == True:
-                print("<< GO JOIN MY FRIEND!! >>")
-                self.sockfd.send("j'arrive".encode("Utf8"))
-                [self.left() for _ in range(2)] # replace to his correct direction
-                self.shortest_path_k(coord_from_me)
-                return "abort"
+        print('============================')
+        print("{" + message + "}")
+        print(re.search("^Avengers Rassemblement!.*", message))
+        print(self.check_level_broadcasted(message))
+        print(self.check_ressources())
+        print('============================')
+        if re.search("^Avengers Rassemblement!.*", message) != None and self.check_level_broadcasted(message) == True and self.check_ressources() == True:
+            print("<< GO JOIN MY FRIEND!! >>")
+            self.sockfd.send("j'arrive".encode("Utf8"))
+            self.shortest_path_k(coord_from_me)
+            return "abort"
         print("someone said : << %s >> at %d" %(message, coord_from_me))
         return "continue"
 
@@ -347,7 +355,7 @@ class Trantorian:
         self.unused_player_slot = int(response)
 
     ## algo
-    # renvoie l'index d'ou le ressouces a ete trouver ou -1 sinon
+    # Returns the index of where the resource was found or -1 otherwise.
     def check_in_vision_field(self, obj):
         tmp = []
         calc_middle = lambda x : (x * x) - x
@@ -364,6 +372,15 @@ class Trantorian:
             if x in efficient_path:
                 continue
             if x in begs:
+                print("vision field: =>")
+                print(self.vision_field)
+                print("efficient path: =>")
+                print(efficient_path)
+                print("delta: =>")
+                print(delta)
+                print(efficient_path[delta])
+                if efficient_path[delta] > len(self.vision_field):
+                    break
                 tmp = self.vision_field[efficient_path[delta]].split(' ')
                 if obj in tmp:
                     print("@@@@@ obj find at index %d" %(efficient_path[delta]))
@@ -422,7 +439,7 @@ class Trantorian:
                 self.take_object(obj)
         print("#########################")
     
-    # ici on se deplace vers l'item en prenant d'autres item requis si on passe dessus
+    # here we move to the item by taking other items required if we pass over it.
     def go_take_it(self, tile_nbr, obj):
         col_nbr = self.find_col_from_tile(tile_nbr)
         calc_middle = lambda x : (x * x) - x
@@ -451,37 +468,76 @@ class Trantorian:
         self.inventory()
         print("~~~~~~~~")
 
-# TODO: recup de la bouf
+    # pick the available item (master first, slave if master ain't available)
+    def choose_item_with_priority(self, master, slave):
+        if master[1] != -1:
+            return master
+        elif slave[1] != -1:
+            return slave
+        return None
 
-    def work(self):
-        print("Up")
-        index_vision = -1
-        # regarder les ressources actuelles
-        index_level = self.level - 1
+    # pick the most needed item (food or stone)
+    def choose_item(self, index_level):
+        # 2 - 5 => FOOD ** Other *
+        # 5 - 10 => FOOD * Other *
+        # 10 - + => FOOD * Other **
+        # get inventory and find out what are the most wanted items (food and stone)
+        self.inventory()
+        # check current ressources
         required_stones = self.elev_table[index_level][1:]
         print(required_stones)
         corresp_stone = list(self.stones.values())
         ref_table = required_stones
         print(corresp_stone)
-        # trouve la ressouce la plus nécessaire
         most_wanted = ref_table.index(max(ref_table))
+
+        # locate food and most wanted stone (if in sight)
+        stone_index = self.check_in_vision_field(self.stone_ref[most_wanted])
+        food_index = self.check_in_vision_field("food")
+        # create tuple for items priorities
+        food = ("food", food_index)
+        stone = (self.stone_ref[most_wanted], stone_index)
+
         print(self.stone_ref[most_wanted])
-        # si on a tout bah on broadcast 
+
+        if self.food > 10: # prioritize stone
+            return self.choose_item_with_priority(stone, food)
+        elif self.food > 5: # no priority
+            random_value = randint(0, 1)
+            if random_value == 0:
+                self.choose_item_with_priority(stone, food)
+            else:
+                self.choose_item_with_priority(food, stone)
+        else: # prioritize food
+            return  self.choose_item_with_priority(food, stone)
+
+# TODO: recup de la bouf
+
+    def work(self):
+        print("Up")
+        # fork if necessary
+        self.connect_number()
+        if self.unused_player_slot == 0:
+            self.fork()
+
+        # choose item to take
+        index_level = self.level - 1
+        item = self.choose_item(index_level)
+
+        # found the most needed ressources
+        # if we have everything we broadcast
         if self.check_ressources() == True:
-            # si assez de joueurs reunis on incante
+            # if enough player gather we do incantation
             if self.level != 1:
                 self.broadcast("Avengers Rassemblement! for level %d" %(self.level))
             if self.player_gathered == self.elev_table[index_level][0] - 1:
                 print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@#####################")
                 self.incantation()
                 return
-        # regarde dans sa vision_field and move forward if most wanted
+        # check in vision_field and move toward most wanted
         self.look()
-        index_vision = self.check_in_vision_field(self.stone_ref[most_wanted])
-        if index_vision != -1:
-            self.go_take_it(index_vision, self.stone_ref[most_wanted])
+        if item != None:
+            self.go_take_it(item[1], item[0])
         else:
             [self.forward() for x in range(3)]
         print("Working")
-
-    # TODO: noise function, dead, ?set_object, ?take_object

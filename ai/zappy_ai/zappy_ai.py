@@ -16,6 +16,7 @@ class ReceiverHandler(asyncore.dispatcher):
         asyncore.dispatcher.__init__(self)
         self.sockfd = socket.create_connection((host, port))
 
+
     def handle_close(self):
         self.close()
         sys.exit(0)
