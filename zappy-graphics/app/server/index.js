@@ -15,7 +15,7 @@ export class Server {
      * @type {WebTCP}
      * @private
      */
-    static _net = new WebTCP('localhost', 9999)
+    static _net = null
 
     /**
      * Socket connected to a remote Zappy server
@@ -38,6 +38,10 @@ export class Server {
      */
     static _emitter = new EventEmitter()
 
+    static setBridgeAddress(ip) {
+        this._net = new WebTCP(ip, 9999)
+    }
+
     /**
      * Connect to a remote server
      * 
@@ -45,6 +49,9 @@ export class Server {
      * @param {Number} port server port
      */
     static connect(host, port) {
+        if (!this._net) {
+            return;
+        }
         if (this._socket !== null) {
             this.disconnect()
         }
