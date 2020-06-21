@@ -26,7 +26,7 @@ const incantation_t *inc)
             continue;
         good = sbuffer_printf(&buf, " %lu", it->id);
     }
-    if (good && !sbuffer_write(&buf, "\n"))
+    if (good && sbuffer_write(&buf, "\n"))
         send_str(spec->sockd, buf.buffer);
     sbuffer_destroy(&buf);
 }
