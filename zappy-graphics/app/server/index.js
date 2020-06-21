@@ -70,7 +70,6 @@ export class Server {
         this._socket.ondata = data => {
             const messages = data.split('\n')
             for (let message of messages) {
-                console.log(message)
                 this._emitter.emit('message', message)
             }
         }
