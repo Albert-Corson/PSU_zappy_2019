@@ -40,18 +40,6 @@ Test(sbuffer, sbuffer_write)
     sbuffer_destroy(&buf);
 }
 
-Test(sbuffer, sbuffer_clear)
-{
-    sbuffer_t buf;
-
-    sbuffer_clear(NULL);
-    sbuffer_init(&buf);
-    sbuffer_write(&buf, "something");
-    sbuffer_clear(&buf);
-    cr_assert_eq(buf.size, 0);
-    sbuffer_destroy(&buf);
-}
-
 Test(sbuffer, sbuffer_destroy)
 {
     sbuffer_t buf;

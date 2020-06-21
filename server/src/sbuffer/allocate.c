@@ -17,13 +17,15 @@ bool sbuffer_allocate(sbuffer_t *buf, size_t size)
     size_t need = 0;
 
     if (buf->buffer) {
-        avail = BUFFER_BLOCK - (buf->size % BUFFER_BLOCK);
+        avail = SBUFFERBLOCK_AVAIL(buf->size);
     } else {
         buf->size = 0;
     }
-    if (avail < size) {
-        need = (((size - avail) / BUFFER_BLOCK) + 1) * BUFFER_BLOCK;
-        tmpptr = realloc(buf->buffer, buf->size + need + avail);
+    if (avail < size + 1) {
+        need = (SBUFFERBLOCK_ALIGNED(size - avail) / SBUFFERBLOCK);
+        need *= SBUFFERBLOCK;
+        need += buf->size + avail;
+        tmpptr = realloc(buf->buffer, need);
         if (!tmpptr)
             return (false);
         buf->buffer = tmpptr;

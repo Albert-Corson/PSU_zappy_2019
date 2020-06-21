@@ -13,23 +13,26 @@
 bool sbuffer_extract_until(sbuffer_t *in, char *reject, sbuffer_t *out)
 {
     size_t len = 0;
-    char *extract = NULL;
+    char *tmpptr = NULL;
 
     if (!in || !reject || !out || !in->size)
         return (true);
     len = strcspn(in->buffer, reject);
-    sbuffer_destroy(out);
     if (!in->buffer[len])
         return (true);
-    if (!sbuffer_allocate(out, len + 1))
+    if (!sbuffer_allocate(out, len))
         return (false);
-    strncpy(out->buffer, in->buffer, len);
-    out->buffer[len] = 0;
-    out->size = len + 1;
+    strncpy(out->buffer + out->size, in->buffer, len);
+    out->buffer[out->size + len] = 0;
+    out->size += len;
     in->size -= len + 1;
     for (size_t idx = 0; idx < in->size; ++idx)
-        in->buffer[idx] = *(in->buffer + len + 1 + idx);
-    len = in->size + (BUFFER_BLOCK - (in->size % BUFFER_BLOCK));
-    in->buffer = realloc(in->buffer, len);
+        in->buffer[idx] = in->buffer[len + 1 + idx];
+    tmpptr = realloc(in->buffer, SBUFFERBLOCK_ALIGNED(in->size + 1));
+    if (!tmpptr) {
+        sbuffer_destroy(in);
+        return (false);
+    }
+    in->buffer = tmpptr;
     return (true);
 }

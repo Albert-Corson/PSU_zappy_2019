@@ -18,17 +18,15 @@ typedef struct {
 /**
 * @brief size of allocated memory blocks
 */
-#define BUFFER_BLOCK 512
+#define SBUFFERBLOCK 512
+
+#define SBUFFERBLOCK_AVAIL(n) (SBUFFERBLOCK - (n % SBUFFERBLOCK))
+#define SBUFFERBLOCK_ALIGNED(n) (n + SBUFFERBLOCK_AVAIL(n))
 
 /**
 * @brief Initializes members of the sbuffer
 */
 void sbuffer_init(sbuffer_t *buf);
-
-/**
-* @brief clears/resets the sbuffer without freeing it
-*/
-void sbuffer_clear(sbuffer_t *buf);
 
 /**
 * @brief frees the sbuffer
@@ -52,4 +50,13 @@ bool sbuffer_printf(sbuffer_t *buf, const char *format, ...);
 */
 bool sbuffer_allocate(sbuffer_t *buf, size_t needed);
 
+/**
+* @brief fill up the `out` buffer with the initial segment of `in` composed of
+* characters not in reject. `in` is left with all characters after the first
+* found from reject
+* If no characters from `reject` are found, no actions are taken and
+* true is returned
+*
+* @return false for an allocation error, true otherwise
+*/
 bool sbuffer_extract_until(sbuffer_t *in, char *reject, sbuffer_t *out);
