@@ -8,9 +8,9 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#ifndef LOG_FD
-#define LOG_FD 2
-#endif
+#define LOG_ERROR_FD 2
+#define LOG_WARN_FD 2
+#define LOG_INFO_FD 1
 
 #define LOG_LEVEL_NONE (0)
 #define LOG_LEVEL_INFO (1 << 0)
@@ -31,17 +31,17 @@
     #if (SOCKER_LOG_LEVEL & LOG_LEVEL_INFO)
         #undef LOG_INFO
         #define LOG_INFO(fmt, ...) \
-            dprintf(LOG_FD, fmt "\n", __VA_ARGS__);
+            dprintf(LOG_INFO_FD, fmt "\n", __VA_ARGS__);
     #endif
     #if (SOCKER_LOG_LEVEL & LOG_LEVEL_WARN)
         #undef LOG_WARN
         #define LOG_WARN(fmt, ...) \
-            dprintf(LOG_FD, "[?] " fmt "\n", __VA_ARGS__);
+            dprintf(LOG_WARN_FD, "[?] " fmt "\n", __VA_ARGS__);
     #endif
     #if (SOCKER_LOG_LEVEL & LOG_LEVEL_ERROR)
         #undef LOG_ERROR
         #define LOG_ERROR(fmt, ...) \
-            dprintf(LOG_FD, "[!] " fmt "\n", __VA_ARGS__);
+            dprintf(LOG_ERROR_FD, "[!] " fmt "\n", __VA_ARGS__);
     #endif
 #endif
 

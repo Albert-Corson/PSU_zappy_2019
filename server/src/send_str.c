@@ -11,5 +11,5 @@
 
 int send_str(sockd_t sockd, const char *str)
 {
-    return (mq_send(sockd, str, strlen(str)));
+    return (socker_send(sockd, str, strlen(str)));
 }

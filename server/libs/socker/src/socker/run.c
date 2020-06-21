@@ -20,7 +20,7 @@ static void handle_readable(sockd_t peer)
 {
     size_t bytes = 0;
 
-    if (FDI_ISSET(FDI_LISTENER, &G_SOCKER.fd_info, peer)) {
+    if (FDI_ISSET(FDI_LISTENER, peer)) {
         socker_accept(peer);
         return;
     }
@@ -55,9 +55,9 @@ void socker_run(void)
         return;
     }
     for (int index = 0; index < FD_SETSIZE; ++index) {
-        if (FD_ISSET(index, &readfds))
+        if (FD_ISSET(index, &readfds) && FDI_ISSET(FDI_READ, index))
             handle_readable(index);
-        if (FD_ISSET(index, &writefds))
+        if (FD_ISSET(index, &writefds) && FDI_ISSET(FDI_WRITE, index))
             handle_writable(index);
     }
 }

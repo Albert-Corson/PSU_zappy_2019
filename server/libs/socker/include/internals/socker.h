@@ -37,31 +37,32 @@ typedef enum fdi_mode {
 /**
 * @brief Check if a fd has the given mode
 */
-#define FDI_ISSET(mode, fd_info, fd) \
-    ((fd_info)->fds[fd] & (mode))
+#define FDI_ISSET(mode, fd) \
+    (G_SOCKER.fd_info.fds[fd] & (mode))
 
 /**
 * @brief Add a mode to the given fd
 */
-#define FDI_SET(mode, fd_info, fd) \
-    ((fd_info)->fds[fd] |= (mode))
+#define FDI_SET(mode, fd) \
+    (G_SOCKER.fd_info.fds[fd] |= (mode))
 
 /**
 * @brief Remove a mode from the given fd
 */
-#define FDI_UNSET(mode, fd_info, fd) \
-    ((fd_info)->fds[fd] ^= (mode))
+#define FDI_UNSET(mode, fd) \
+    (G_SOCKER.fd_info.fds[fd] &= ~(mode))
 
 /**
 * @brief Empty a fd_info set
 */
-#define FDI_ZERO(fd_info) \
-    memset((fd_info), FDI_NO_MODE, FD_SETSIZE)
+#define FDI_ZERO() \
+    memset(&G_SOCKER.fd_info, FDI_NO_MODE, FD_SETSIZE * sizeof(unsigned char))
+
 /**
 * @brief Remove all modes from a given fd
 */
-#define FDI_CLR(fd_info, fd) \
-    ((fd_info)->fds[fd] &= FDI_NO_MODE)
+#define FDI_CLR(fd) \
+    (G_SOCKER.fd_info.fds[fd] &= FDI_NO_MODE)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Socker internals

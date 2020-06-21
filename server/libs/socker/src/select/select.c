@@ -15,7 +15,7 @@ static void prepare_fdset(fdi_mode_t mode, fd_set *fds, int *max_fd)
 {
     FD_ZERO(fds);
     for (int index = 0; index < FD_SETSIZE; ++index) {
-        if (!FDI_ISSET(mode, &G_SOCKER.fd_info, index))
+        if (!FDI_ISSET(mode, index))
             continue;
         if (index > *max_fd)
             *max_fd = index;

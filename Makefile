@@ -7,7 +7,7 @@
 
 include sources.mk var.mk
 
-all: libs ai_z server_z ## Build the binary and relinks if needed
+all: ai_z server_z ## Build the binary and relinks if needed
 
 libs:
 	$(MAKE) -C server/libs/socker INCLUDES_PATH="$(INCLUDES_PATH_SRV)"
@@ -20,7 +20,7 @@ debug: libs_debug $(NAME_SRV) ai_z
 
 include server.mk ai.mk
 
-server_z: $(NAME_SRV) ## build the server binary (or you can substituate with the binary name wich has the same effect)
+server_z: libs $(NAME_SRV) ## build the server binary (or you can substituate with the binary name wich has the same effect)
 
 ai_z: $(NAME_AI) ## build the ai/client binary (or you can substituate with the binary name wich has the same effect)
 
