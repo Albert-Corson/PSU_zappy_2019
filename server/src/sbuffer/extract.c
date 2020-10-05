@@ -17,7 +17,8 @@ static bool shorten(sbuffer_t *in, size_t len)
     in->size -= len + 1;
     for (size_t idx = 0; idx < in->size; ++idx)
         in->buffer[idx] = in->buffer[len + 1 + idx];
-    in->buffer[in->size] = 0;
+    if (in->size)
+        in->buffer[in->size] = 0;
     tmpptr = realloc(in->buffer, SBUFFERBLOCK_ALIGNED(in->size + 1));
     if (!tmpptr) {
         sbuffer_destroy(in);
